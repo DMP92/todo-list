@@ -11,6 +11,7 @@ const itemRef = (function() {
         // pushes todo item into Item array
         function pushItem(item) {
             itemArray.push(item);
+            projectCreate.fetch(item);
         }
         
         // shares specific itemArray
@@ -20,42 +21,84 @@ const itemRef = (function() {
         }
 
     // shares specific item
-    function shareSpecificTask(index) {
+    function shareTask(index) {
         return itemArray[index];
     }
 
-        // shares specific item title
-        function shareTitle(index) {
+        // shares specific item name
+        function shareName(index) {
             return itemArray[index].name;
         }
 
-        // shares specific item description
-        function shareDescription(index) {
-            return itemArray[index].description;
-        }
-
-        // shares specific item summary
-        function shareSummary(index) {
-            return itemArray[index].summary;
-        }
-
         // shares specific item notes
-        function shareNotes(index) {
+        function shareNote(index) {
             return itemArray[index].notes;
+        }
+
+        // shares specific item date
+        function shareSummary(index) {
+            return itemArray[index].date;
+        }
+
+        // shows which project the item belongs to
+        function shareProject(index) {
+           return itemArray[index].project;
         }
 
     return {
         printItem : pushItem,
-        title: shareTitle,
-        description: shareDescription,
+        title: shareName,
+        notes: shareNote,
         summary: shareSummary,
-        notes: shareNotes,
-        task: shareSpecificTask,
+        notes: shareProject,
+        task: shareTask,
         share: shareArray
     }
 })();
 
-const arrayprint = document.querySelector('.array');
-arrayprint.addEventListener('click', itemRef.share);
+// module for creating projects
+const projectCreate = (function() {
+
+    // array that contains each project
+    const projectArray = [];
+
+    // function that gathers data about each item
+    function fetchItems(item) {
+        const project = {  };
+        project.task = item.task;
+        project.notes = item.notes;
+        project.date = item.date;
+        project.name = item.project;
+
+        projectArray.push(project);
+    }
+
+    // function that shares projectArray
+    function shareProjectArray() {
+        return projectArray;
+    }
+
+    // creates project container for all sub tasks
+    function createProject(item) {
+
+        return item.name;
+
+    }
+
+    return {
+        fetch: fetchItems,
+        shareArray: shareProjectArray,
+        create: createProject
+    }
+})();
+
+const newItem = ItemFactory();
+const button = document.querySelector('.submit');
+button.addEventListener('click', newItem.createGeneralItem);
+
+const arrayprint = document.querySelector('.formDelete');
+arrayprint.addEventListener('click', () => {
+    console.log(itemRef.shareArray);
+})
 
 export { itemRef }

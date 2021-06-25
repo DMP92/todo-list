@@ -1,0 +1,396 @@
+body {
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(10, 10%);
+    grid-template-areas: 
+                "header"
+                "content"
+                "footer";
+    background-color: black;
+}
+
+    .header {
+        grid-area: "header";
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        grid-area: "header";
+        background-color: #151515;
+        color: #02807d;
+        grid-column: 1/10;
+        grid-row: 1/2;
+        height: 100%;
+        width: 100%;
+        font-size: 26px;
+        font-family: monospace;
+        z-index: 10;
+        
+    }
+
+    input {
+        border: transparent;
+        outline: transparent;
+        background-color: rgba(255, 255, 255, 0.2);
+        box-shadow: inset 0px 0px 5px #02807d;
+        color: #21ebe7;
+        text-indent: 5px;
+    }
+
+    h1 {
+        color: #02807d;
+    }
+
+    #text {
+        color: #02807d;
+    }
+
+    .code {
+        display: flex;
+        font-family: monospace;
+        font-size: 25px;  
+        color: white; 
+    }
+
+    .lPar {
+        color:rgb(221, 144, 79) !important;
+        z-index: 10 !important;
+    }
+
+    .rPar {
+        color:rgb(221, 144, 79);
+    }
+
+
+    .footer {
+        grid-area: "footer";
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #151515;
+        color: #02807d;
+        font-size: 15px;
+        font-family: monospace;
+        grid-column: 1/11;
+        grid-row: 10/11;
+        height: 100%;
+        width: 100%;
+    }
+
+            .footer > p {
+                margin-left: 5px;
+                margin-right: 5px;
+                color: white;
+            }
+
+            .footer > p:nth-child(2) {
+                margin-left: 5px;
+                margin-right: 0px !important;
+                color: rgb(197, 144, 47);
+            }
+
+    /* main content div */
+    #content {
+        display: grid;
+        grid-area: "content";
+        grid-column: 1/2;
+        grid-row: 2/10;
+        grid-template-columns: repeat(10, 10%);
+        grid-template-rows: repeat(10, 10%);
+        grid-template-areas:              
+                    "side main"
+                    "side main";
+        width: 100%;
+        height: 100%;
+        background-color: black;   
+    }
+
+        .sidebar {
+            position: relative;
+            grid-area: "side";
+            background-color: rgb(9, 93, 102);
+            grid-column: 1/4;
+            grid-row: 1/11;
+            width: 100%;
+            height: 100%;
+            color: white;
+            border-right: 3px solid rgb(221, 144, 79);
+            z-index: 5;
+
+            display: grid;
+            grid-template-columns: repeat(10, 10%);
+            grid-template-rows: 5% repeat(10, 10%);
+            grid-template-areas: 
+                    "inbox"
+                    "today"
+                    "weekly"
+                    "projects"
+                    "all";
+            box-shadow: 0px 0px 5px black;
+        }
+
+                .sidebar>* {
+                    font-family: monospace;
+                    display: grid;
+                    width: 100%;
+                    height: 100%;
+                    transition: .2s ease-in-out;
+                    color: white;
+                    box-shadow: inset 0px 0px 5px black;
+                    place-content: center !important;
+                }
+
+                .sidebar>:hover {
+                    color: white;
+                    background-color: rgb(221, 144, 79);
+                    box-shadow: inset 0px 0px 10px black;
+                    
+                }
+
+                .inbox {
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 5px;
+                    place-content: end;
+                    grid-area: "inbox";
+                    grid-column: 2/10;
+                    grid-row: 2/3;
+                }
+
+                .today { 
+                    grid-area: "today";
+                    grid-column: 2/10;
+                    grid-row: 3/4;
+                }
+
+                .weekly {
+                    grid-area: "weekly";
+                    grid-column: 2/10;
+                    grid-row: 4/5;
+                }
+
+                .projects {
+                    grid-area: "projects";
+                    grid-column: 2/10;
+                    grid-row: 5/6;
+                }
+
+                .all {
+                    grid-area: "all";
+                    grid-column: 2/10;
+                    grid-row: 6/7;
+                    border-bottom-right-radius: 5px;
+                    border-bottom-left-radius: 5px;
+                }
+
+        .mainSection {
+            position: relative;
+            grid-area: "main";
+            grid-column: 4/11;
+            grid-row: 1/11;
+            background-color: black;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(4, 24%);
+            grid-template-rows: repeat(10, 10%);
+            grid-template-areas: 
+                    "form form"
+                    "items items";
+            width: min(100%, 800px);
+        }
+
+            .form {
+                grid-area: "form";
+                grid-column: 1/5;
+                grid-row: 1/3;
+                background-color: #02807d;
+                display: grid;
+                grid-gap: 5px;
+                grid-template-columns: repeat(10, 10%);
+                grid-template-rows: repeat(10, 10%);
+                grid-template-areas: 
+                            "task date submit"
+                            "notes project delete";
+                padding: 10px;
+                width: 100%;
+            }
+
+                    .task {
+                        grid-area: "task";
+                        grid-row: 2/4;
+                        grid-column: 1/5;
+                        width: 90%;
+                    }
+
+                    .notes {
+                        grid-area: "notes";
+                        grid-row: 4/8;
+                        grid-column: 1/5;
+                        width: 90%;
+
+                    }
+
+                    .date {
+                        grid-area: "date";
+                        grid-row: 2/4;
+                        grid-column: 5/8;
+                        width: 90%;
+
+                    }
+
+                    .project {
+                        grid-area: "project";
+                        grid-row: 5/7;
+                        grid-column: 5/8;
+                        width: 90%;
+
+                    }
+
+                    .submit {
+                        grid-area: "submit";
+                        grid-column: 8/9;
+                        grid-row: 2/4;
+                        width: 90%;
+                    }
+
+                    .formDelete {
+                        grid-area: "delete";
+                        grid-column: 8/9;
+                        grid-row: 4/6;
+                        width: 90%;
+                    }
+
+button {
+    
+}
+
+button:hover {
+    transform: scale(1.2);
+}
+
+.taskPanel {
+    overflow-y: auto;
+    position: relative;
+    grid-area: "items";
+    grid-column: 1/5;
+    grid-row: 3/11;
+    background-color: black;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(auto, minmax(300px, 350px));
+    justify-content: center;
+    align-content: start;
+    grid-gap: 2px;
+    
+}
+
+.taskItem {
+    display: grid;
+    grid-column: 1/2;
+    width: 100%;
+    grid-template-columns: repeat(10, 10%);
+    grid-template-rows: 5% 20% 20% 55%;
+    grid-template-areas: 
+                "project D C E"
+                "task date"
+                "description";
+    background-color: rgb(9, 93, 102);
+    height: 100px;
+    grid-column-gap: 5px;
+    align-self: start;
+    box-shadow: inset 0px 0px 5px black;
+}
+
+.projectName {
+    display: flex;
+    align-items: center;
+    background-color: rgb(9, 93, 102);
+    grid-area: "project";
+    color: white;
+    text-indent: 20px;
+    font-family: monospace;
+    grid-column: 1/6;
+    grid-row: 2/3;
+    height: 65%;
+    
+}
+
+.itemDelete {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    grid-area: "D";
+    grid-column: 7/8;
+    grid-row: 2/3;
+    height: 90%;
+}
+
+.completeTask {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+    grid-area: "C";
+    grid-column: 8/9;
+    grid-row: 2/3;
+}
+
+.editTask {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+    align-items: center;
+    grid-area: "E";
+    grid-column: 9/10;
+    grid-row: 2/3;
+}
+
+.taskName {
+    display: flex;
+    align-items: center;
+    grid-area: "task";
+    grid-column: 1/6;
+    grid-row: 3/4;
+    font-family: monospace;
+    background-color: rgb(9, 93, 102);
+    text-indent: 20px;
+    height: 100%;
+    color: white;
+}
+
+.taskDate {
+    grid-area: "date";
+    display: flex;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    height: 90%;
+    background-color: rgb(9, 93, 102);
+    grid-column: 9/10;
+    grid-row: 3/4;
+    color: white;
+
+}
+
+.description {
+    display: flex;
+    align-items: center;
+    grid-area: "description";
+    background-color: rgb(9, 93, 102);
+    grid-column: 1/6;
+    grid-row: 4/5;
+    text-indent: 20px;
+    font-family: monospace;
+    height: 80%;
+    color: white;
+
+}

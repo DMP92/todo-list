@@ -10,24 +10,24 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "domToDo": () => (/* binding */ domToDo)
+/* harmony export */   "generalTask": () => (/* binding */ generalTask)
 /* harmony export */ });
 
-const domToDo = (function() {
+const generalTask = (function() {
     
     
-    // upon click will get title of todo list item
-    function toDoInput(title) {
-        const input = document.querySelector('.todoItem');
+    // upon click will get task  item
+    function toDoInput(task) {
+        const input = document.querySelector('.task');
         
         return input.value;
     }
 
-    // on click will get description of todo list item
-    function itemDescription(text) {
-        const description = document.querySelector('.description');
-
-        return description.value;
+    // on click will get notes of todo list item
+    function itemNotes(text) {
+        const notes = document.querySelector('.notes');
+        console.log('sup');
+        return notes.value;
     }
 
     // on click will get completion date
@@ -37,23 +37,146 @@ const domToDo = (function() {
         return itemDate.value;
     }
 
-    function project(name) {
-        const projectName = document.querySelector('.projectName');
+    function project(title) {
+        const projectTitle = document.querySelector('.project');
 
-        return projectName.value;
+        
+        return projectTitle.value;
     }
 
 
+    function sendItemData() {
+        toDoInput();
+        itemNotes();
+        date();
+        project();
+
+    }
+
     return {
         title: toDoInput,
-        info: itemDescription,
+        notes: itemNotes,
         date: date,
-        project: project
+        project: project,
+        send: sendItemData
     }
 })()
 
 
+// Module that prints each task item to UI
+const taskPrint = (function() {
 
+    // // prints task panel container
+    // const taskPanel = document.querySelector('.taskPanel');
+    
+
+    //     function _printTaskContainer() {
+    //         const taskItem = document.createElement('div');
+    //         taskItem.classList.add('taskItem');
+    //         taskPanel.appendChild(taskItem);
+    //     }
+
+    // const taskItem = document.querySelectorAll('.taskItem');
+
+    
+    function printTask() {
+        const taskPanel = document.querySelector('.taskPanel');
+        const item = document.createElement('div');
+            item.classList.add('taskItem');
+            taskPanel.appendChild(item);
+        _printProjectName(item);
+        _printButtons(item);
+        _printTaskName(item);
+        _printTaskDate(item);
+        _printDescription(item);
+    }
+
+    // prints the name of the project
+   
+
+        function _printProjectName(item) {
+            const projectName = document.createElement('div');
+            projectName.classList.add('projectName');
+
+            projectName.textContent = generalTask.project();
+            if(projectName.textContent === '') {
+                projectName.textContent = 'Project Name: None';
+                item.appendChild(projectName);
+            } else {
+                item.appendChild(projectName);
+            }
+        }
+
+    // prints the buttons (delete, complete, edit)
+    
+
+        function _printButtons(item) {
+            const itemDelete = document.createElement('button');
+        itemDelete.classList.add('itemDelete');
+        itemDelete.textContent = 'D';
+
+    const completeTask = document.createElement('button');
+        completeTask.classList.add('completeTask');
+        completeTask.textContent = 'C';
+
+    const editTask = document.createElement('button');
+        editTask.classList.add('editTask');
+        editTask.textContent = 'E';
+
+            console.log('3 buttons');
+            item.appendChild(itemDelete);
+            item.appendChild(completeTask);
+            item.appendChild(editTask);
+        }
+
+    // prints name of task
+   
+
+
+        function _printTaskName(item) {
+            const taskName = document.createElement('div');
+            taskName.classList.add('taskName');
+
+            console.log('4 name');
+            taskName.textContent = generalTask.title();
+            item.appendChild(taskName);
+        }
+    
+    // prints task date
+    
+
+
+        function _printTaskDate(item) {
+            const taskDate = document.createElement('div');
+            taskDate.classList.add('taskDate');
+
+            console.log('5 date');
+            taskDate.textContent = generalTask.date();
+            item.appendChild(taskDate);
+        }
+
+    // prints description / notes for task
+    
+
+            function _printDescription(item) {
+                const description = document.createElement('div');
+                description.classList.add('description');
+
+                console.log('6 description');
+                description.textContent = generalTask.notes();
+                item.appendChild(description);
+            }
+
+    
+
+    return {
+        print: printTask
+    }
+
+})();
+
+const submit = document.querySelector('.submit');
+submit.addEventListener('click', taskPrint.print);
 
 
 
@@ -76,17 +199,15 @@ __webpack_require__.r(__webpack_exports__);
 
 // Module that creates each item in the to-do list
 
-const ItemFactory = (name, summary, date) => {
+const ItemFactory = (task, notes, date, title) => {
 
-
-    
     // create new item factory
-    function createItem(title, text, date, projectName ) {
+    function createGeneralItem(task, notes, date, title) {
         const item = {};
-        item.title = _DOM__WEBPACK_IMPORTED_MODULE_0__.domToDo.title(title);
-        item.description = _DOM__WEBPACK_IMPORTED_MODULE_0__.domToDo.info(text);
-        item.date = _DOM__WEBPACK_IMPORTED_MODULE_0__.domToDo.date(date);
-        item.project = _DOM__WEBPACK_IMPORTED_MODULE_0__.domToDo.project(projectName);
+        item.task = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.title(task);
+        item.notes = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.notes(notes);
+        item.date = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.date(date);
+        item.project = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.project(title);
         
         _pushItem(item);
     }
@@ -95,14 +216,8 @@ const ItemFactory = (name, summary, date) => {
         _index__WEBPACK_IMPORTED_MODULE_1__.itemRef.printItem(item);
     }
    
-    return { createItem }
+    return { createGeneralItem }
 }
-
-const newItem = ItemFactory();
-const button = document.querySelector('.submit');
-    button.addEventListener('click', newItem.createItem);
-
-
 
 
 
@@ -132,6 +247,7 @@ const itemRef = (function() {
         // pushes todo item into Item array
         function pushItem(item) {
             itemArray.push(item);
+            projectCreate.fetch(item);
         }
         
         // shares specific itemArray
@@ -141,43 +257,85 @@ const itemRef = (function() {
         }
 
     // shares specific item
-    function shareSpecificTask(index) {
+    function shareTask(index) {
         return itemArray[index];
     }
 
-        // shares specific item title
-        function shareTitle(index) {
+        // shares specific item name
+        function shareName(index) {
             return itemArray[index].name;
         }
 
-        // shares specific item description
-        function shareDescription(index) {
-            return itemArray[index].description;
-        }
-
-        // shares specific item summary
-        function shareSummary(index) {
-            return itemArray[index].summary;
-        }
-
         // shares specific item notes
-        function shareNotes(index) {
+        function shareNote(index) {
             return itemArray[index].notes;
+        }
+
+        // shares specific item date
+        function shareSummary(index) {
+            return itemArray[index].date;
+        }
+
+        // shows which project the item belongs to
+        function shareProject(index) {
+           return itemArray[index].project;
         }
 
     return {
         printItem : pushItem,
-        title: shareTitle,
-        description: shareDescription,
+        title: shareName,
+        notes: shareNote,
         summary: shareSummary,
-        notes: shareNotes,
-        task: shareSpecificTask,
+        notes: shareProject,
+        task: shareTask,
         share: shareArray
     }
 })();
 
-const arrayprint = document.querySelector('.array');
-arrayprint.addEventListener('click', itemRef.share);
+// module for creating projects
+const projectCreate = (function() {
+
+    // array that contains each project
+    const projectArray = [];
+
+    // function that gathers data about each item
+    function fetchItems(item) {
+        const project = {  };
+        project.task = item.task;
+        project.notes = item.notes;
+        project.date = item.date;
+        project.name = item.project;
+
+        projectArray.push(project);
+    }
+
+    // function that shares projectArray
+    function shareProjectArray() {
+        return projectArray;
+    }
+
+    // creates project container for all sub tasks
+    function createProject(item) {
+
+        return item.name;
+
+    }
+
+    return {
+        fetch: fetchItems,
+        shareArray: shareProjectArray,
+        create: createProject
+    }
+})();
+
+const newItem = (0,_Factory__WEBPACK_IMPORTED_MODULE_0__.ItemFactory)();
+const button = document.querySelector('.submit');
+button.addEventListener('click', newItem.createGeneralItem);
+
+const arrayprint = document.querySelector('.formDelete');
+arrayprint.addEventListener('click', () => {
+    console.log(itemRef.shareArray);
+})
 
 
 

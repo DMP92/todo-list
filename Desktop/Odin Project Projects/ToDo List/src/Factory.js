@@ -1,18 +1,16 @@
-import { domToDo } from "./DOM"
+import { generalTask } from "./DOM"
 import {itemRef} from "./index"
 // Module that creates each item in the to-do list
 
-const ItemFactory = (name, summary, date) => {
+const ItemFactory = (task, notes, date, title) => {
 
-
-    
     // create new item factory
-    function createItem(title, text, date, projectName ) {
+    function createGeneralItem(task, notes, date, title) {
         const item = {};
-        item.title = domToDo.title(title);
-        item.description = domToDo.info(text);
-        item.date = domToDo.date(date);
-        item.project = domToDo.project(projectName);
+        item.task = generalTask.title(task);
+        item.notes = generalTask.notes(notes);
+        item.date = generalTask.date(date);
+        item.project = generalTask.project(title);
         
         _pushItem(item);
     }
@@ -21,13 +19,7 @@ const ItemFactory = (name, summary, date) => {
         itemRef.printItem(item);
     }
    
-    return { createItem }
+    return { createGeneralItem }
 }
-
-const newItem = ItemFactory();
-const button = document.querySelector('.submit');
-    button.addEventListener('click', newItem.createItem);
-
-
 
 export {ItemFactory}
