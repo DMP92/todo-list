@@ -22,4 +22,25 @@ const ItemFactory = (task, notes, date, title) => {
     return { createGeneralItem }
 }
 
+
+
+const interactWithDOM = (function() {
+
+    // variable that gets DOM elements
+    const taskPanel = document.querySelector('.taskPanel');
+    const deleteButtons = taskPanel.querySelector('.itemDelete');
+    if (deleteButtons != null) {
+        console.log('what!?');
+        deleteButtons.addEventListener('click', () => {
+            console.log('hey1');
+        });
+    }
+
+    function _deleteItem(event) {
+        console.log('hey');
+    }
+
+})();
+
+
 export {ItemFactory}

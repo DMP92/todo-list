@@ -49,3 +49,10 @@ Project should have:
 
 
 */
+
+/* I ran into an issue where I couldn't get any eventListeners to work on the items that
+    I printed to the screen using JS. Why? Because, the page runs only once. So, AFTER that one 
+    run, THEN I added the elements. So, the event listeners were not updated to this fact.
+    So, I had to update the event listeners essentially, by calling a function that housed them
+    each time I pressed the button that was adding new elements to the screen.
+*/

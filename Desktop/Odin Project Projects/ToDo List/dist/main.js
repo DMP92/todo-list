@@ -26,14 +26,12 @@ const generalTask = (function() {
     // on click will get notes of todo list item
     function itemNotes(text) {
         const notes = document.querySelector('.notes');
-        console.log('sup');
         return notes.value;
     }
 
     // on click will get completion date
     function date(date) {
         const itemDate = document.querySelector('.date');
-
         return itemDate.value;
     }
 
@@ -44,6 +42,18 @@ const generalTask = (function() {
         return projectTitle.value;
     }
 
+
+    function clearItemData() {
+        const input = document.querySelector('.task');
+        const notes = document.querySelector('.notes');
+        const itemDate = document.querySelector('.date');
+        const projectTitle = document.querySelector('.project');
+
+        input.value = '';
+        notes.value = '';
+        itemDate.value = '';
+        projectTitle.value = '';
+    }
 
     function sendItemData() {
         toDoInput();
@@ -58,27 +68,18 @@ const generalTask = (function() {
         notes: itemNotes,
         date: date,
         project: project,
+        clear: clearItemData,
         send: sendItemData
     }
 })()
 
 
+
+
 // Module that prints each task item to UI
 const taskPrint = (function() {
 
-    // // prints task panel container
-    // const taskPanel = document.querySelector('.taskPanel');
-    
-
-    //     function _printTaskContainer() {
-    //         const taskItem = document.createElement('div');
-    //         taskItem.classList.add('taskItem');
-    //         taskPanel.appendChild(taskItem);
-    //     }
-
-    // const taskItem = document.querySelectorAll('.taskItem');
-
-    
+    // function that calls each appendChild method in order to create the task
     function printTask() {
         const taskPanel = document.querySelector('.taskPanel');
         const item = document.createElement('div');
@@ -91,92 +92,237 @@ const taskPrint = (function() {
         _printDescription(item);
     }
 
-    // prints the name of the project
-   
+                // prints the name of the project
+                function _printProjectName(item) {
+                    const projectName = document.createElement('div');
 
-        function _printProjectName(item) {
-            const projectName = document.createElement('div');
-            projectName.classList.add('projectName');
+                    projectName.classList.add('projectName');
 
-            projectName.textContent = generalTask.project();
-            if(projectName.textContent === '') {
-                projectName.textContent = 'Project Name: None';
-                item.appendChild(projectName);
-            } else {
-                item.appendChild(projectName);
-            }
-        }
+                    projectName.textContent = generalTask.project();
+                    if(projectName.textContent === '') {
+                        projectName.textContent = 'Project Name: None';
+                        item.appendChild(projectName);
+                    } else {
+                        item.appendChild(projectName);
+                    }
+                }
 
-    // prints the buttons (delete, complete, edit)
-    
+                // prints the buttons (delete, complete, edit)
+                function _printButtons(item) {
+                    const itemDelete = document.createElement('button');
+                    itemDelete.classList.add('itemDelete');
+                    itemDelete.textContent = 'D';
 
-        function _printButtons(item) {
-            const itemDelete = document.createElement('button');
-        itemDelete.classList.add('itemDelete');
-        itemDelete.textContent = 'D';
+                    const completeTask = document.createElement('button');
+                    completeTask.classList.add('completeTask');
+                    completeTask.textContent = 'C';
+                    const completeTaskObject = {};
+                    completeTaskObject.toggle = false;
+                    completeTaskObject.object = completeTask;
 
-    const completeTask = document.createElement('button');
-        completeTask.classList.add('completeTask');
-        completeTask.textContent = 'C';
+                    const editTask = document.createElement('button');
+                    editTask.classList.add('editTask');
+                    editTask.textContent = 'E';
 
-    const editTask = document.createElement('button');
-        editTask.classList.add('editTask');
-        editTask.textContent = 'E';
+                    item.appendChild(itemDelete);
+                    item.appendChild(completeTask);
+                    item.appendChild(editTask);
+                }
 
-            console.log('3 buttons');
-            item.appendChild(itemDelete);
-            item.appendChild(completeTask);
-            item.appendChild(editTask);
-        }
+                // prints name of task
+                function _printTaskName(item) {
+                    const taskName = document.createElement('div');
+                    taskName.classList.add('taskName');
 
-    // prints name of task
-   
+                    taskName.textContent = generalTask.title();
+                    item.appendChild(taskName);
+                }
+            
+                // prints task date
+                function _printTaskDate(item) {
+                    const taskDate = document.createElement('div');
+                    taskDate.classList.add('taskDate');
 
+                    taskDate.textContent = generalTask.date();
+                    item.appendChild(taskDate);
+                }
 
-        function _printTaskName(item) {
-            const taskName = document.createElement('div');
-            taskName.classList.add('taskName');
+                // prints description / notes for task
+                function _printDescription(item) {
+                    const description = document.createElement('div');
+                    description.classList.add('description');
 
-            console.log('4 name');
-            taskName.textContent = generalTask.title();
-            item.appendChild(taskName);
-        }
-    
-    // prints task date
-    
+                    description.textContent = generalTask.notes();
+                    item.appendChild(description);
+                }
 
-
-        function _printTaskDate(item) {
-            const taskDate = document.createElement('div');
-            taskDate.classList.add('taskDate');
-
-            console.log('5 date');
-            taskDate.textContent = generalTask.date();
-            item.appendChild(taskDate);
-        }
-
-    // prints description / notes for task
-    
-
-            function _printDescription(item) {
-                const description = document.createElement('div');
-                description.classList.add('description');
-
-                console.log('6 description');
-                description.textContent = generalTask.notes();
-                item.appendChild(description);
-            }
-
-    
+    function shareDelete(items) {
+        const deleteButtons = document.querySelectorAll('.itemDelete');
+        console.log(deleteButtons);
+        return deleteButtons;
+    }
 
     return {
-        print: printTask
+        print: printTask,
+        share: shareDelete
     }
 
 })();
 
+
+// module made for editing and interacting with elements
+const editItems = (function() {
+
+                // variables that target DOM elements for deletion and editing
+                const taskPanel = document.querySelector('.taskPanel');
+
+    // function that houses the event listener for the deleteItem function
+    function buttonEventListeners(event) {
+        // variables that get each nodeList of buttons for interaction
+        const deleteButtons = document.querySelectorAll('.itemDelete');
+        const editButtons = document.querySelectorAll('.editTask');
+        const completeButtons = document.querySelectorAll('.completeTask');
+
+
+        deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
+        editButtons.forEach(button => button.addEventListener('click', _editTask));
+        completeButtons.forEach(button => button.addEventListener('click', _completeTask));
+    }
+
+            // private function that removes task item nodes from taskPanel
+            function _deleteItem(event){
+                const parent = event.target.parentElement;
+                taskPanel.removeChild(parent);
+            }
+
+            // private function that marks task item as completed
+            function _completeTask() {
+                
+                // variables that fetch and assign the cssText for the clicked completeTask button
+                const parent = event.target.parentElement;
+                const gray = "filter: grayscale(1);";
+                const normal = "filter: grayscale(0);";
+
+                // switch statement that (based on the cssText of the clicked element) either grays out, or 
+                // fills in the taskItem container div
+                switch(true) {
+                    case parent.style.cssText === '':
+                        parent.style.cssText = `${gray}`;
+                    break;
+                    case parent.style.cssText === gray:
+                        parent.style.cssText = `${normal}`;
+                    break;
+                    case parent.style.cssText === normal:
+                        parent.style.cssText = `${gray}`;
+                    break;
+                }
+                
+            }    
+
+            // private function that allows the task info to be edited
+            function _editTask() {
+
+                // variables that get each nodeList item of the specific container the clicked button is in
+                const parent = event.target.parentElement;
+                const project = parent.children[0]
+                const edit = parent.children[3];
+                const name = parent.children[4];
+                const date = parent.children[5];
+                const notes = parent.children[6];
+
+                // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
+                // ELSE it will run the function called below which appends the newly edited info to the DOM
+                if (name.tagName === 'DIV') {
+                // variables for appending input items to taskItem
+                const editProject = document.createElement('input');
+                    editProject.classList.add('projectName');
+                    editProject.style.cssText = 'text-align: center;';
+                    editProject.placeholder = 'Edit Project Name';
+                    parent.replaceChild(editProject, project);
+
+
+                const editName = document.createElement('input');
+                    editName.classList.add('taskName');
+                    editName.placeholder = 'Edit Task Name';
+                    editName.style.cssText = 'text-align: center;';
+                    parent.replaceChild(editName, name);
+
+
+                const editDate = document.createElement('input');
+                    editDate.classList.add('taskDate');
+                    editDate.type = 'date';
+                    editDate.style.cssText = "background-color: White; color: black; text-align: center;";
+                    editDate.placeholder = 'Edit Date';
+                    parent.replaceChild(editDate, date)
+
+
+
+                const editDescription = document.createElement('input');
+                    editDescription.classList.add('description');
+                    editDescription.placeholder = 'Edit Notes';
+                    editDescription.style.cssText = 'text-align: center;';
+                    parent.replaceChild(editDescription, notes);
+
+            // parent.appendChild();
+
+                } else {
+                    _appendTask();
+                }
+            }
+
+            // function that takes newly edited information and publishes them to the DOM
+            function _appendTask() {
+
+                // gets the container of the specific edit button clicked
+                const parent = event.target.parentElement;
+
+                // variables for appending finished items to taskItem
+                const project = parent.children[0]
+                const edit = parent.children[3];
+                const name = parent.children[4];
+                const date = parent.children[5];
+                const notes = parent.children[6];
+                
+
+                const taskName = document.createElement('div');
+                    taskName.classList.add('taskName');
+                    taskName.textContent = name.value;
+
+                const description = document.createElement('div');
+                    description.classList.add('description');
+                    description.textContent = notes.value;
+
+                const taskDate = document.createElement('div');
+                    taskDate.classList.add('taskDate');
+                    taskDate.textContent = date.value;
+
+                const projectName = document.createElement('div');
+                    projectName.classList.add('projectName');
+                    projectName.textContent = project.value;
+
+                parent.replaceChild(projectName, project);
+                parent.replaceChild(taskName, name);
+                parent.replaceChild(taskDate, date);
+                parent.replaceChild(description, notes);
+
+            }
+
+    return {
+        eventListeners: buttonEventListeners
+    }
+})()
+
+
+
 const submit = document.querySelector('.submit');
-submit.addEventListener('click', taskPrint.print);
+submit.addEventListener('click', () => {
+    taskPrint.print();
+    editItems.eventListeners();
+    generalTask.clear();
+
+});
+
+
 
 
 
@@ -218,6 +364,27 @@ const ItemFactory = (task, notes, date, title) => {
    
     return { createGeneralItem }
 }
+
+
+
+const interactWithDOM = (function() {
+
+    // variable that gets DOM elements
+    const taskPanel = document.querySelector('.taskPanel');
+    const deleteButtons = taskPanel.querySelector('.itemDelete');
+    if (deleteButtons != null) {
+        console.log('what!?');
+        deleteButtons.addEventListener('click', () => {
+            console.log('hey1');
+        });
+    }
+
+    function _deleteItem(event) {
+        console.log('hey');
+    }
+
+})();
+
 
 
 
@@ -332,10 +499,30 @@ const newItem = (0,_Factory__WEBPACK_IMPORTED_MODULE_0__.ItemFactory)();
 const button = document.querySelector('.submit');
 button.addEventListener('click', newItem.createGeneralItem);
 
-const arrayprint = document.querySelector('.formDelete');
-arrayprint.addEventListener('click', () => {
-    console.log(itemRef.shareArray);
-})
+
+
+const itemDel = document.querySelectorAll('.itemDelete');
+const itemDeleteA = Array.from(itemDel);
+
+itemDel.forEach(button => button.addEventListener('click', (e) => {
+    
+    deleteButton(e);
+    console.log(itemDel);
+    console.log(taskIt);
+}))
+// module that deletes items when delete button is pressed
+function deleteButton(e) {
+    
+    console.log(itemDeleteA.indexOf(e.currentTarget));
+    console.log(itemDel);
+    console.log(itemDel);
+    console.log(itemDeleteA);
+}
+
+
+
+
+
 
 
 

@@ -96,9 +96,28 @@ const newItem = ItemFactory();
 const button = document.querySelector('.submit');
 button.addEventListener('click', newItem.createGeneralItem);
 
-const arrayprint = document.querySelector('.formDelete');
-arrayprint.addEventListener('click', () => {
-    console.log(itemRef.shareArray);
-})
+
+
+const itemDel = document.querySelectorAll('.itemDelete');
+const itemDeleteA = Array.from(itemDel);
+
+itemDel.forEach(button => button.addEventListener('click', (e) => {
+    
+    deleteButton(e);
+    console.log(itemDel);
+    console.log(taskIt);
+}))
+// module that deletes items when delete button is pressed
+function deleteButton(e) {
+    
+    console.log(itemDeleteA.indexOf(e.currentTarget));
+    console.log(itemDel);
+    console.log(itemDel);
+    console.log(itemDeleteA);
+}
+
+
 
 export { itemRef }
+
+
