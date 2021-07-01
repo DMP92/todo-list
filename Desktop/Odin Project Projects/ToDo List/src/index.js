@@ -11,7 +11,8 @@ const itemRef = (function() {
         // pushes todo item into Item array
         function pushItem(item) {
             itemArray.push(item);
-            projectCreate.fetch(item);
+            projectCreate.create(item);
+            console.log(item);
         }
         
         // shares specific itemArray
@@ -79,9 +80,9 @@ const projectCreate = (function() {
     }
 
     // creates project container for all sub tasks
-    function createProject(item) {
-
-        return item.name;
+    function createProject() {
+       
+        
 
     }
 
@@ -92,32 +93,16 @@ const projectCreate = (function() {
     }
 })();
 
+// initializes a new factory from Factory.js that allows each taskItem to be printed to the DOM
 const newItem = ItemFactory();
 const button = document.querySelector('.submit');
-button.addEventListener('click', newItem.createGeneralItem);
+button.addEventListener('click', () => {
+    newItem.createGeneralItem()  
+});
 
 
 
-const itemDel = document.querySelectorAll('.itemDelete');
-const itemDeleteA = Array.from(itemDel);
 
-itemDel.forEach(button => button.addEventListener('click', (e) => {
-    
-    deleteButton(e);
-    console.log(itemDel);
-    console.log(taskIt);
-}))
-// module that deletes items when delete button is pressed
-function deleteButton(e) {
-    
-    console.log(itemDeleteA.indexOf(e.currentTarget));
-    console.log(itemDel);
-    console.log(itemDel);
-    console.log(itemDeleteA);
-}
-
-
-
-export { itemRef }
+export { itemRef, projectCreate }
 
 

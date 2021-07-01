@@ -56,3 +56,11 @@ Project should have:
     So, I had to update the event listeners essentially, by calling a function that housed them
     each time I pressed the button that was adding new elements to the screen.
 */
+
+/* 
+    I left the project with it still needing to figure out how to separate things with 
+    project titles and such into their own separate arrays, which will in turn order them and/or
+    omit them entirely from the page
+
+*/
+

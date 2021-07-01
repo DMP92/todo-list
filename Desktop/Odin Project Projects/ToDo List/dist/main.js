@@ -2,16 +2,20 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/DOM.js":
-/*!********************!*\
-  !*** ./src/DOM.js ***!
-  \********************/
+/***/ "./src/DOM-Creation.js":
+/*!*****************************!*\
+  !*** ./src/DOM-Creation.js ***!
+  \*****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "generalTask": () => (/* binding */ generalTask)
+/* harmony export */   "generalTask": () => (/* binding */ generalTask),
+/* harmony export */   "taskPrint": () => (/* binding */ taskPrint)
 /* harmony export */ });
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+
+
 
 const generalTask = (function() {
     
@@ -79,6 +83,8 @@ const generalTask = (function() {
 // Module that prints each task item to UI
 const taskPrint = (function() {
 
+    const taskObjects = [];
+
     // function that calls each appendChild method in order to create the task
     function printTask() {
         const taskPanel = document.querySelector('.taskPanel');
@@ -90,8 +96,28 @@ const taskPrint = (function() {
         _printTaskName(item);
         _printTaskDate(item);
         _printDescription(item);
+        shareTaskItem(item);
+
+        createItemObject(item);
     }
 
+    // function that returns taskObjects array
+    function createItemObject(item) {
+        
+        if (typeof item != 'undefined') {
+            const task = {};
+            task.project = item.children[0].textContent;
+            task.taskName = item.children[4].textContent;
+            task.date = item.children[5].textContent;
+            task.notes = item.children[6].textContent;
+            taskObjects.push(task);
+            console.log(taskObjects)
+        } else {
+            console.log(taskObjects);
+        }
+
+    }
+    
                 // prints the name of the project
                 function _printProjectName(item) {
                     const projectName = document.createElement('div');
@@ -109,24 +135,25 @@ const taskPrint = (function() {
 
                 // prints the buttons (delete, complete, edit)
                 function _printButtons(item) {
-                    const itemDelete = document.createElement('button');
-                    itemDelete.classList.add('itemDelete');
-                    itemDelete.textContent = 'D';
 
                     const completeTask = document.createElement('button');
                     completeTask.classList.add('completeTask');
-                    completeTask.textContent = 'C';
-                    const completeTaskObject = {};
-                    completeTaskObject.toggle = false;
-                    completeTaskObject.object = completeTask;
+                    completeTask.title = "Complete Task";
+                    // const completeTaskObject = {};
+                    // completeTaskObject.toggle = false;
+                    // completeTaskObject.object = completeTask;
 
                     const editTask = document.createElement('button');
                     editTask.classList.add('editTask');
-                    editTask.textContent = 'E';
+                    editTask.title = 'Edit Task'
 
-                    item.appendChild(itemDelete);
+                    const itemDelete = document.createElement('button');
+                    itemDelete.classList.add('itemDelete');
+                    itemDelete.title = 'Delete Task'
+
                     item.appendChild(completeTask);
                     item.appendChild(editTask);
+                    item.appendChild(itemDelete);
                 }
 
                 // prints name of task
@@ -156,15 +183,15 @@ const taskPrint = (function() {
                     item.appendChild(description);
                 }
 
-    function shareDelete(items) {
-        const deleteButtons = document.querySelectorAll('.itemDelete');
-        console.log(deleteButtons);
-        return deleteButtons;
+    function shareTaskItem(item) {
+        return item;
     }
+            
 
     return {
         print: printTask,
-        share: shareDelete
+        share: shareTaskItem,
+        createArray: createItemObject
     }
 
 })();
@@ -207,12 +234,20 @@ const editItems = (function() {
                 // fills in the taskItem container div
                 switch(true) {
                     case parent.style.cssText === '':
+                        event.target.classList.remove('completeTask');
+                        event.target.classList.add('checkedTask');
                         parent.style.cssText = `${gray}`;
+                        ;
                     break;
                     case parent.style.cssText === gray:
+                        event.target.classList.remove('checkedTask');
+                        event.target.classList.add('completeTask');
                         parent.style.cssText = `${normal}`;
+
                     break;
                     case parent.style.cssText === normal:
+                        event.target.classList.remove('completeTask');
+                        event.target.classList.add('checkedTask');
                         parent.style.cssText = `${gray}`;
                     break;
                 }
@@ -234,6 +269,8 @@ const editItems = (function() {
                 // ELSE it will run the function called below which appends the newly edited info to the DOM
                 if (name.tagName === 'DIV') {
                 // variables for appending input items to taskItem
+                
+                
                 const editProject = document.createElement('input');
                     editProject.classList.add('projectName');
                     editProject.style.cssText = 'text-align: center;';
@@ -263,6 +300,8 @@ const editItems = (function() {
                     editDescription.style.cssText = 'text-align: center;';
                     parent.replaceChild(editDescription, notes);
 
+                    event.target.classList.remove('editTask');
+                    event.target.classList.add('editingTask');
             // parent.appendChild();
 
                 } else {
@@ -272,6 +311,9 @@ const editItems = (function() {
 
             // function that takes newly edited information and publishes them to the DOM
             function _appendTask() {
+
+                event.target.classList.remove('editingTask');
+                event.target.classList.add('editTask');
 
                 // gets the container of the specific edit button clicked
                 const parent = event.target.parentElement;
@@ -312,19 +354,35 @@ const editItems = (function() {
     }
 })()
 
-
+const deleteButton = document.querySelector('.formDelete');
+deleteButton.addEventListener('click', () => {
+    taskPrint.createArray();
+})
 
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     taskPrint.print();
+    taskPrint.share();
     editItems.eventListeners();
-    generalTask.clear();
-
+    _index_js__WEBPACK_IMPORTED_MODULE_0__.projectCreate.shareArray();
+    
 });
 
 
 
-
+// I left off trying to figure out how to separate my code into webpack functioning modules
+// Also, I'm trying to figure out how I'm to separate each thing into an array based on 
+                        // projects
+                        // weeks the project is intended for
+                        // all projects
+                        // projects due today
+                        // I need to learn what the inbox feature is intended for..
+                        
+// I also need to learn about webpack, and how I'm to get each module up and running, completely
+// functioning. This will take a lot of time, but in the end it WILL save me a lot of time 
+// if I completely learn and understand how it works. Most of my issues during this project have been
+// almost entirely from not completely understanding how webpack works
+// actually it has accounted for probably well over 65% of the time spent on this project
 
 
 /***/ }),
@@ -339,7 +397,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ItemFactory": () => (/* binding */ ItemFactory)
 /* harmony export */ });
-/* harmony import */ var _DOM__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DOM */ "./src/DOM.js");
+/* harmony import */ var _DOM_Creation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DOM-Creation */ "./src/DOM-Creation.js");
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index */ "./src/index.js");
 
 
@@ -350,40 +408,21 @@ const ItemFactory = (task, notes, date, title) => {
     // create new item factory
     function createGeneralItem(task, notes, date, title) {
         const item = {};
-        item.task = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.title(task);
-        item.notes = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.notes(notes);
-        item.date = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.date(date);
-        item.project = _DOM__WEBPACK_IMPORTED_MODULE_0__.generalTask.project(title);
+
         
-        _pushItem(item);
+        _pushItem(_DOM_Creation__WEBPACK_IMPORTED_MODULE_0__.taskPrint.createArray());
+
     }
+
 
     function _pushItem(item) {
         _index__WEBPACK_IMPORTED_MODULE_1__.itemRef.printItem(item);
+        _DOM_Creation__WEBPACK_IMPORTED_MODULE_0__.generalTask.clear();
     }
    
     return { createGeneralItem }
 }
 
-
-
-const interactWithDOM = (function() {
-
-    // variable that gets DOM elements
-    const taskPanel = document.querySelector('.taskPanel');
-    const deleteButtons = taskPanel.querySelector('.itemDelete');
-    if (deleteButtons != null) {
-        console.log('what!?');
-        deleteButtons.addEventListener('click', () => {
-            console.log('hey1');
-        });
-    }
-
-    function _deleteItem(event) {
-        console.log('hey');
-    }
-
-})();
 
 
 
@@ -398,7 +437,8 @@ const interactWithDOM = (function() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "itemRef": () => (/* binding */ itemRef)
+/* harmony export */   "itemRef": () => (/* binding */ itemRef),
+/* harmony export */   "projectCreate": () => (/* binding */ projectCreate)
 /* harmony export */ });
 /* harmony import */ var _Factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Factory */ "./src/Factory.js");
 
@@ -414,7 +454,8 @@ const itemRef = (function() {
         // pushes todo item into Item array
         function pushItem(item) {
             itemArray.push(item);
-            projectCreate.fetch(item);
+            projectCreate.create(item);
+            console.log(item);
         }
         
         // shares specific itemArray
@@ -482,9 +523,9 @@ const projectCreate = (function() {
     }
 
     // creates project container for all sub tasks
-    function createProject(item) {
-
-        return item.name;
+    function createProject() {
+       
+        
 
     }
 
@@ -495,29 +536,13 @@ const projectCreate = (function() {
     }
 })();
 
+// initializes a new factory from Factory.js that allows each taskItem to be printed to the DOM
 const newItem = (0,_Factory__WEBPACK_IMPORTED_MODULE_0__.ItemFactory)();
 const button = document.querySelector('.submit');
-button.addEventListener('click', newItem.createGeneralItem);
+button.addEventListener('click', () => {
+    newItem.createGeneralItem()  
+});
 
-
-
-const itemDel = document.querySelectorAll('.itemDelete');
-const itemDeleteA = Array.from(itemDel);
-
-itemDel.forEach(button => button.addEventListener('click', (e) => {
-    
-    deleteButton(e);
-    console.log(itemDel);
-    console.log(taskIt);
-}))
-// module that deletes items when delete button is pressed
-function deleteButton(e) {
-    
-    console.log(itemDeleteA.indexOf(e.currentTarget));
-    console.log(itemDel);
-    console.log(itemDel);
-    console.log(itemDeleteA);
-}
 
 
 

@@ -52,31 +52,32 @@ body {
         border-radius: 2px;
     }
 
+    /* header h1 */
     h1 {
         color: #02807d;
     }
 
-    #text {
-        color: #02807d;
-    }
+        #text {
+            color: #02807d;
+        }
 
-    .code {
-        display: flex;
-        font-family: monospace;
-        font-size: 25px;  
-        color: white; 
-    }
+        .code {
+            display: flex;
+            font-family: monospace;
+            font-size: 25px;  
+            color: white; 
+        }
 
-    .lPar {
-        color:var(--accent-color) !important;
-        z-index: 10 !important;
-    }
+        .lPar {
+            color:var(--accent-color) !important;
+            z-index: 10 !important;
+        }
 
-    .rPar {
-        color:var(--accent-color);
-    }
+        .rPar {
+            color:var(--accent-color);
+        }
 
-
+    
     .footer {
         grid-area: "footer";
         display: flex;
@@ -133,7 +134,7 @@ body {
             color: white;
             border-right: 3px solid var(--accent-color);
             z-index: 5;
-
+            
             display: grid;
             grid-template-columns: repeat(10, 10%);
             grid-template-rows: 5% repeat(10, 10%);
@@ -146,7 +147,7 @@ body {
             box-shadow: 0px 0px 5px black;
         }
 
-                .sidebar>* {
+                .sidebar > * {
                     font-family: monospace;
                     display: grid;
                     width: 100%;
@@ -155,6 +156,7 @@ body {
                     color: white;
                     box-shadow: inset 0px 0px 5px black;
                     place-content: center !important;
+                    align-self: start;
                 }
 
                 .sidebar>:hover {
@@ -171,6 +173,7 @@ body {
                     grid-area: "inbox";
                     grid-column: 2/10;
                     grid-row: 2/3;
+                    
                 }
 
                 .today { 
@@ -218,7 +221,7 @@ body {
             .form {
                 grid-area: "form";
                 grid-column: 1/11;
-                grid-row: 1/3;
+                grid-row: 1/4;
                 background-color: var(--dark-color);
                 display: grid;
                 grid-gap: 5px;
@@ -267,16 +270,28 @@ body {
                     }
 
                     .submit {
+                        position: relative;
                         grid-area: "submit";
                         grid-column: 8/9;
                         grid-row: 2/4;
-                        width: 90%;
+                        width: 57px;
+                        background-color: transparent;
+                        color: white;
+                        border: 1px solid white;
                     }
+
+                        .submit:hover {
+                            
+                            background-color: white;
+                            color: black;
+                            border: 1px solid white;
+                            box-shadow: 0px 0px 5px white;
+                        }
 
                     .formDelete {
                         grid-area: "delete";
                         grid-column: 8/9;
-                        grid-row: 4/6;
+                        grid-row: 6/8;
                         width: 90%;
                     }
 
@@ -290,7 +305,6 @@ button {
 
 button:hover {
     background-color: rgb(202, 202, 202);
-    transform: scale(1.1);
 }
 
 .taskPanel {
@@ -298,7 +312,7 @@ button:hover {
     position: relative;
     grid-area: "items";
     grid-column: 1/11;
-    grid-row: 3/11;
+    grid-row: 4/11;
     background-color: var(--dark-color);
     display: grid;
     grid-template-columns: 100%;
@@ -317,7 +331,7 @@ button:hover {
     grid-template-columns: repeat(10, 10%);
     grid-template-rows: 5% 20% 20% 55%;
     grid-template-areas: 
-                "project D C E"
+                "project C E D"
                 "task date"
                 "description";
     background-color: var(--main-color);
@@ -350,33 +364,139 @@ button:hover {
     align-items: center;
     justify-content: center;
     grid-area: "D";
-    grid-column: 7/8;
+    background-color: transparent;
+    background-image: url('./Images/delete.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 33px 24px;
+    grid-column: 9/10;
     grid-row: 2/3;
-    height: 90%;
+    height: 100%;
+    width: 27.35px;
+    justify-self: start;
 }
+
+    .itemDelete:hover {
+        background-color: transparent;
+        background-image: url('./Images/deleteHover.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 33px 25px;
+        width: 27.35px;
+    }
 
 .completeTask {
     display: flex;
     align-self: center;
     align-items: center;
-    justify-content: center;
-    height: 90%;
+    justify-self: end;
+    height: 100%;
     grid-area: "C";
-    grid-column: 8/9;
     grid-row: 2/3;
+    grid-column: 7/8;
+    background-image: url('./Images/check.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 27.35px;
+    background-color: transparent;
+    background-size: 300px 200px;
 }
+
+    .completeTask:hover {
+        background-image: url('./Images/checkHover.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent;
+        width: 27.35px;
+        background-size: 300px 200px;
+
+    }
+
+    /* Made so when task item is clicked, it can be given this class and remain in grid */
+    .checkedTask {
+        background-image: url('./Images/checkHover.png');
+        display: flex;
+        align-self: center;
+        align-items: center;
+        justify-self: end;
+        height: 100%;
+        grid-area: "C";
+        grid-row: 2/3;
+        grid-column: 7/8;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 27.35px;
+        background-color: transparent;
+        background-size: 300px 200px;
+    }
+
+        /* Made so when task item is clicked, it can be given this class and remain in grid */
+        .checkedTask:hover {
+            background-image: url('./Images/checkHover.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            width: 27.35px;
+            background-size: 300px 200px;
+        }
 
 .editTask {
     display: flex;
     align-self: center;
     align-items: center;
     justify-content: center;
-    height: 90%;
+    justify-self: center;
+    height: 100%;
     align-items: center;
     grid-area: "E";
-    grid-column: 9/10;
+    grid-column: 8/9;
     grid-row: 2/3;
+    background-image: url('./Images/edit.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    background-size: 35px 25px;
+    width: 27.35px;
 }
+
+    .editTask:hover {
+        background-image: url('./Images/editHover.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent !important;
+        background-size: 30px 20px;
+        width: 27.35px;
+    }
+
+    /* Made so when task item is clicked, it can be given this class and remain in grid */
+    .editingTask {
+        display: flex;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+        justify-self: center;
+        height: 100%;
+        align-items: center;
+        grid-area: "E";
+        grid-column: 8/9;
+        grid-row: 2/3;
+        background-image: url('./Images/editHover.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent;
+        background-size: 30px 20px;
+        width: 27.35px;
+    }
+
+    /* Made so when task item is clicked, it can be given this class and remain in grid */
+    .editingTask:hover {
+        background-image: url('./Images/editHover.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent !important;
+        background-size: 30px 20px;
+        width: 27.35px;
+    }
 
 .taskName {
     display: flex;
@@ -398,6 +518,7 @@ button:hover {
 }
 
 .taskDate {
+    margin-top: 10px;
     grid-area: "date";
     display: flex;
     align-self: center;
@@ -426,11 +547,11 @@ button:hover {
     font-family: monospace;
     height: 80%;
     color: white;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
-    word-wrap: break-word;
+    word-wrap: normal;
     justify-self: center;
     width: 95%;
     text-align: center;
-    
+
 }

@@ -1,3 +1,5 @@
+import { itemRef, projectCreate } from "./index.js";
+
 
 const generalTask = (function() {
     
@@ -65,6 +67,8 @@ const generalTask = (function() {
 // Module that prints each task item to UI
 const taskPrint = (function() {
 
+    const taskObjects = [];
+
     // function that calls each appendChild method in order to create the task
     function printTask() {
         const taskPanel = document.querySelector('.taskPanel');
@@ -76,8 +80,28 @@ const taskPrint = (function() {
         _printTaskName(item);
         _printTaskDate(item);
         _printDescription(item);
+        shareTaskItem(item);
+
+        createItemObject(item);
     }
 
+    // function that returns taskObjects array
+    function createItemObject(item) {
+        
+        if (typeof item != 'undefined') {
+            const task = {};
+            task.project = item.children[0].textContent;
+            task.taskName = item.children[4].textContent;
+            task.date = item.children[5].textContent;
+            task.notes = item.children[6].textContent;
+            taskObjects.push(task);
+            console.log(taskObjects)
+        } else {
+            console.log(taskObjects);
+        }
+
+    }
+    
                 // prints the name of the project
                 function _printProjectName(item) {
                     const projectName = document.createElement('div');
@@ -95,24 +119,25 @@ const taskPrint = (function() {
 
                 // prints the buttons (delete, complete, edit)
                 function _printButtons(item) {
-                    const itemDelete = document.createElement('button');
-                    itemDelete.classList.add('itemDelete');
-                    itemDelete.textContent = 'D';
 
                     const completeTask = document.createElement('button');
                     completeTask.classList.add('completeTask');
-                    completeTask.textContent = 'C';
-                    const completeTaskObject = {};
-                    completeTaskObject.toggle = false;
-                    completeTaskObject.object = completeTask;
+                    completeTask.title = "Complete Task";
+                    // const completeTaskObject = {};
+                    // completeTaskObject.toggle = false;
+                    // completeTaskObject.object = completeTask;
 
                     const editTask = document.createElement('button');
                     editTask.classList.add('editTask');
-                    editTask.textContent = 'E';
+                    editTask.title = 'Edit Task'
 
-                    item.appendChild(itemDelete);
+                    const itemDelete = document.createElement('button');
+                    itemDelete.classList.add('itemDelete');
+                    itemDelete.title = 'Delete Task'
+
                     item.appendChild(completeTask);
                     item.appendChild(editTask);
+                    item.appendChild(itemDelete);
                 }
 
                 // prints name of task
@@ -142,15 +167,15 @@ const taskPrint = (function() {
                     item.appendChild(description);
                 }
 
-    function shareDelete(items) {
-        const deleteButtons = document.querySelectorAll('.itemDelete');
-        console.log(deleteButtons);
-        return deleteButtons;
+    function shareTaskItem(item) {
+        return item;
     }
+            
 
     return {
         print: printTask,
-        share: shareDelete
+        share: shareTaskItem,
+        createArray: createItemObject
     }
 
 })();
@@ -193,12 +218,20 @@ const editItems = (function() {
                 // fills in the taskItem container div
                 switch(true) {
                     case parent.style.cssText === '':
+                        event.target.classList.remove('completeTask');
+                        event.target.classList.add('checkedTask');
                         parent.style.cssText = `${gray}`;
+                        ;
                     break;
                     case parent.style.cssText === gray:
+                        event.target.classList.remove('checkedTask');
+                        event.target.classList.add('completeTask');
                         parent.style.cssText = `${normal}`;
+
                     break;
                     case parent.style.cssText === normal:
+                        event.target.classList.remove('completeTask');
+                        event.target.classList.add('checkedTask');
                         parent.style.cssText = `${gray}`;
                     break;
                 }
@@ -220,6 +253,8 @@ const editItems = (function() {
                 // ELSE it will run the function called below which appends the newly edited info to the DOM
                 if (name.tagName === 'DIV') {
                 // variables for appending input items to taskItem
+                
+                
                 const editProject = document.createElement('input');
                     editProject.classList.add('projectName');
                     editProject.style.cssText = 'text-align: center;';
@@ -249,6 +284,8 @@ const editItems = (function() {
                     editDescription.style.cssText = 'text-align: center;';
                     parent.replaceChild(editDescription, notes);
 
+                    event.target.classList.remove('editTask');
+                    event.target.classList.add('editingTask');
             // parent.appendChild();
 
                 } else {
@@ -258,6 +295,9 @@ const editItems = (function() {
 
             // function that takes newly edited information and publishes them to the DOM
             function _appendTask() {
+
+                event.target.classList.remove('editingTask');
+                event.target.classList.add('editTask');
 
                 // gets the container of the specific edit button clicked
                 const parent = event.target.parentElement;
@@ -298,16 +338,32 @@ const editItems = (function() {
     }
 })()
 
-
+const deleteButton = document.querySelector('.formDelete');
+deleteButton.addEventListener('click', () => {
+    taskPrint.createArray();
+})
 
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     taskPrint.print();
+    taskPrint.share();
     editItems.eventListeners();
-    generalTask.clear();
-
+    projectCreate.shareArray();
+    
 });
 
-export { generalTask }
+export { generalTask, taskPrint }
 
-
+// I left off trying to figure out how to separate my code into webpack functioning modules
+// Also, I'm trying to figure out how I'm to separate each thing into an array based on 
+                        // projects
+                        // weeks the project is intended for
+                        // all projects
+                        // projects due today
+                        // I need to learn what the inbox feature is intended for..
+                        
+// I also need to learn about webpack, and how I'm to get each module up and running, completely
+// functioning. This will take a lot of time, but in the end it WILL save me a lot of time 
+// if I completely learn and understand how it works. Most of my issues during this project have been
+// almost entirely from not completely understanding how webpack works
+// actually it has accounted for probably well over 65% of the time spent on this project
