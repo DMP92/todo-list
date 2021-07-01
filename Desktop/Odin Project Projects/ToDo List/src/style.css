@@ -242,7 +242,9 @@ body {
                     }
 
                     .notes {
-                        display: flex;
+                        display: grid;
+                        place-items: start;
+                        place-content: start;
                         word-wrap: break-word;
                         grid-area: "notes";
                         grid-row: 4/8;

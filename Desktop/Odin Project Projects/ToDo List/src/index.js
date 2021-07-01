@@ -1,4 +1,8 @@
-import { ItemFactory } from "./Factory";
+import { ItemFactory } from "./taskFactory";
+import  exampe  from "./updateDOM";
+import { grabTask } from "./grabTask";
+import { editItems } from "./editTasks";
+import { taskPrint } from "./printTasks";
 
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
@@ -8,21 +12,28 @@ const itemRef = (function() {
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
 
-        // pushes todo item into Item array
+        // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
             itemArray.push(item);
+            shareItem(item);
+
+            // unsure what I will do with this call 
             projectCreate.create(item);
-            console.log(item);
         }
         
         // shares specific itemArray
         function shareArray() {
-            console.log(itemArray);
             return itemArray;
+        }
+
+        function shareItem(item) {
+            taskPrint.receive(item);
         }
 
     // shares specific item
     function shareTask(index) {
+        console.log('sharing task');
+        console.log(itemArray[index])
         return itemArray[index];
     }
 
@@ -53,7 +64,8 @@ const itemRef = (function() {
         summary: shareSummary,
         notes: shareProject,
         task: shareTask,
-        share: shareArray
+        share: shareArray,
+        shareItem: shareItem
     }
 })();
 
@@ -70,7 +82,8 @@ const projectCreate = (function() {
         project.notes = item.notes;
         project.date = item.date;
         project.name = item.project;
-
+        console.log(project);
+        createProject(project);
         projectArray.push(project);
     }
 
@@ -80,8 +93,7 @@ const projectCreate = (function() {
     }
 
     // creates project container for all sub tasks
-    function createProject() {
-       
+    function createProject(project) {
         
 
     }
@@ -93,11 +105,11 @@ const projectCreate = (function() {
     }
 })();
 
-// initializes a new factory from Factory.js that allows each taskItem to be printed to the DOM
-const newItem = ItemFactory();
-const button = document.querySelector('.submit');
-button.addEventListener('click', () => {
-    newItem.createGeneralItem()  
+const submit = document.querySelector('.submit');
+submit.addEventListener('click', () => {
+    grabTask.send();
+    editItems.eventListeners();
+    
 });
 
 
