@@ -166,6 +166,12 @@ body {
                     
                 }
 
+                .hovered {
+                    color: black;
+                    background-color: var(--accent-color);
+                    box-shadow: inset 0px 0px 10px black;
+                }
+
                 .inbox {
                     border-top-left-radius: 5px;
                     border-top-right-radius: 5px;
@@ -318,7 +324,7 @@ button:hover {
     background-color: var(--dark-color);
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: repeat(auto, minmax(300px, 350px));
+    grid-template-rows: repeat(auto, minmax(300px, 300px));
     justify-content: center;
     align-content: start;
     grid-gap: 2px;
@@ -352,7 +358,7 @@ button:hover {
     color: black;
     text-indent: 20px;
     font-family: monospace;
-    grid-column: 1/6;
+    grid-column: 1/7;
     grid-row: 2/3;
     height: 65%;
     background-color: var(--accent-color);
@@ -505,7 +511,7 @@ button:hover {
     align-items: center;
     align-self: center;
     grid-area: "task";
-    grid-column: 1/6;
+    grid-column: 1/7;
     grid-row: 3/4;
     font-family: monospace;
     
@@ -517,6 +523,7 @@ button:hover {
     font-weight: 500;
     width: 95%;
     justify-content: center;
+    justify-self: center;
 }
 
 .taskDate {
@@ -537,13 +544,12 @@ button:hover {
 
 .description {
     display: flex;
-    justify-self: end;
     border: black solid 2px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-    align-items: center;
+    align-items: start;
     grid-area: "description";
     background-color: var(--main-color);
-    grid-column: 1/6;
+    grid-column: 1/7;
     grid-row: 4/5;
     text-indent: 20px;
     font-family: monospace;
@@ -552,7 +558,9 @@ button:hover {
     overflow-y: auto;
     overflow-x: hidden;
     word-wrap: normal;
+    word-break: break-all;
     justify-self: center;
+    justify-content: center;
     width: 95%;
     text-align: center;
 

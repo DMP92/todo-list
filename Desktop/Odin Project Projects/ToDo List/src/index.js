@@ -3,7 +3,8 @@ import  exampe  from "./updateDOM";
 import { grabTask } from "./grabTask";
 import { editItems } from "./editTasks";
 import { taskPrint } from "./printTasks";
-
+import { sidebarTab } from "./updateDOM";
+import { housing } from "./updateDOM";
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
 
@@ -28,6 +29,7 @@ const itemRef = (function() {
 
         function shareItem(item) {
             taskPrint.receive(item);
+            housing.con(item);
         }
 
     // shares specific item
@@ -105,11 +107,11 @@ const projectCreate = (function() {
     }
 })();
 
+
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     grabTask.send();
     editItems.eventListeners();
-    
 });
 
 

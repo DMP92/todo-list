@@ -25,16 +25,16 @@ const editItems = (function() {
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
-        // private function that removes task item nodes from taskPanel
-        function _deleteItem(event){
-            const parent = event.target.parentElement;
-            taskPanel.removeChild(parent);
-        }
+    // private function that removes task item nodes from taskPanel
+    function _deleteItem(event){
+        const parent = event.target.parentElement;
+        taskPanel.removeChild(parent);
+    }
 
     /* 
     **************************** COMPLETE TASK *******************************    
     */
-   
+
     // private function that marks task item as completed
     function _completeTask() {
         
@@ -126,54 +126,61 @@ const editItems = (function() {
         }
     }
 
-// function that takes newly edited information and publishes them to the DOM
-function _appendTask() {
+    /* 
+    **************************** APPEND EACH TASK AFTER EDIT *******************************    
+    */
 
-    event.target.classList.remove('editingTask');
-    event.target.classList.add('editTask');
+    // function that takes newly edited information and publishes them to the DOM
+    function _appendTask() {
 
-    // gets the container of the specific edit button clicked
-    const parent = event.target.parentElement;
+        event.target.classList.remove('editingTask');
+        event.target.classList.add('editTask');
 
-    // variables for appending finished items to taskItem
-    const project = parent.children[0]
-    const edit = parent.children[3];
-    const name = parent.children[4];
-    const date = parent.children[5];
-    const notes = parent.children[6];
+        // gets the container of the specific edit button clicked
+        const parent = event.target.parentElement;
+
+        // variables for appending finished items to taskItem
+        const project = parent.children[0]
+        const edit = parent.children[3];
+        const name = parent.children[4];
+        const date = parent.children[5];
+        const notes = parent.children[6];
+        
+
+        const taskName = document.createElement('div');
+            taskName.classList.add('taskName');
+            taskName.textContent = name.value;
+
+        const description = document.createElement('div');
+            description.classList.add('description');
+            description.textContent = notes.value;
+
+        const taskDate = document.createElement('div');
+            taskDate.classList.add('taskDate');
+            taskDate.textContent = date.value;
+
+        const projectName = document.createElement('div');
+            projectName.classList.add('projectName');
+            projectName.textContent = project.value;
+
+        parent.replaceChild(projectName, project);
+        parent.replaceChild(taskName, name);
+        parent.replaceChild(taskDate, date);
+        parent.replaceChild(description, notes);
+
+    }
+
     
 
-    const taskName = document.createElement('div');
-        taskName.classList.add('taskName');
-        taskName.textContent = name.value;
+    return {
+    eventListeners: buttonEventListeners
 
-    const description = document.createElement('div');
-        description.classList.add('description');
-        description.textContent = notes.value;
+    }
 
-    const taskDate = document.createElement('div');
-        taskDate.classList.add('taskDate');
-        taskDate.textContent = date.value;
+})();
 
-    const projectName = document.createElement('div');
-        projectName.classList.add('projectName');
-        projectName.textContent = project.value;
-
-    parent.replaceChild(projectName, project);
-    parent.replaceChild(taskName, name);
-    parent.replaceChild(taskDate, date);
-    parent.replaceChild(description, notes);
-
-}
-
-return {
-eventListeners: buttonEventListeners
-}
-})()
-
-const deleteButton = document.querySelector('.formDelete');
-deleteButton.addEventListener('click', () => {
-taskPrint.createArray();
-})
+    const deleteButton = document.querySelector('.formDelete');
+        deleteButton.addEventListener('click', () => {
+    })
 
 export { editItems }
