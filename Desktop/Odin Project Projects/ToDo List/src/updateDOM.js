@@ -1,12 +1,16 @@
+import { itemRef } from "./index.js";
+import { formatDistance, subDays } from 'date-fns'
+import { editItems, taskUpdate } from "./editTasks.js";
+import { taskPrint, tabbedPrint } from "./printTasks.js";
 /* 
 ************************************************************************************
-****************************CONTROLS EACH SIDEBAR PANEL*****************************
+****************************CONTROLS WHICH SIDEBAR IS LIT UP************************
 ************************************************************************************
 */
 
-
-
-const sidebarTab = (function() {
+// module that tracks which sidebar panel is interacted with, and then passes that info on
+// so the data corresponding with that tab can be displayed in the DOM
+const sideBarHighlight = (function() {
 
     // variables for targeting each tab
     const sideBarChildren = document.querySelector('.sidebar').children;
@@ -24,10 +28,10 @@ const sidebarTab = (function() {
     function defaultTab() {
         const all = document.querySelector('.all');
         all.classList.add('hovered');
-        console.log(all);
         operator(4);
     }
 
+    // function that highlights the tab that is clicked and unhighlights the tabs that aren't
     function sideBarEventListeners() {
 
         sideBarArray.forEach(tab => tab.addEventListener('click', () => {
@@ -55,6 +59,7 @@ const sidebarTab = (function() {
         }))
     }
 
+    // shares the array that contains each sidebar element
     function shareTabs() {
         return sideBarChildren;
     }
@@ -66,23 +71,7 @@ const sidebarTab = (function() {
     }
 })();
 
-const housing = (function() {
-    function contain(item) {
-        const array = [];
-        console.log(item);
-    }
-    return {
-        con: contain
-    }
-})()
-
-/* 
-************************************************************************************
-****************************MODULE CONTROLS PROJECT TAB*****************************
-************************************************************************************
-*/
-
-// function that connects users choice to proper tab logic
+// function that calls functions in the 'tabSelection' module based on which tab is clicked
 function operator(index) {
     switch(true) {
         case index === 0:
@@ -103,33 +92,74 @@ function operator(index) {
     }
 }
 
+/* 
+************************************************************************************
+****************************MODULE THAT CONTROLS EACH TAB***************************
+************************************************************************************
+*/
 
+// runs logic for each tab based on which tab is clicked
 const tabSelection = (function() {
 
+    const projectArray = [];
+    const itemArray = [];
+
+    function receiveProjects(project) {
+        projectArray.push(project);
+       
+    }
+
+    function receiveArrayItems(item, index, page) {
+       
+        switch(true) {
+            case page === 'index':
+                itemArray.push(item);
+                console.log(itemArray);
+            break;
+        }
+    }
     // functions for each tab
 
     function inboxTab() {
-        console.log(0);
+        taskUpdate.erase();
     }
 
     function todayTab() {
+        taskUpdate.erase();
         console.log(1);
-
+        // whatever taks are dated for today show up in the DOM
     }
 
     function weeklyTab() {
+        taskUpdate.erase();
         console.log(2);
+        // whatever tasks happen this week show up in the DOM
     }
 
     function projectsTab() {
+        taskUpdate.erase();
         console.log(3);
+
+
+        tabbedPrint.unpack(projectArray);
+        // tasks associated with certain projects will show up in the DOM
     }
 
-    function allTab() {
-        console.log(4);
+    function allTab(array) {
+        
+        if (itemArray.length != 0) {
+            taskUpdate.erase();
+            tabbedPrint.unpack(itemArray);
+        }
+
+
+
+
     }
 
     return {
+        receive: receiveArrayItems,
+        receiveProjects: receiveProjects,
         inbox: inboxTab,
         today: todayTab,
         weekly: weeklyTab,
@@ -141,8 +171,8 @@ const tabSelection = (function() {
 
 window.addEventListener('load', () => {
     
-    sidebarTab.default();
-    sidebarTab.children();
+    sideBarHighlight.default();
+    sideBarHighlight.children();
 });
 
-export { sidebarTab, housing }
+export { sideBarHighlight, tabSelection }

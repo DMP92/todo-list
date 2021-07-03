@@ -69,10 +69,6 @@ const grabTask = (function() {
     }
 })()
 
-
-
-
-
 export { grabTask }
 
 // Also, I'm trying to figure out how I'm to separate each thing into an array based on 

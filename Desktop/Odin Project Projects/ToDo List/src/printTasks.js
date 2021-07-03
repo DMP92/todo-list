@@ -13,9 +13,10 @@ const taskPrint = (function() {
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
 
-    function receiveItem(item) {
+    function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
         unpackItem(item);
+        console.log(index);
     }
 
     // takes item and breaks it down into each part
@@ -144,6 +145,36 @@ const taskPrint = (function() {
 
 })();
 
+/* 
+************************************************************************************
+*************************MODULE THAT PRINTS TAB SPECIFIC CONTENT********************
+************************************************************************************
+*/
+
+const tabbedPrint = (function() {
+
+    // breaks down each array sent into it's individual items
+    function arrayUnpack(array) {
+        for (var i = 0; i < array.length; i++) {
+           
+            _arrayItem(array[i]);
+        }
+    }
+
+    function _arrayItem(index) {
+        const project = {};
+        project.task = index.task;
+        project.notes = index.notes;
+        project.date = index.date;
+        project.project = index.project;
+        taskPrint.unpack(project);
+    }
+
+    return {
+        unpack: arrayUnpack
+    }
+})();
 
 
-export { taskPrint }
+
+export { taskPrint, tabbedPrint }

@@ -2,9 +2,9 @@ import { ItemFactory } from "./taskFactory";
 import  exampe  from "./updateDOM";
 import { grabTask } from "./grabTask";
 import { editItems } from "./editTasks";
-import { taskPrint } from "./printTasks";
+import { tabbedPrint, taskPrint } from "./printTasks";
 import { sidebarTab } from "./updateDOM";
-import { housing } from "./updateDOM";
+import { tabSelection } from "./updateDOM";
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
 
@@ -15,21 +15,26 @@ const itemRef = (function() {
 
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
+
             itemArray.push(item);
-            shareItem(item);
 
-            // unsure what I will do with this call 
-            projectCreate.create(item);
+            const index = itemArray.indexOf(item);
+            shareItem(item, index);
+            shareArrayItems(item, index, 'index');
+            // unsure what I will do with this call
+            if (item.project != '') {
+                projectCreate.fetch(item);
+            }
         }
-        
+ 
         // shares specific itemArray
-        function shareArray() {
-            return itemArray;
+        function shareArrayItems(item, index, page) {
+            tabSelection.receive(item, index, page);
         }
 
-        function shareItem(item) {
-            taskPrint.receive(item);
-            housing.con(item);
+        function shareItem(item, index) {
+            taskPrint.receive(item, index);
+
         }
 
     // shares specific item
@@ -66,7 +71,7 @@ const itemRef = (function() {
         summary: shareSummary,
         notes: shareProject,
         task: shareTask,
-        share: shareArray,
+        share: shareArrayItems,
         shareItem: shareItem
     }
 })();
@@ -83,10 +88,10 @@ const projectCreate = (function() {
         project.task = item.task;
         project.notes = item.notes;
         project.date = item.date;
-        project.name = item.project;
-        console.log(project);
-        createProject(project);
-        projectArray.push(project);
+        project.project = item.project;
+        project.status = 'unfinished';
+        
+        tabSelection.receiveProjects(project);
     }
 
     // function that shares projectArray
@@ -107,6 +112,11 @@ const projectCreate = (function() {
     }
 })();
 
+// keeps all event listeners active
+const sidebar = document.querySelector('.sidebar');
+    sidebar.addEventListener('click', () => {
+        editItems.eventListeners();
+    })
 
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
@@ -114,7 +124,9 @@ submit.addEventListener('click', () => {
     editItems.eventListeners();
 });
 
-
+/* 
+    I need there to be a way to communicate with
+*/
 
 
 export { itemRef, projectCreate }

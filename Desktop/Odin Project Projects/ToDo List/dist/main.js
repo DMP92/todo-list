@@ -10,8 +10,10 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "editItems": () => (/* binding */ editItems)
+/* harmony export */   "editItems": () => (/* binding */ editItems),
+/* harmony export */   "taskUpdate": () => (/* binding */ taskUpdate)
 /* harmony export */ });
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
 
 
 /* 
@@ -20,7 +22,7 @@ __webpack_require__.r(__webpack_exports__);
 ************************************************************************************
 */
 
-// module made for editing and interacting with elements
+// module made for editing and interacting with each task item
 const editItems = (function() {
 
     // variables that target DOM elements for deletion and editing
@@ -35,7 +37,7 @@ const editItems = (function() {
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
-        editButtons.forEach(button => button.addEventListener('click', _editTask));
+        editButtons.forEach(button => button.addEventListener('click', _editTask));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
@@ -64,7 +66,6 @@ const editItems = (function() {
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
-                ;
             break;
             case parent.style.cssText === gray:
                 event.target.classList.remove('checkedTask');
@@ -134,18 +135,25 @@ const editItems = (function() {
             event.target.classList.remove('editTask');
             event.target.classList.add('editingTask');
     // parent.appendChild();
-
+        
         } else {
             _appendTask();
         }
     }
 
     /* 
-    **************************** APPEND EACH TASK AFTER EDIT *******************************    
+    ************************************************************************************
+    **********************************APPEND EACH TASK AFTER EDIT***********************
+    ************************************************************************************
     */
+
 
     // function that takes newly edited information and publishes them to the DOM
     function _appendTask() {
+
+        // variable for grabbing all task items
+        const taskItems = document.querySelectorAll('.taskItem');
+        const tasks = Array.from(taskItems);
 
         event.target.classList.remove('editingTask');
         event.target.classList.add('editTask');
@@ -182,9 +190,19 @@ const editItems = (function() {
         parent.replaceChild(taskDate, date);
         parent.replaceChild(description, notes);
 
+        // variable that fetches index of edited element
+        const index = tasks.indexOf(parent);
+
+        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, index);
     }
 
-    
+    function updateArrays() {
+
+    }
+
+    function projectArray() {
+
+    }
 
     return {
     eventListeners: buttonEventListeners
@@ -193,9 +211,67 @@ const editItems = (function() {
 
 })();
 
+    /* 
+    ************************************************************************************
+    **********************************GRAB EDITED TASK**********************************
+    ************************************************************************************
+    */
+
+    // module that grabs edited task info and communicates that changes were made
+    const grabEditedTask = (function() {
+
+        /* 
+            there should be a way to track back to the orignial array in index.js when you edit
+            it'll figure out which index the edited item belongs to, determine if it has a project
+            and rewrite that information. Keeping it's place in the array index, but updating it
+        */
+        // variables that grab specific task that is edited
+
+        function receiveEditedTask(target, task, notes, date, project, index) {
+            const editedTask = {};
+            editedTask.name = task,
+            editedTask.notes = notes,
+            editedTask.date = date,
+            editedTask.project = project
+            console.log(editedTask)
+        }
+
+        return {
+            newTask: receiveEditedTask
+        }
+    })();
+
     const deleteButton = document.querySelector('.formDelete');
         deleteButton.addEventListener('click', () => {
     })
+
+     /* 
+    ************************************************************************************
+    **********************************MODULE FOR DELETING EVERY ITEM********************
+    ************************************************************************************
+    */
+
+    const taskUpdate = (function() {
+
+        // variable that grabs task container & tasks
+        const mainSection = document.querySelector('.mainSection');
+        const taskPanel = document.querySelector('.taskPanel');
+        const allItems = taskPanel.children;
+        // function that erases all tasks from panel
+
+        function eraseTasks() {
+            var child = taskPanel.lastElementChild; 
+            while (child) {
+                taskPanel.removeChild(child);
+                child = taskPanel.lastElementChild;
+            }
+
+        }
+
+        return {
+            erase: eraseTasks
+        }
+    })();
 
 
 
@@ -285,10 +361,6 @@ const grabTask = (function() {
 
 
 
-
-
-
-
 // Also, I'm trying to figure out how I'm to separate each thing into an array based on 
                         // projects
                         // weeks the project is intended for
@@ -338,21 +410,26 @@ const itemRef = (function() {
 
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
+
             itemArray.push(item);
-            shareItem(item);
 
-            // unsure what I will do with this call 
-            projectCreate.create(item);
+            const index = itemArray.indexOf(item);
+            shareItem(item, index);
+            shareArrayItems(item, index, 'index');
+            // unsure what I will do with this call
+            if (item.project != '') {
+                projectCreate.fetch(item);
+            }
         }
-        
+ 
         // shares specific itemArray
-        function shareArray() {
-            return itemArray;
+        function shareArrayItems(item, index, page) {
+            _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.receive(item, index, page);
         }
 
-        function shareItem(item) {
-            _printTasks__WEBPACK_IMPORTED_MODULE_4__.taskPrint.receive(item);
-            _updateDOM__WEBPACK_IMPORTED_MODULE_1__.housing.con(item);
+        function shareItem(item, index) {
+            _printTasks__WEBPACK_IMPORTED_MODULE_4__.taskPrint.receive(item, index);
+
         }
 
     // shares specific item
@@ -389,7 +466,7 @@ const itemRef = (function() {
         summary: shareSummary,
         notes: shareProject,
         task: shareTask,
-        share: shareArray,
+        share: shareArrayItems,
         shareItem: shareItem
     }
 })();
@@ -406,10 +483,10 @@ const projectCreate = (function() {
         project.task = item.task;
         project.notes = item.notes;
         project.date = item.date;
-        project.name = item.project;
-        console.log(project);
-        createProject(project);
-        projectArray.push(project);
+        project.project = item.project;
+        project.status = 'unfinished';
+        
+        _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.receiveProjects(project);
     }
 
     // function that shares projectArray
@@ -430,6 +507,11 @@ const projectCreate = (function() {
     }
 })();
 
+// keeps all event listeners active
+const sidebar = document.querySelector('.sidebar');
+    sidebar.addEventListener('click', () => {
+        _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+    })
 
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
@@ -437,7 +519,9 @@ submit.addEventListener('click', () => {
     _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
 });
 
-
+/* 
+    I need there to be a way to communicate with
+*/
 
 
 
@@ -455,7 +539,8 @@ submit.addEventListener('click', () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "taskPrint": () => (/* binding */ taskPrint)
+/* harmony export */   "taskPrint": () => (/* binding */ taskPrint),
+/* harmony export */   "tabbedPrint": () => (/* binding */ tabbedPrint)
 /* harmony export */ });
 
 /* 
@@ -472,9 +557,10 @@ const taskPrint = (function() {
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
 
-    function receiveItem(item) {
+    function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
         unpackItem(item);
+        console.log(index);
     }
 
     // takes item and breaks it down into each part
@@ -603,6 +689,36 @@ const taskPrint = (function() {
 
 })();
 
+/* 
+************************************************************************************
+*************************MODULE THAT PRINTS TAB SPECIFIC CONTENT********************
+************************************************************************************
+*/
+
+const tabbedPrint = (function() {
+
+    // breaks down each array sent into it's individual items
+    function arrayUnpack(array) {
+        for (var i = 0; i < array.length; i++) {
+           
+            _arrayItem(array[i]);
+        }
+    }
+
+    function _arrayItem(index) {
+        const project = {};
+        project.task = index.task;
+        project.notes = index.notes;
+        project.date = index.date;
+        project.project = index.project;
+        taskPrint.unpack(project);
+    }
+
+    return {
+        unpack: arrayUnpack
+    }
+})();
+
 
 
 
@@ -634,7 +750,8 @@ const ItemFactory = () => {
            task: taskName,
            notes: notes,
            date: date,
-           project: project 
+           project: project, 
+           status: 'incomplete'
         }
 
         _pushItem(item);
@@ -661,18 +778,25 @@ const ItemFactory = () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "sidebarTab": () => (/* binding */ sidebarTab),
-/* harmony export */   "housing": () => (/* binding */ housing)
+/* harmony export */   "sideBarHighlight": () => (/* binding */ sideBarHighlight),
+/* harmony export */   "tabSelection": () => (/* binding */ tabSelection)
 /* harmony export */ });
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var _editTasks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editTasks.js */ "./src/editTasks.js");
+/* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
+
+
+
+
 /* 
 ************************************************************************************
-****************************CONTROLS EACH SIDEBAR PANEL*****************************
+****************************CONTROLS WHICH SIDEBAR IS LIT UP************************
 ************************************************************************************
 */
 
-
-
-const sidebarTab = (function() {
+// module that tracks which sidebar panel is interacted with, and then passes that info on
+// so the data corresponding with that tab can be displayed in the DOM
+const sideBarHighlight = (function() {
 
     // variables for targeting each tab
     const sideBarChildren = document.querySelector('.sidebar').children;
@@ -690,10 +814,10 @@ const sidebarTab = (function() {
     function defaultTab() {
         const all = document.querySelector('.all');
         all.classList.add('hovered');
-        console.log(all);
         operator(4);
     }
 
+    // function that highlights the tab that is clicked and unhighlights the tabs that aren't
     function sideBarEventListeners() {
 
         sideBarArray.forEach(tab => tab.addEventListener('click', () => {
@@ -721,6 +845,7 @@ const sidebarTab = (function() {
         }))
     }
 
+    // shares the array that contains each sidebar element
     function shareTabs() {
         return sideBarChildren;
     }
@@ -732,23 +857,7 @@ const sidebarTab = (function() {
     }
 })();
 
-const housing = (function() {
-    function contain(item) {
-        const array = [];
-        console.log(item);
-    }
-    return {
-        con: contain
-    }
-})()
-
-/* 
-************************************************************************************
-****************************MODULE CONTROLS PROJECT TAB*****************************
-************************************************************************************
-*/
-
-// function that connects users choice to proper tab logic
+// function that calls functions in the 'tabSelection' module based on which tab is clicked
 function operator(index) {
     switch(true) {
         case index === 0:
@@ -769,33 +878,74 @@ function operator(index) {
     }
 }
 
+/* 
+************************************************************************************
+****************************MODULE THAT CONTROLS EACH TAB***************************
+************************************************************************************
+*/
 
+// runs logic for each tab based on which tab is clicked
 const tabSelection = (function() {
 
+    const projectArray = [];
+    const itemArray = [];
+
+    function receiveProjects(project) {
+        projectArray.push(project);
+       
+    }
+
+    function receiveArrayItems(item, index, page) {
+       
+        switch(true) {
+            case page === 'index':
+                itemArray.push(item);
+                console.log(itemArray);
+            break;
+        }
+    }
     // functions for each tab
 
     function inboxTab() {
-        console.log(0);
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
     }
 
     function todayTab() {
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         console.log(1);
-
+        // whatever taks are dated for today show up in the DOM
     }
 
     function weeklyTab() {
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         console.log(2);
+        // whatever tasks happen this week show up in the DOM
     }
 
     function projectsTab() {
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         console.log(3);
+
+
+        _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.tabbedPrint.unpack(projectArray);
+        // tasks associated with certain projects will show up in the DOM
     }
 
-    function allTab() {
-        console.log(4);
+    function allTab(array) {
+        
+        if (itemArray.length != 0) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.tabbedPrint.unpack(itemArray);
+        }
+
+
+
+
     }
 
     return {
+        receive: receiveArrayItems,
+        receiveProjects: receiveProjects,
         inbox: inboxTab,
         today: todayTab,
         weekly: weeklyTab,
@@ -807,8 +957,8 @@ const tabSelection = (function() {
 
 window.addEventListener('load', () => {
     
-    sidebarTab.default();
-    sidebarTab.children();
+    sideBarHighlight.default();
+    sideBarHighlight.children();
 });
 
 

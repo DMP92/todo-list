@@ -64,3 +64,32 @@ Project should have:
 
 */
 
+/* 
+for whatever reason - I went to make an event listener like:
+
+blank.forEach(blank => blank.addEventListener('click', () => { 
+    function();
+}))
+
+when doing it THAT way, it gave me a weird response. It multiplied the call, and called it way to early.
+However, when resetting it like:
+
+blank.forEach(blank => blank.addEventListener('click', function));
+
+it acted normally. Not sure why, but it's something to keep in mind for trouble shooting later for sure.
+*/
+
+
+/* 
+    SO
+    I want to make a heading for each project
+
+        You'll click on the project tab and it will show each project
+        THEN
+        when you click on the taskItem that contains that project, it will become a header inside
+        the taskPanel container
+
+        You will then be able to add tasks to that project
+
+        SO basically. Each project needs to become an array, and each array item will be an object
+*/

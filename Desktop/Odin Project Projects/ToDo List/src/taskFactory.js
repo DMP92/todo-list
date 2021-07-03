@@ -11,7 +11,8 @@ const ItemFactory = () => {
            task: taskName,
            notes: notes,
            date: date,
-           project: project 
+           project: project, 
+           status: 'incomplete'
         }
 
         _pushItem(item);

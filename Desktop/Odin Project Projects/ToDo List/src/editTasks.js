@@ -1,4 +1,4 @@
-
+import { projectCreate } from "./index.js";
 
 /* 
 ************************************************************************************
@@ -6,7 +6,7 @@
 ************************************************************************************
 */
 
-// module made for editing and interacting with elements
+// module made for editing and interacting with each task item
 const editItems = (function() {
 
     // variables that target DOM elements for deletion and editing
@@ -21,7 +21,7 @@ const editItems = (function() {
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
-        editButtons.forEach(button => button.addEventListener('click', _editTask));
+        editButtons.forEach(button => button.addEventListener('click', _editTask));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
@@ -50,7 +50,6 @@ const editItems = (function() {
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
-                ;
             break;
             case parent.style.cssText === gray:
                 event.target.classList.remove('checkedTask');
@@ -120,18 +119,25 @@ const editItems = (function() {
             event.target.classList.remove('editTask');
             event.target.classList.add('editingTask');
     // parent.appendChild();
-
+        
         } else {
             _appendTask();
         }
     }
 
     /* 
-    **************************** APPEND EACH TASK AFTER EDIT *******************************    
+    ************************************************************************************
+    **********************************APPEND EACH TASK AFTER EDIT***********************
+    ************************************************************************************
     */
+
 
     // function that takes newly edited information and publishes them to the DOM
     function _appendTask() {
+
+        // variable for grabbing all task items
+        const taskItems = document.querySelectorAll('.taskItem');
+        const tasks = Array.from(taskItems);
 
         event.target.classList.remove('editingTask');
         event.target.classList.add('editTask');
@@ -168,9 +174,19 @@ const editItems = (function() {
         parent.replaceChild(taskDate, date);
         parent.replaceChild(description, notes);
 
+        // variable that fetches index of edited element
+        const index = tasks.indexOf(parent);
+
+        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, index);
     }
 
-    
+    function updateArrays() {
+
+    }
+
+    function projectArray() {
+
+    }
 
     return {
     eventListeners: buttonEventListeners
@@ -179,8 +195,66 @@ const editItems = (function() {
 
 })();
 
+    /* 
+    ************************************************************************************
+    **********************************GRAB EDITED TASK**********************************
+    ************************************************************************************
+    */
+
+    // module that grabs edited task info and communicates that changes were made
+    const grabEditedTask = (function() {
+
+        /* 
+            there should be a way to track back to the orignial array in index.js when you edit
+            it'll figure out which index the edited item belongs to, determine if it has a project
+            and rewrite that information. Keeping it's place in the array index, but updating it
+        */
+        // variables that grab specific task that is edited
+
+        function receiveEditedTask(target, task, notes, date, project, index) {
+            const editedTask = {};
+            editedTask.name = task,
+            editedTask.notes = notes,
+            editedTask.date = date,
+            editedTask.project = project
+            console.log(editedTask)
+        }
+
+        return {
+            newTask: receiveEditedTask
+        }
+    })();
+
     const deleteButton = document.querySelector('.formDelete');
         deleteButton.addEventListener('click', () => {
     })
 
-export { editItems }
+     /* 
+    ************************************************************************************
+    **********************************MODULE FOR DELETING EVERY ITEM********************
+    ************************************************************************************
+    */
+
+    const taskUpdate = (function() {
+
+        // variable that grabs task container & tasks
+        const mainSection = document.querySelector('.mainSection');
+        const taskPanel = document.querySelector('.taskPanel');
+        const allItems = taskPanel.children;
+        // function that erases all tasks from panel
+
+        function eraseTasks() {
+            var child = taskPanel.lastElementChild; 
+            while (child) {
+                taskPanel.removeChild(child);
+                child = taskPanel.lastElementChild;
+            }
+
+        }
+
+        return {
+            erase: eraseTasks
+        }
+    })();
+
+export { editItems, taskUpdate }
