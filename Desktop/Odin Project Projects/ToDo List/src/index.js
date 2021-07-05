@@ -12,21 +12,29 @@ const itemRef = (function() {
 
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
-
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
 
             itemArray.push(item);
-
             const index = itemArray.indexOf(item);
+            let myItem = JSON.stringify(item);
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
             // unsure what I will do with this call
             if (item.project != '') {
                 projectCreate.fetch(item);
+                console.log(myItem);                
+            } else {
+                localStorage.setItem(`T${index}`, myItem);
+                console.log(localStorage.getItem(`T${2}`.status));
             }
         }
  
+        function arrayShare(item) {
+            console.log(itemArray.indexOf(item));
+            return itemArray;
+        }
+
         // shares specific itemArray
         function shareArrayItems(item, index, page) {
             tabSelection.receive(item, index, page);
@@ -64,17 +72,49 @@ const itemRef = (function() {
            return itemArray[index].project;
         }
 
+        function localStore() {
+            const myStorage = window.localStorage;
+            return myStorage;
+        }
+
     return {
         printItem : pushItem,
+        arrayShare: arrayShare,
         title: shareName,
         notes: shareNote,
         summary: shareSummary,
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem
+        shareItem: shareItem,
+        localStore: localStore
     }
 })();
+
+
+// Module for array manipulation 
+const manipulateTaskArray = (function() {
+    
+
+    function _grabArray() {
+        const itemArray = itemRef.arrayShare();
+        console.log(itemArray);
+        return itemArray;
+       
+    }
+
+    function replaceItem(item, index) {
+        const itemArray = _grabArray();
+        itemArray.splice(index, 1, item);
+        console.log(itemArray);
+    }
+
+    return {
+        replace: replaceItem
+    }
+})();
+
+
 
 // module for creating projects
 const projectCreate = (function() {
@@ -90,8 +130,11 @@ const projectCreate = (function() {
         project.date = item.date;
         project.project = item.project;
         project.status = 'unfinished';
-        
         tabSelection.receiveProjects(project);
+
+        projectArray.push(project);
+        const index = projectArray.indexOf(project);
+        
     }
 
     // function that shares projectArray
@@ -121,14 +164,21 @@ const sidebar = document.querySelector('.sidebar');
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     grabTask.send();
-    editItems.eventListeners();
+
 });
+
+window.addEventListener('load', () => {
+    editItems.eventListeners();
+
+})
+
+
 
 /* 
     I need there to be a way to communicate with
 */
 
 
-export { itemRef, projectCreate }
+export { itemRef, projectCreate, manipulateTaskArray }
 
 

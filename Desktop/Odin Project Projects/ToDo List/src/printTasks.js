@@ -5,33 +5,39 @@
 ************************************************************************************
 */
 
+import { itemRef } from ".";
+
 
 // Module that prints each task item to UI
 const taskPrint = (function() {
-
     // variables for task parent
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
 
+    function receiveLocalStorage(archive) {
+        console.log(archive);
+    }
+
     function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
-        unpackItem(item);
+        unpackItem(item, index);
         console.log(index);
     }
 
     // takes item and breaks it down into each part
-    function unpackItem(item) {
+    function unpackItem(item, index, status) {
         const task = {};
         task.task = item.task;
         task.notes = item.notes;
         task.date = item.date;
         task.project = item.project;
-        
-        printTask(task);
+        task.status = status;
+        printTask(task, index, status);
+        console.log(task, index);
     }
 
     // function that calls each appendChild method in order to create the task
-    function printTask(task) {
+    function printTask(task, index, status) {
         const item = document.createElement('div');
         item.classList.add('taskItem');
         
@@ -44,8 +50,9 @@ const taskPrint = (function() {
         _printTaskDate(item, task.date);
         _printDescription(item, task.notes);
         // shareTaskItem(item);
-
+        // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
+        console.log(status);
     }
 
     // function that returns taskObjects array
@@ -137,6 +144,7 @@ const taskPrint = (function() {
             
 
     return {
+        localStore: receiveLocalStorage,
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
@@ -152,7 +160,7 @@ const taskPrint = (function() {
 */
 
 const tabbedPrint = (function() {
-
+    const myStorage = window.localStorage;
     // breaks down each array sent into it's individual items
     function arrayUnpack(array) {
         for (var i = 0; i < array.length; i++) {

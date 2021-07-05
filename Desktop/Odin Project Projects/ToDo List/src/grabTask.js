@@ -53,10 +53,10 @@ const grabTask = (function() {
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
-       
+        const status = 'incomplete'
        
        const sendGrabbedData = ItemFactory();
-       sendGrabbedData.receiveTasks(taskName, notes, date, project);
+       sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
     }
 
     return {

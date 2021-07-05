@@ -58,7 +58,10 @@ const editItems = (function() {
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
-
+        
+        // allows us to get index for event target to change status from incomplete to complete or vice versa
+        const taskItems = document.querySelectorAll('.taskItem');
+        const tasks = Array.from(taskItems);
         // switch statement that (based on the cssText of the clicked element) either grays out, or 
         // fills in the taskItem container div
         switch(true) {
@@ -79,9 +82,39 @@ const editItems = (function() {
                 parent.style.cssText = `${gray}`;
             break;
         }
-        
-    }    
+        completeLocalStorage(parent);
+    }   
+    
+    function completeLocalStorage(parent) {
 
+        // variables for grabbing identification
+       
+        const project = parent.children[0];
+        const name = parent.children[4];
+
+        const keys = Object.keys(localStorage);
+        let i = 0;
+
+        while (i < keys.length) {
+            const items = JSON.parse(localStorage.getItem(keys[i]));
+             if (items.task === name.textContent) {
+                // const oldItems = JSON.parse(localStorage.getItem(keys[i]).key);
+                var key = localStorage.key(i);
+                const newItems = {};
+                newItems.task = items.task;
+                newItems.notes = items.notes;
+                newItems.date = items.date;
+                newItems.project = items.project;
+                newItems.status = 'complete';
+                const newest = JSON.stringify(newItems);
+                localStorage.setItem(key, newest);
+                //  localStorage.setItem(items, `{task:${task}, notes: ${notes}, date: ${date}, ${project}, ${status}}`);
+                 console.log(key);
+             }
+            
+            i++
+        }
+    }
     /* 
     **************************** EDIT TASK *******************************    
     */
@@ -193,12 +226,10 @@ const editItems = (function() {
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
 
-        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, index);
+        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
     }
 
-    function updateArrays() {
-
-    }
+    
 
     function projectArray() {
 
@@ -227,13 +258,18 @@ const editItems = (function() {
         */
         // variables that grab specific task that is edited
 
-        function receiveEditedTask(target, task, notes, date, project, index) {
+        function receiveEditedTask(target, task, notes, date, project, status, index) {
             const editedTask = {};
             editedTask.name = task,
             editedTask.notes = notes,
             editedTask.date = date,
-            editedTask.project = project
-            console.log(editedTask)
+            editedTask.project = project,
+            editedTask.status = status,
+            _updateArrays(editedTask, index)
+        }
+
+        function _updateArrays(task, index) {
+            _index_js__WEBPACK_IMPORTED_MODULE_0__.manipulateTaskArray.replace(task, index)
         }
 
         return {
@@ -343,10 +379,10 @@ const grabTask = (function() {
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
-       
+        const status = 'incomplete'
        
        const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_0__.ItemFactory)();
-       sendGrabbedData.receiveTasks(taskName, notes, date, project);
+       sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
     }
 
     return {
@@ -386,7 +422,8 @@ const grabTask = (function() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "itemRef": () => (/* binding */ itemRef),
-/* harmony export */   "projectCreate": () => (/* binding */ projectCreate)
+/* harmony export */   "projectCreate": () => (/* binding */ projectCreate),
+/* harmony export */   "manipulateTaskArray": () => (/* binding */ manipulateTaskArray)
 /* harmony export */ });
 /* harmony import */ var _taskFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./taskFactory */ "./src/taskFactory.js");
 /* harmony import */ var _updateDOM__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./updateDOM */ "./src/updateDOM.js");
@@ -407,21 +444,29 @@ const itemRef = (function() {
 
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
-
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
 
             itemArray.push(item);
-
             const index = itemArray.indexOf(item);
+            let myItem = JSON.stringify(item);
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
             // unsure what I will do with this call
             if (item.project != '') {
                 projectCreate.fetch(item);
+                console.log(myItem);                
+            } else {
+                localStorage.setItem(`T${index}`, myItem);
+                console.log(localStorage.getItem(`T${2}`.status));
             }
         }
  
+        function arrayShare(item) {
+            console.log(itemArray.indexOf(item));
+            return itemArray;
+        }
+
         // shares specific itemArray
         function shareArrayItems(item, index, page) {
             _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.receive(item, index, page);
@@ -459,17 +504,49 @@ const itemRef = (function() {
            return itemArray[index].project;
         }
 
+        function localStore() {
+            const myStorage = window.localStorage;
+            return myStorage;
+        }
+
     return {
         printItem : pushItem,
+        arrayShare: arrayShare,
         title: shareName,
         notes: shareNote,
         summary: shareSummary,
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem
+        shareItem: shareItem,
+        localStore: localStore
     }
 })();
+
+
+// Module for array manipulation 
+const manipulateTaskArray = (function() {
+    
+
+    function _grabArray() {
+        const itemArray = itemRef.arrayShare();
+        console.log(itemArray);
+        return itemArray;
+       
+    }
+
+    function replaceItem(item, index) {
+        const itemArray = _grabArray();
+        itemArray.splice(index, 1, item);
+        console.log(itemArray);
+    }
+
+    return {
+        replace: replaceItem
+    }
+})();
+
+
 
 // module for creating projects
 const projectCreate = (function() {
@@ -485,8 +562,11 @@ const projectCreate = (function() {
         project.date = item.date;
         project.project = item.project;
         project.status = 'unfinished';
-        
         _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.receiveProjects(project);
+
+        projectArray.push(project);
+        const index = projectArray.indexOf(project);
+        
     }
 
     // function that shares projectArray
@@ -516,8 +596,15 @@ const sidebar = document.querySelector('.sidebar');
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
-    _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+
 });
+
+window.addEventListener('load', () => {
+    _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+
+})
+
+
 
 /* 
     I need there to be a way to communicate with
@@ -542,6 +629,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "taskPrint": () => (/* binding */ taskPrint),
 /* harmony export */   "tabbedPrint": () => (/* binding */ tabbedPrint)
 /* harmony export */ });
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! . */ "./src/index.js");
 
 /* 
 ************************************************************************************
@@ -550,32 +638,38 @@ __webpack_require__.r(__webpack_exports__);
 */
 
 
+
+
 // Module that prints each task item to UI
 const taskPrint = (function() {
-
     // variables for task parent
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
 
+    function receiveLocalStorage(archive) {
+        console.log(archive);
+    }
+
     function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
-        unpackItem(item);
+        unpackItem(item, index);
         console.log(index);
     }
 
     // takes item and breaks it down into each part
-    function unpackItem(item) {
+    function unpackItem(item, index, status) {
         const task = {};
         task.task = item.task;
         task.notes = item.notes;
         task.date = item.date;
         task.project = item.project;
-        
-        printTask(task);
+        task.status = status;
+        printTask(task, index, status);
+        console.log(task, index);
     }
 
     // function that calls each appendChild method in order to create the task
-    function printTask(task) {
+    function printTask(task, index, status) {
         const item = document.createElement('div');
         item.classList.add('taskItem');
         
@@ -588,8 +682,9 @@ const taskPrint = (function() {
         _printTaskDate(item, task.date);
         _printDescription(item, task.notes);
         // shareTaskItem(item);
-
+        // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
+        console.log(status);
     }
 
     // function that returns taskObjects array
@@ -681,6 +776,7 @@ const taskPrint = (function() {
             
 
     return {
+        localStore: receiveLocalStorage,
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
@@ -696,7 +792,7 @@ const taskPrint = (function() {
 */
 
 const tabbedPrint = (function() {
-
+    const myStorage = window.localStorage;
     // breaks down each array sent into it's individual items
     function arrayUnpack(array) {
         for (var i = 0; i < array.length; i++) {
@@ -744,17 +840,19 @@ __webpack_require__.r(__webpack_exports__);
 const ItemFactory = () => {
 
     // receiving function that breaks down each task item and sends it onward
-    function receiveTasks(taskName, notes, date, project) {
+    function receiveTasks(taskName, notes, date, project, status) {
         
         const item = {
            task: taskName,
            notes: notes,
            date: date,
            project: project, 
-           status: 'incomplete'
+           status: status
         }
 
+       
         _pushItem(item);
+      
     }
 
     // pushes each task into index.js where it is added to the taskArray
@@ -900,7 +998,6 @@ const tabSelection = (function() {
         switch(true) {
             case page === 'index':
                 itemArray.push(item);
-                console.log(itemArray);
             break;
         }
     }
@@ -938,6 +1035,20 @@ const tabSelection = (function() {
             _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.tabbedPrint.unpack(itemArray);
         }
 
+        const keys = Object.keys(localStorage);
+        let i = 0;
+
+    while (i != keys.length) {
+        const items = JSON.parse(localStorage.getItem(keys[i]));
+        if (items.status === 'complete') {
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(items, [i], 'complete');
+            i++
+        } else if (items.status === 'incomplete') {
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(items, [i], 'incomplete');
+            i++
+        }
+
+    }
 
 
 

@@ -114,7 +114,6 @@ const tabSelection = (function() {
         switch(true) {
             case page === 'index':
                 itemArray.push(item);
-                console.log(itemArray);
             break;
         }
     }
@@ -152,6 +151,20 @@ const tabSelection = (function() {
             tabbedPrint.unpack(itemArray);
         }
 
+        const keys = Object.keys(localStorage);
+        let i = 0;
+
+    while (i != keys.length) {
+        const items = JSON.parse(localStorage.getItem(keys[i]));
+        if (items.status === 'complete') {
+            taskPrint.unpack(items, [i], 'complete');
+            i++
+        } else if (items.status === 'incomplete') {
+            taskPrint.unpack(items, [i], 'incomplete');
+            i++
+        }
+
+    }
 
 
 

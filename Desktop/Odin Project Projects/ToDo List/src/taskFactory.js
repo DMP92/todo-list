@@ -5,17 +5,19 @@ import {itemRef} from "./index"
 const ItemFactory = () => {
 
     // receiving function that breaks down each task item and sends it onward
-    function receiveTasks(taskName, notes, date, project) {
+    function receiveTasks(taskName, notes, date, project, status) {
         
         const item = {
            task: taskName,
            notes: notes,
            date: date,
            project: project, 
-           status: 'incomplete'
+           status: status
         }
 
+       
         _pushItem(item);
+      
     }
 
     // pushes each task into index.js where it is added to the taskArray

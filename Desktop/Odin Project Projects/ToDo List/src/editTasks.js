@@ -1,4 +1,4 @@
-import { projectCreate } from "./index.js";
+import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
 
 /* 
 ************************************************************************************
@@ -42,7 +42,10 @@ const editItems = (function() {
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
-
+        
+        // allows us to get index for event target to change status from incomplete to complete or vice versa
+        const taskItems = document.querySelectorAll('.taskItem');
+        const tasks = Array.from(taskItems);
         // switch statement that (based on the cssText of the clicked element) either grays out, or 
         // fills in the taskItem container div
         switch(true) {
@@ -63,9 +66,39 @@ const editItems = (function() {
                 parent.style.cssText = `${gray}`;
             break;
         }
-        
-    }    
+        completeLocalStorage(parent);
+    }   
+    
+    function completeLocalStorage(parent) {
 
+        // variables for grabbing identification
+       
+        const project = parent.children[0];
+        const name = parent.children[4];
+
+        const keys = Object.keys(localStorage);
+        let i = 0;
+
+        while (i < keys.length) {
+            const items = JSON.parse(localStorage.getItem(keys[i]));
+             if (items.task === name.textContent) {
+                // const oldItems = JSON.parse(localStorage.getItem(keys[i]).key);
+                var key = localStorage.key(i);
+                const newItems = {};
+                newItems.task = items.task;
+                newItems.notes = items.notes;
+                newItems.date = items.date;
+                newItems.project = items.project;
+                newItems.status = 'complete';
+                const newest = JSON.stringify(newItems);
+                localStorage.setItem(key, newest);
+                //  localStorage.setItem(items, `{task:${task}, notes: ${notes}, date: ${date}, ${project}, ${status}}`);
+                 console.log(key);
+             }
+            
+            i++
+        }
+    }
     /* 
     **************************** EDIT TASK *******************************    
     */
@@ -177,12 +210,10 @@ const editItems = (function() {
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
 
-        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, index);
+        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
     }
 
-    function updateArrays() {
-
-    }
+    
 
     function projectArray() {
 
@@ -211,13 +242,18 @@ const editItems = (function() {
         */
         // variables that grab specific task that is edited
 
-        function receiveEditedTask(target, task, notes, date, project, index) {
+        function receiveEditedTask(target, task, notes, date, project, status, index) {
             const editedTask = {};
             editedTask.name = task,
             editedTask.notes = notes,
             editedTask.date = date,
-            editedTask.project = project
-            console.log(editedTask)
+            editedTask.project = project,
+            editedTask.status = status,
+            _updateArrays(editedTask, index)
+        }
+
+        function _updateArrays(task, index) {
+            manipulateTaskArray.replace(task, index)
         }
 
         return {
