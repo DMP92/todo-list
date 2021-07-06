@@ -5,33 +5,79 @@ import { editItems } from "./editTasks";
 import { tabbedPrint, taskPrint } from "./printTasks";
 import { sidebarTab } from "./updateDOM";
 import { tabSelection } from "./updateDOM";
+import { fi } from "date-fns/locale";
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
 
 const itemRef = (function() {
 
+   
+
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
+    
+   
+
+        function fillArray() {
+            // gets stored array from localStorage
+            const fillArray = JSON.parse(localStorage.getItem('itemArray'));
+ 
+            // keeps itemArray filled with saved values so it doesn't reset on window load
+            switch(true) {
+                case fillArray != null:
+                    for (var i = 0; i < fillArray.length; i++) {
+                        itemArray.push(fillArray[i]);
+                    }
+                break;
+            }
+
+        }
+
+
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
-
+            // pushes item to array
             itemArray.push(item);
+            // pushes array item to localStorage
+
+            // gets array from local storage
+          
+
+            // let myItem = JSON.stringify(item);
+            // shareItem(item, index);
+            // shareArrayItems(item, index, 'index');
+            // unsure what I will do with this call
+            // if (item.project != '') {
+            //     projectCreate.fetch(item);
+            //     console.log(myItem);                
+            // } else {
+            //     localStorage.setItem(`T${index}`, myItem);
+            //     console.log(localStorage.getItem(`T${2}`.status));
+            // }
+            _storagePush(item);
+        }
+
+        // pushes each item into localStorage 
+        function _storagePush(item) {
+
+            // gives index position
             const index = itemArray.indexOf(item);
-            let myItem = JSON.stringify(item);
+           
+            // stores the itemArray in localStorage
+            const storeArray = JSON.stringify(itemArray);
+            localStorage.setItem('itemArray', storeArray);
+            
+            // variable that contains the obtained reference to the locallyStored 'itemArray'
+            let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+            console.log(storedArray[index].task);    
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
-            // unsure what I will do with this call
-            if (item.project != '') {
-                projectCreate.fetch(item);
-                console.log(myItem);                
-            } else {
-                localStorage.setItem(`T${index}`, myItem);
-                console.log(localStorage.getItem(`T${2}`.status));
-            }
+
         }
- 
+
         function arrayShare(item) {
-            console.log(itemArray.indexOf(item));
+            
+            console.log(itemArray)
             return itemArray;
         }
 
@@ -72,12 +118,10 @@ const itemRef = (function() {
            return itemArray[index].project;
         }
 
-        function localStore() {
-            const myStorage = window.localStorage;
-            return myStorage;
-        }
+        
 
     return {
+        fillArray, fillArray,
         printItem : pushItem,
         arrayShare: arrayShare,
         title: shareName,
@@ -86,8 +130,7 @@ const itemRef = (function() {
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem,
-        localStore: localStore
+        shareItem: shareItem
     }
 })();
 
@@ -164,12 +207,13 @@ const sidebar = document.querySelector('.sidebar');
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     grabTask.send();
+    editItems.eventListeners();
 
 });
 
 window.addEventListener('load', () => {
     editItems.eventListeners();
-
+    itemRef.fillArray();
 })
 
 

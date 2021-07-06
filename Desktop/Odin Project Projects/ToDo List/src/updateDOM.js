@@ -146,26 +146,13 @@ const tabSelection = (function() {
 
     function allTab(array) {
         
-        if (itemArray.length != 0) {
-            taskUpdate.erase();
-            tabbedPrint.unpack(itemArray);
+        let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+        
+        if (storedArray != null) {
+            for ( var i = 0; i < storedArray.length; i++) {
+                taskPrint.unpack(storedArray[i]);
+            }
         }
-
-        const keys = Object.keys(localStorage);
-        let i = 0;
-
-    while (i != keys.length) {
-        const items = JSON.parse(localStorage.getItem(keys[i]));
-        if (items.status === 'complete') {
-            taskPrint.unpack(items, [i], 'complete');
-            i++
-        } else if (items.status === 'incomplete') {
-            taskPrint.unpack(items, [i], 'incomplete');
-            i++
-        }
-
-    }
-
 
 
     }

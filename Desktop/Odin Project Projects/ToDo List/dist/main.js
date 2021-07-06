@@ -47,18 +47,34 @@ const editItems = (function() {
         taskPanel.removeChild(parent);
     }
 
+    function searchItem(data) {
+
+        const array = _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.arrayShare();
+
+        for (var i = 0; i < array.length; i++){
+            let index = array[i].task;
+            if (index === data) {
+                console.log(array.indexOf(array[i]));
+            }
+        }
+
+    }
+
+
     /* 
     **************************** COMPLETE TASK *******************************    
     */
 
     // private function that marks task item as completed
     function _completeTask() {
-        
         // variables that fetch and assign the cssText for the clicked completeTask button
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
-        
+
+        const task = parent.children[4].textContent;
+        console.log(task);
+        searchItem(task);
         // allows us to get index for event target to change status from incomplete to complete or vice versa
         const taskItems = document.querySelectorAll('.taskItem');
         const tasks = Array.from(taskItems);
@@ -323,7 +339,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "grabTask": () => (/* binding */ grabTask)
 /* harmony export */ });
-/* harmony import */ var _taskFactory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./taskFactory.js */ "./src/taskFactory.js");
+/* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
+/* harmony import */ var _taskFactory_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./taskFactory.js */ "./src/taskFactory.js");
+
 
 /* 
 ************************************************************************************
@@ -336,9 +354,10 @@ const grabTask = (function() {
     
     // upon click will get task  item
     function toDoInput() {
-        const input = document.querySelector('.task');
         
+        const input = document.querySelector('.task');
         return input.value;
+
     }
 
     // on click will get notes of todo list item
@@ -373,16 +392,108 @@ const grabTask = (function() {
         projectTitle.value = '';
     }
 
-    function sendItemData() {
-       
+    // function to confirm there are no repeating task values
+    function checkItemData(item) {
+
         const taskName = toDoInput();
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
-        const status = 'incomplete'
+        const status = 'incomplete';
+
+        console.log(61);
+        // requires task input to be filled out
+        if (item === undefined) {
+            console.log(64);
+            const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
+            sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+            console.log('fisrst');
+           
+        } else {
+
+            console.log(70);
+            switch(true) {         
+                case taskName != '':
+                    if (item.task === taskName) {
+                       alert('Tasks must not repeat names');
+                       console.log(75);
+                       break;
+                   } 
        
-       const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_0__.ItemFactory)();
-       sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+                  if (item.notes === notes && notes != '') {
+                       alert('Notes must not repeat');
+                       console.log(80);
+                       break;
+                  } 
+       
+                  if (item.project === project && project != '') {
+                    alert('Projects must not repeat names');
+                    console.log(85);
+                    break;
+                  } 
+       
+                  
+                   const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
+                   sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+                   console.log(91);
+                      
+               break;
+               
+               case taskName == '':
+                console.log(100);
+                   alert('All tasks must have names');
+               break;
+           }
+   
+        }
+
+           
+            
+        
+        
+        
+
+    }
+
+    function sendItemData() {
+       
+        // variable for grabbing .task 'Task' input field
+        
+        const task = document.querySelector('.task');
+        const keys = Object.keys(localStorage);
+        const values = localStorage.getItem('itemArray', keys[i]);
+        var i = 0;
+        const usableArray = JSON.parse(values);
+
+        if(usableArray === null) {
+            checkItemData()
+            console.log('low first');
+
+        } else if (usableArray != null) {
+            
+            while (i < usableArray.length) { 
+                console.log('lest first');
+                checkItemData(usableArray[i])
+
+                i++
+            }
+        }
+
+        /* I'm thinking there needs to be the data accessed inside THIS function 'sendItemData()'
+                THEN I'll call the function above, loop through the keys in the above function and
+                inside that loop it will push each item and search each item. 
+                
+                It should:
+                    - break out of the loop if ever there's a duplicate and return an error
+                    - give an alert describing the issue
+                    - and alongside breaking out of the loop, it should stop the function call altogether
+                    
+                The function above will then print the task item, assuming all checks were met
+                
+        */
+        
+            
+        
     }
 
     return {
@@ -391,6 +502,7 @@ const grabTask = (function() {
         itemDate: itemDate,
         itemProject: itemProject,
         clear: clearItemData,
+        check: checkItemData,
         send: sendItemData
     }
 })()
@@ -437,33 +549,79 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
 
 const itemRef = (function() {
 
+   
+
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
+    
+   
+
+        function fillArray() {
+            // gets stored array from localStorage
+            const fillArray = JSON.parse(localStorage.getItem('itemArray'));
+ 
+            // keeps itemArray filled with saved values so it doesn't reset on window load
+            switch(true) {
+                case fillArray != null:
+                    for (var i = 0; i < fillArray.length; i++) {
+                        itemArray.push(fillArray[i]);
+                    }
+                break;
+            }
+
+        }
+
+
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
-
+            // pushes item to array
             itemArray.push(item);
+            // pushes array item to localStorage
+
+            // gets array from local storage
+          
+
+            // let myItem = JSON.stringify(item);
+            // shareItem(item, index);
+            // shareArrayItems(item, index, 'index');
+            // unsure what I will do with this call
+            // if (item.project != '') {
+            //     projectCreate.fetch(item);
+            //     console.log(myItem);                
+            // } else {
+            //     localStorage.setItem(`T${index}`, myItem);
+            //     console.log(localStorage.getItem(`T${2}`.status));
+            // }
+            _storagePush(item);
+        }
+
+        // pushes each item into localStorage 
+        function _storagePush(item) {
+
+            // gives index position
             const index = itemArray.indexOf(item);
-            let myItem = JSON.stringify(item);
+           
+            // stores the itemArray in localStorage
+            const storeArray = JSON.stringify(itemArray);
+            localStorage.setItem('itemArray', storeArray);
+            
+            // variable that contains the obtained reference to the locallyStored 'itemArray'
+            let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+            console.log(storedArray[index].task);    
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
-            // unsure what I will do with this call
-            if (item.project != '') {
-                projectCreate.fetch(item);
-                console.log(myItem);                
-            } else {
-                localStorage.setItem(`T${index}`, myItem);
-                console.log(localStorage.getItem(`T${2}`.status));
-            }
+
         }
- 
+
         function arrayShare(item) {
-            console.log(itemArray.indexOf(item));
+            
+            console.log(itemArray)
             return itemArray;
         }
 
@@ -504,12 +662,10 @@ const itemRef = (function() {
            return itemArray[index].project;
         }
 
-        function localStore() {
-            const myStorage = window.localStorage;
-            return myStorage;
-        }
+        
 
     return {
+        fillArray, fillArray,
         printItem : pushItem,
         arrayShare: arrayShare,
         title: shareName,
@@ -518,8 +674,7 @@ const itemRef = (function() {
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem,
-        localStore: localStore
+        shareItem: shareItem
     }
 })();
 
@@ -596,12 +751,13 @@ const sidebar = document.querySelector('.sidebar');
 const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
+    _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
 
 });
 
 window.addEventListener('load', () => {
     _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
-
+    itemRef.fillArray();
 })
 
 
@@ -653,19 +809,21 @@ const taskPrint = (function() {
     function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
         unpackItem(item, index);
-        console.log(index);
     }
 
     // takes item and breaks it down into each part
     function unpackItem(item, index, status) {
-        const task = {};
-        task.task = item.task;
-        task.notes = item.notes;
-        task.date = item.date;
-        task.project = item.project;
-        task.status = status;
-        printTask(task, index, status);
-        console.log(task, index);
+
+        const taskInput = document.querySelector('.task');
+        
+                const task = {};
+                task.task = item.task;
+                task.notes = item.notes;
+                task.date = item.date;
+                task.project = item.project;
+                task.status = status;
+                printTask(task, index, status);
+                // console.log(task, index);    
     }
 
     // function that calls each appendChild method in order to create the task
@@ -684,7 +842,6 @@ const taskPrint = (function() {
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
-        console.log(status);
     }
 
     // function that returns taskObjects array
@@ -1030,26 +1187,13 @@ const tabSelection = (function() {
 
     function allTab(array) {
         
-        if (itemArray.length != 0) {
-            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.tabbedPrint.unpack(itemArray);
+        let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+        
+        if (storedArray != null) {
+            for ( var i = 0; i < storedArray.length; i++) {
+                _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(storedArray[i]);
+            }
         }
-
-        const keys = Object.keys(localStorage);
-        let i = 0;
-
-    while (i != keys.length) {
-        const items = JSON.parse(localStorage.getItem(keys[i]));
-        if (items.status === 'complete') {
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(items, [i], 'complete');
-            i++
-        } else if (items.status === 'incomplete') {
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(items, [i], 'incomplete');
-            i++
-        }
-
-    }
-
 
 
     }

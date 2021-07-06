@@ -31,18 +31,34 @@ const editItems = (function() {
         taskPanel.removeChild(parent);
     }
 
+    function searchItem(data) {
+
+        const array = itemRef.arrayShare();
+
+        for (var i = 0; i < array.length; i++){
+            let index = array[i].task;
+            if (index === data) {
+                console.log(array.indexOf(array[i]));
+            }
+        }
+
+    }
+
+
     /* 
     **************************** COMPLETE TASK *******************************    
     */
 
     // private function that marks task item as completed
     function _completeTask() {
-        
         // variables that fetch and assign the cssText for the clicked completeTask button
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
-        
+
+        const task = parent.children[4].textContent;
+        console.log(task);
+        searchItem(task);
         // allows us to get index for event target to change status from incomplete to complete or vice versa
         const taskItems = document.querySelectorAll('.taskItem');
         const tasks = Array.from(taskItems);

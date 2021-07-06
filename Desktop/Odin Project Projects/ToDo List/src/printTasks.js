@@ -21,19 +21,21 @@ const taskPrint = (function() {
     function receiveItem(item, index) {
         // calls unpackItem to breakdown each item key
         unpackItem(item, index);
-        console.log(index);
     }
 
     // takes item and breaks it down into each part
     function unpackItem(item, index, status) {
-        const task = {};
-        task.task = item.task;
-        task.notes = item.notes;
-        task.date = item.date;
-        task.project = item.project;
-        task.status = status;
-        printTask(task, index, status);
-        console.log(task, index);
+
+        const taskInput = document.querySelector('.task');
+        
+                const task = {};
+                task.task = item.task;
+                task.notes = item.notes;
+                task.date = item.date;
+                task.project = item.project;
+                task.status = status;
+                printTask(task, index, status);
+                // console.log(task, index);    
     }
 
     // function that calls each appendChild method in order to create the task
@@ -52,7 +54,6 @@ const taskPrint = (function() {
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
-        console.log(status);
     }
 
     // function that returns taskObjects array

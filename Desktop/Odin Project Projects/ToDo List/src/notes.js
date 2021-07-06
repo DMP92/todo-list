@@ -103,6 +103,9 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
         not only that, but I should loop through each localStorage key for matching task names and 
         require them to be different
 
+                    - !!!!forms require text put into at least the task input!!!!
+                    - cannot have the same task input
+
         I need to have everything be done in ONE array
         I will have all of the data be accessed through the ONE array, in itemRef. I'll pull 
         items out and use that data to create content for each tab
