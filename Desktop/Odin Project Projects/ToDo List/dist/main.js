@@ -34,18 +34,39 @@ const editItems = (function() {
         const deleteButtons = document.querySelectorAll('.itemDelete');
         const editButtons = document.querySelectorAll('.editTask');
         const completeButtons = document.querySelectorAll('.completeTask');
+        const checkedButtons = document.querySelectorAll('.checkedTask');
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
         editButtons.forEach(button => button.addEventListener('click', _editTask));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
+        checkedButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event){
+
+        // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
-        taskPanel.removeChild(parent);
+        const task = parent.children[4].textContent;
+        const action = 'delete';
+        // variable for task index
+        let index = searchItem(task);
+
+        // variable that fetches array 
+        let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.arrayShare();
+
+        // removes items from both the array, localStorage, and the DOM
+        _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, 1);
+        taskPanel.removeChild(parent);   
     }
+
+
+
+        /* I think I need to get the index of each item to print upon clicking
+                then I need to send that into itemRef and replace w/e item is edited
+                then call for a storage Push so it updates the item
+         */
 
     function searchItem(data) {
 
@@ -54,7 +75,7 @@ const editItems = (function() {
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
             if (index === data) {
-                console.log(array.indexOf(array[i]));
+                return array.indexOf(array[i]);
             }
         }
 
@@ -65,19 +86,32 @@ const editItems = (function() {
     **************************** COMPLETE TASK *******************************    
     */
 
+    // function that grays each task out that is already marked complete
+    function loadComplete(item) {
+        
+        const gray = "filter: grayscale(1);";
+        const checkBox = item.children[1];
+        
+        checkBox.classList.remove('completeTask');
+        checkBox.classList.add('checkedTask');
+        item.style.cssText = `${gray}`;
+        console.log(performance.now());
+    }
+
     // private function that marks task item as completed
     function _completeTask() {
         // variables that fetch and assign the cssText for the clicked completeTask button
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
+        const action = 'complete';
 
+        // targets specific element interacted with and returns a usable index position
         const task = parent.children[4].textContent;
-        console.log(task);
-        searchItem(task);
-        // allows us to get index for event target to change status from incomplete to complete or vice versa
-        const taskItems = document.querySelectorAll('.taskItem');
-        const tasks = Array.from(taskItems);
+        const index = searchItem(task);
+        let status = 'incomplete';
+        console.log(index);
+        
         // switch statement that (based on the cssText of the clicked element) either grays out, or 
         // fills in the taskItem container div
         switch(true) {
@@ -85,17 +119,22 @@ const editItems = (function() {
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
+                status = 'complete'
+                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
             break;
-            case parent.style.cssText === gray:
+            case parent.style.cssText === "filter: grayscale(1);":
                 event.target.classList.remove('checkedTask');
                 event.target.classList.add('completeTask');
                 parent.style.cssText = `${normal}`;
-
+                status = 'incomplete';
+                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
             break;
-            case parent.style.cssText === normal:
+            case parent.style.cssText === "filter: grayscale(0);":
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
+                status = 'complete';
+                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
             break;
         }
         completeLocalStorage(parent);
@@ -252,7 +291,8 @@ const editItems = (function() {
     }
 
     return {
-    eventListeners: buttonEventListeners
+    eventListeners: buttonEventListeners,
+    complete: loadComplete,
 
     }
 
@@ -353,11 +393,9 @@ const grabTask = (function() {
     
     
     // upon click will get task  item
-    function toDoInput() {
-        
+    function toDoInput() { 
         const input = document.querySelector('.task');
         return input.value;
-
     }
 
     // on click will get notes of todo list item
@@ -373,127 +411,72 @@ const grabTask = (function() {
     }
 
     function itemProject() {
-        const projectTitle = document.querySelector('.project');
-
-        
+        const projectTitle = document.querySelector('.project');   
         return projectTitle.value;
     }
 
+    // function to confirm there are no repeating task values
+    function checkItemData(taskName, notes, date, project, status) {
 
-    function clearItemData() {
-        const input = document.querySelector('.task');
-        const notes = document.querySelector('.notes');
-        const itemDate = document.querySelector('.date');
-        const projectTitle = document.querySelector('.project');
+        // variable for fetching the itemArray inside localStorage and assigning it a variable
+        const arrays = JSON.parse(localStorage.getItem('itemArray'));
 
-        input.value = '';
-        notes.value = '';
-        itemDate.value = '';
-        projectTitle.value = '';
+        // variables that help the switch statement below decide what to do based on if repeat data is found
+        let existing = false;
+        let dataSet = undefined;
+
+        // loop that runs through each locallyStored item and checks if there are repeated values
+        switch(true) {
+            case arrays === null:     
+            break;
+            
+            case arrays != null:
+            for ( var i = 0; i < arrays.length; i++) {
+                if (arrays[i].task === taskName && arrays[i].task != '') {
+                    existing = true;
+                    dataSet = 'tasks';
+                }
+
+                if (arrays[i].notes === notes && arrays[i].notes != '') {
+                    existing = true;
+                    dataSet = 'notes';
+                }
+
+                if (arrays[i].project === project && arrays[i].project != '') {
+                    existing = true;
+                    dataSet = 'projects';
+                }
+            }
+        }
+        // if no repeated data, print the task
+            // if there IS repeated data, alert the user, and refuse their task
+        switch(true) {
+            case existing === false && taskName === '':
+                return alert('Tasks cannot be blank!');
+            break;
+
+            case existing === false && taskName != '':
+                const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
+                sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+            break;
+
+            case existing === true:
+               return alert(`All ${dataSet} must be unique. `);
+            break;
+        }
+       
     }
 
-    // function to confirm there are no repeating task values
-    function checkItemData(item) {
+    // function that gathers all task data from each form, and pushes to the above function 'checkItemData()'
+    function sendItemData() {
 
         const taskName = toDoInput();
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
-        const status = 'incomplete';
+        const status = 'incomplete'
 
-        console.log(61);
-        // requires task input to be filled out
-        if (item === undefined) {
-            console.log(64);
-            const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
-            sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
-            console.log('fisrst');
-           
-        } else {
-
-            console.log(70);
-            switch(true) {         
-                case taskName != '':
-                    if (item.task === taskName) {
-                       alert('Tasks must not repeat names');
-                       console.log(75);
-                       break;
-                   } 
-       
-                  if (item.notes === notes && notes != '') {
-                       alert('Notes must not repeat');
-                       console.log(80);
-                       break;
-                  } 
-       
-                  if (item.project === project && project != '') {
-                    alert('Projects must not repeat names');
-                    console.log(85);
-                    break;
-                  } 
-       
-                  
-                   const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
-                   sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
-                   console.log(91);
-                      
-               break;
-               
-               case taskName == '':
-                console.log(100);
-                   alert('All tasks must have names');
-               break;
-           }
-   
-        }
-
-           
-            
-        
-        
-        
-
-    }
-
-    function sendItemData() {
-       
-        // variable for grabbing .task 'Task' input field
-        
-        const task = document.querySelector('.task');
-        const keys = Object.keys(localStorage);
-        const values = localStorage.getItem('itemArray', keys[i]);
-        var i = 0;
-        const usableArray = JSON.parse(values);
-
-        if(usableArray === null) {
-            checkItemData()
-            console.log('low first');
-
-        } else if (usableArray != null) {
-            
-            while (i < usableArray.length) { 
-                console.log('lest first');
-                checkItemData(usableArray[i])
-
-                i++
-            }
-        }
-
-        /* I'm thinking there needs to be the data accessed inside THIS function 'sendItemData()'
-                THEN I'll call the function above, loop through the keys in the above function and
-                inside that loop it will push each item and search each item. 
-                
-                It should:
-                    - break out of the loop if ever there's a duplicate and return an error
-                    - give an alert describing the issue
-                    - and alongside breaking out of the loop, it should stop the function call altogether
-                    
-                The function above will then print the task item, assuming all checks were met
-                
-        */
-        
-            
-        
+        checkItemData(taskName, notes, date, project, status);
     }
 
     return {
@@ -501,26 +484,12 @@ const grabTask = (function() {
         notes: itemNotes,
         itemDate: itemDate,
         itemProject: itemProject,
-        clear: clearItemData,
         check: checkItemData,
         send: sendItemData
     }
 })()
 
 
-
-// Also, I'm trying to figure out how I'm to separate each thing into an array based on 
-                        // projects
-                        // weeks the project is intended for
-                        // all projects
-                        // projects due today
-                        // I need to learn what the inbox feature is intended for..
-
-// I also need to learn about webpack, and how I'm to get each module up and running, completely
-// functioning. This will take a lot of time, but in the end it WILL save me a lot of time 
-// if I completely learn and understand how it works. Most of my issues during this project have been
-// almost entirely from not completely understanding how webpack works
-// actually it has accounted for probably well over 65% of the time spent on this project
 
 
 /***/ }),
@@ -550,18 +519,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
-
 const itemRef = (function() {
-
-   
 
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
     
-   
-
         function fillArray() {
             // gets stored array from localStorage
             const fillArray = JSON.parse(localStorage.getItem('itemArray'));
@@ -574,54 +539,56 @@ const itemRef = (function() {
                     }
                 break;
             }
-
         }
-
 
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
             // pushes item to array
             itemArray.push(item);
-            // pushes array item to localStorage
-
-            // gets array from local storage
-          
-
-            // let myItem = JSON.stringify(item);
-            // shareItem(item, index);
-            // shareArrayItems(item, index, 'index');
-            // unsure what I will do with this call
-            // if (item.project != '') {
-            //     projectCreate.fetch(item);
-            //     console.log(myItem);                
-            // } else {
-            //     localStorage.setItem(`T${index}`, myItem);
-            //     console.log(localStorage.getItem(`T${2}`.status));
-            // }
-            _storagePush(item);
+            
+            storagePush(item);
         }
 
         // pushes each item into localStorage 
-        function _storagePush(item) {
+        function storagePush(item) {
 
             // gives index position
             const index = itemArray.indexOf(item);
-           
+           console.log(itemArray);
             // stores the itemArray in localStorage
             const storeArray = JSON.stringify(itemArray);
             localStorage.setItem('itemArray', storeArray);
             
             // variable that contains the obtained reference to the locallyStored 'itemArray'
             let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-            console.log(storedArray[index].task);    
+            // console.log(storedArray[index].task);   
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
+              
+        }
 
+        function arrayUpdate(action, index, amount) {
+            let storeArray = JSON.stringify(itemArray);
+
+            switch(true) {
+                case action === 'delete':
+                    itemArray.splice(index, 1);
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                break;
+                case action === 'edit':
+                    console.log(action);
+                break;
+                case action === 'complete':
+                    itemArray[index].status = amount;
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                break;
+            }
         }
 
         function arrayShare(item) {
             
-            console.log(itemArray)
             return itemArray;
         }
 
@@ -674,7 +641,8 @@ const itemRef = (function() {
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem
+        shareItem: shareItem, 
+        update: arrayUpdate,
     }
 })();
 
@@ -786,6 +754,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "tabbedPrint": () => (/* binding */ tabbedPrint)
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! . */ "./src/index.js");
+/* harmony import */ var _editTasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editTasks */ "./src/editTasks.js");
 
 /* 
 ************************************************************************************
@@ -821,8 +790,8 @@ const taskPrint = (function() {
                 task.notes = item.notes;
                 task.date = item.date;
                 task.project = item.project;
-                task.status = status;
-                printTask(task, index, status);
+                task.status = item.status;
+                printTask(task, index, task.status);
                 // console.log(task, index);    
     }
 
@@ -839,6 +808,9 @@ const taskPrint = (function() {
         _printTaskName(item, task.task);
         _printTaskDate(item, task.date);
         _printDescription(item, task.notes);
+        if (status === 'complete') {
+            _editTasks__WEBPACK_IMPORTED_MODULE_1__.editItems.complete(item);
+        }
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
@@ -949,8 +921,8 @@ const taskPrint = (function() {
 */
 
 const tabbedPrint = (function() {
-    const myStorage = window.localStorage;
     // breaks down each array sent into it's individual items
+    
     function arrayUnpack(array) {
         for (var i = 0; i < array.length; i++) {
            
@@ -959,12 +931,13 @@ const tabbedPrint = (function() {
     }
 
     function _arrayItem(index) {
-        const project = {};
-        project.task = index.task;
-        project.notes = index.notes;
-        project.date = index.date;
-        project.project = index.project;
-        taskPrint.unpack(project);
+        const item = {};
+        item.task = index.task;
+        item.notes = index.notes;
+        item.date = index.date;
+        item.project = index.project;
+        item.status = index.status;
+        taskPrint.unpack(item);
     }
 
     return {
@@ -999,6 +972,7 @@ const ItemFactory = () => {
     // receiving function that breaks down each task item and sends it onward
     function receiveTasks(taskName, notes, date, project, status) {
         
+        // forms each group of task data into an object 
         const item = {
            task: taskName,
            notes: notes,
@@ -1007,15 +981,12 @@ const ItemFactory = () => {
            status: status
         }
 
-       
         _pushItem(item);
-      
     }
 
     // pushes each task into index.js where it is added to the taskArray
     function _pushItem(item) {
         _index__WEBPACK_IMPORTED_MODULE_1__.itemRef.printItem(item);
-        _grabTask__WEBPACK_IMPORTED_MODULE_0__.grabTask.clear();
     }
    
     return { receiveTasks }
@@ -1051,7 +1022,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // module that tracks which sidebar panel is interacted with, and then passes that info on
 // so the data corresponding with that tab can be displayed in the DOM
-const sideBarHighlight = (function() {
+const sideBarHighlight = (function () {
 
     // variables for targeting each tab
     const sideBarChildren = document.querySelector('.sidebar').children;
@@ -1078,11 +1049,11 @@ const sideBarHighlight = (function() {
         sideBarArray.forEach(tab => tab.addEventListener('click', () => {
             const index = sideBarArray.indexOf(event.target);
 
-            switch(true) {
+            switch (true) {
                 case event.target.classList.contains('hovered'):
                     event.target.classList.remove('hovered');
                     defaultTab();
-                break;
+                    break;
                 case !event.target.classList.contains('hovered'):
                     child1.classList.remove('hovered');
                     child2.classList.remove('hovered');
@@ -1091,11 +1062,11 @@ const sideBarHighlight = (function() {
                     child5.classList.remove('hovered');
                     event.target.classList.add('hovered');
                     operator(index);
-                break;
+                    break;
             }
 
             const hover = document.querySelector('.hovered');
-            
+
 
         }))
     }
@@ -1114,22 +1085,22 @@ const sideBarHighlight = (function() {
 
 // function that calls functions in the 'tabSelection' module based on which tab is clicked
 function operator(index) {
-    switch(true) {
+    switch (true) {
         case index === 0:
-           tabSelection.inbox();
-        break;
+            tabSelection.inbox();
+            break;
         case index === 1:
             tabSelection.today();
-        break;
+            break;
         case index === 2:
             tabSelection.weekly();
-        break;
+            break;
         case index === 3:
             tabSelection.projects();
-        break;
+            break;
         case index === 4:
             tabSelection.all();
-        break;
+            break;
     }
 }
 
@@ -1140,22 +1111,22 @@ function operator(index) {
 */
 
 // runs logic for each tab based on which tab is clicked
-const tabSelection = (function() {
+const tabSelection = (function () {
 
     const projectArray = [];
     const itemArray = [];
 
     function receiveProjects(project) {
         projectArray.push(project);
-       
+
     }
 
     function receiveArrayItems(item, index, page) {
-       
-        switch(true) {
+
+        switch (true) {
             case page === 'index':
                 itemArray.push(item);
-            break;
+                break;
         }
     }
     // functions for each tab
@@ -1178,19 +1149,27 @@ const tabSelection = (function() {
 
     function projectsTab() {
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-        console.log(3);
 
+        const projectItems = JSON.parse(localStorage.getItem('itemArray'));
+        console.log(projectItems);
 
-        _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.tabbedPrint.unpack(projectArray);
+        for (var i = 0; i < projectItems.length; i++) {
+            if (projectItems[i].project === '') {
+            } else if (projectItems[i].project != '') {
+                _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(projectItems[i]);
+                console.log(projectItems[i].project);
+            }
+        }
         // tasks associated with certain projects will show up in the DOM
     }
 
     function allTab(array) {
-        
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
         let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-        
+
         if (storedArray != null) {
-            for ( var i = 0; i < storedArray.length; i++) {
+            for (var i = 0; i < storedArray.length; i++) {
                 _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(storedArray[i]);
             }
         }
@@ -1211,7 +1190,7 @@ const tabSelection = (function() {
 
 
 window.addEventListener('load', () => {
-    
+
     sideBarHighlight.default();
     sideBarHighlight.children();
 });

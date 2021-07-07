@@ -18,18 +18,39 @@ const editItems = (function() {
         const deleteButtons = document.querySelectorAll('.itemDelete');
         const editButtons = document.querySelectorAll('.editTask');
         const completeButtons = document.querySelectorAll('.completeTask');
+        const checkedButtons = document.querySelectorAll('.checkedTask');
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
         editButtons.forEach(button => button.addEventListener('click', _editTask));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
+        checkedButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event){
+
+        // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
-        taskPanel.removeChild(parent);
+        const task = parent.children[4].textContent;
+        const action = 'delete';
+        // variable for task index
+        let index = searchItem(task);
+
+        // variable that fetches array 
+        let itemArray = itemRef.arrayShare();
+
+        // removes items from both the array, localStorage, and the DOM
+        itemRef.update(action, index, 1);
+        taskPanel.removeChild(parent);   
     }
+
+
+
+        /* I think I need to get the index of each item to print upon clicking
+                then I need to send that into itemRef and replace w/e item is edited
+                then call for a storage Push so it updates the item
+         */
 
     function searchItem(data) {
 
@@ -38,7 +59,7 @@ const editItems = (function() {
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
             if (index === data) {
-                console.log(array.indexOf(array[i]));
+                return array.indexOf(array[i]);
             }
         }
 
@@ -49,19 +70,32 @@ const editItems = (function() {
     **************************** COMPLETE TASK *******************************    
     */
 
+    // function that grays each task out that is already marked complete
+    function loadComplete(item) {
+        
+        const gray = "filter: grayscale(1);";
+        const checkBox = item.children[1];
+        
+        checkBox.classList.remove('completeTask');
+        checkBox.classList.add('checkedTask');
+        item.style.cssText = `${gray}`;
+        console.log(performance.now());
+    }
+
     // private function that marks task item as completed
     function _completeTask() {
         // variables that fetch and assign the cssText for the clicked completeTask button
         const parent = event.target.parentElement;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
+        const action = 'complete';
 
+        // targets specific element interacted with and returns a usable index position
         const task = parent.children[4].textContent;
-        console.log(task);
-        searchItem(task);
-        // allows us to get index for event target to change status from incomplete to complete or vice versa
-        const taskItems = document.querySelectorAll('.taskItem');
-        const tasks = Array.from(taskItems);
+        const index = searchItem(task);
+        let status = 'incomplete';
+        console.log(index);
+        
         // switch statement that (based on the cssText of the clicked element) either grays out, or 
         // fills in the taskItem container div
         switch(true) {
@@ -69,17 +103,22 @@ const editItems = (function() {
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
+                status = 'complete'
+                itemRef.update(action, index, status);
             break;
-            case parent.style.cssText === gray:
+            case parent.style.cssText === "filter: grayscale(1);":
                 event.target.classList.remove('checkedTask');
                 event.target.classList.add('completeTask');
                 parent.style.cssText = `${normal}`;
-
+                status = 'incomplete';
+                itemRef.update(action, index, status);
             break;
-            case parent.style.cssText === normal:
+            case parent.style.cssText === "filter: grayscale(0);":
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
+                status = 'complete';
+                itemRef.update(action, index, status);
             break;
         }
         completeLocalStorage(parent);
@@ -236,7 +275,8 @@ const editItems = (function() {
     }
 
     return {
-    eventListeners: buttonEventListeners
+    eventListeners: buttonEventListeners,
+    complete: loadComplete,
 
     }
 

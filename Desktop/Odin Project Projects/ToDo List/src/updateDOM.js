@@ -10,7 +10,7 @@ import { taskPrint, tabbedPrint } from "./printTasks.js";
 
 // module that tracks which sidebar panel is interacted with, and then passes that info on
 // so the data corresponding with that tab can be displayed in the DOM
-const sideBarHighlight = (function() {
+const sideBarHighlight = (function () {
 
     // variables for targeting each tab
     const sideBarChildren = document.querySelector('.sidebar').children;
@@ -37,11 +37,11 @@ const sideBarHighlight = (function() {
         sideBarArray.forEach(tab => tab.addEventListener('click', () => {
             const index = sideBarArray.indexOf(event.target);
 
-            switch(true) {
+            switch (true) {
                 case event.target.classList.contains('hovered'):
                     event.target.classList.remove('hovered');
                     defaultTab();
-                break;
+                    break;
                 case !event.target.classList.contains('hovered'):
                     child1.classList.remove('hovered');
                     child2.classList.remove('hovered');
@@ -50,11 +50,11 @@ const sideBarHighlight = (function() {
                     child5.classList.remove('hovered');
                     event.target.classList.add('hovered');
                     operator(index);
-                break;
+                    break;
             }
 
             const hover = document.querySelector('.hovered');
-            
+
 
         }))
     }
@@ -73,22 +73,22 @@ const sideBarHighlight = (function() {
 
 // function that calls functions in the 'tabSelection' module based on which tab is clicked
 function operator(index) {
-    switch(true) {
+    switch (true) {
         case index === 0:
-           tabSelection.inbox();
-        break;
+            tabSelection.inbox();
+            break;
         case index === 1:
             tabSelection.today();
-        break;
+            break;
         case index === 2:
             tabSelection.weekly();
-        break;
+            break;
         case index === 3:
             tabSelection.projects();
-        break;
+            break;
         case index === 4:
             tabSelection.all();
-        break;
+            break;
     }
 }
 
@@ -99,22 +99,22 @@ function operator(index) {
 */
 
 // runs logic for each tab based on which tab is clicked
-const tabSelection = (function() {
+const tabSelection = (function () {
 
     const projectArray = [];
     const itemArray = [];
 
     function receiveProjects(project) {
         projectArray.push(project);
-       
+
     }
 
     function receiveArrayItems(item, index, page) {
-       
-        switch(true) {
+
+        switch (true) {
             case page === 'index':
                 itemArray.push(item);
-            break;
+                break;
         }
     }
     // functions for each tab
@@ -137,19 +137,27 @@ const tabSelection = (function() {
 
     function projectsTab() {
         taskUpdate.erase();
-        console.log(3);
 
+        const projectItems = JSON.parse(localStorage.getItem('itemArray'));
+        console.log(projectItems);
 
-        tabbedPrint.unpack(projectArray);
+        for (var i = 0; i < projectItems.length; i++) {
+            if (projectItems[i].project === '') {
+            } else if (projectItems[i].project != '') {
+                taskPrint.unpack(projectItems[i]);
+                console.log(projectItems[i].project);
+            }
+        }
         // tasks associated with certain projects will show up in the DOM
     }
 
     function allTab(array) {
-        
+        taskUpdate.erase();
+
         let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-        
+
         if (storedArray != null) {
-            for ( var i = 0; i < storedArray.length; i++) {
+            for (var i = 0; i < storedArray.length; i++) {
                 taskPrint.unpack(storedArray[i]);
             }
         }
@@ -170,7 +178,7 @@ const tabSelection = (function() {
 
 
 window.addEventListener('load', () => {
-    
+
     sideBarHighlight.default();
     sideBarHighlight.children();
 });

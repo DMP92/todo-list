@@ -6,7 +6,7 @@
 */
 
 import { itemRef } from ".";
-
+import { editItems } from "./editTasks";
 
 // Module that prints each task item to UI
 const taskPrint = (function() {
@@ -33,8 +33,8 @@ const taskPrint = (function() {
                 task.notes = item.notes;
                 task.date = item.date;
                 task.project = item.project;
-                task.status = status;
-                printTask(task, index, status);
+                task.status = item.status;
+                printTask(task, index, task.status);
                 // console.log(task, index);    
     }
 
@@ -51,6 +51,9 @@ const taskPrint = (function() {
         _printTaskName(item, task.task);
         _printTaskDate(item, task.date);
         _printDescription(item, task.notes);
+        if (status === 'complete') {
+            editItems.complete(item);
+        }
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
@@ -161,8 +164,8 @@ const taskPrint = (function() {
 */
 
 const tabbedPrint = (function() {
-    const myStorage = window.localStorage;
     // breaks down each array sent into it's individual items
+    
     function arrayUnpack(array) {
         for (var i = 0; i < array.length; i++) {
            
@@ -171,12 +174,13 @@ const tabbedPrint = (function() {
     }
 
     function _arrayItem(index) {
-        const project = {};
-        project.task = index.task;
-        project.notes = index.notes;
-        project.date = index.date;
-        project.project = index.project;
-        taskPrint.unpack(project);
+        const item = {};
+        item.task = index.task;
+        item.notes = index.notes;
+        item.date = index.date;
+        item.project = index.project;
+        item.status = index.status;
+        taskPrint.unpack(item);
     }
 
     return {

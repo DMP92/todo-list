@@ -7,6 +7,7 @@ const ItemFactory = () => {
     // receiving function that breaks down each task item and sends it onward
     function receiveTasks(taskName, notes, date, project, status) {
         
+        // forms each group of task data into an object 
         const item = {
            task: taskName,
            notes: notes,
@@ -15,15 +16,12 @@ const ItemFactory = () => {
            status: status
         }
 
-       
         _pushItem(item);
-      
     }
 
     // pushes each task into index.js where it is added to the taskArray
     function _pushItem(item) {
         itemRef.printItem(item);
-        grabTask.clear();
     }
    
     return { receiveTasks }

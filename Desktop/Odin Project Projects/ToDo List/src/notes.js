@@ -93,33 +93,26 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
 
         SO basically. Each project needs to become an array, and each array item will be an object
 
-
-
-
-
-
-
-        I need to have the forms have the requirement of text being put into them before they're created
-        not only that, but I should loop through each localStorage key for matching task names and 
-        require them to be different
-
-                    - !!!!forms require text put into at least the task input!!!!
-                    - cannot have the same task input
-
-        I need to have everything be done in ONE array
-        I will have all of the data be accessed through the ONE array, in itemRef. I'll pull 
-        items out and use that data to create content for each tab
-
-        they will ONLY exist inside of the main array though. That way whenever they're updated,
-        only one array needs updating, instead of me chasing down 50 different paths all leading back to
-        the main array.
-
         I also need to have a project header that all tasks will go underneath
         the first task written up alongside the project, will be made into a task underneat the project
         header
 
         obviously each eventlistener needs to be updated so they can deal with each action that can be taken
         against each task/project
-
-        I need a way to make sure that they don't overwrite already existing array positions. 
 */
+
+/* Tabs I've got to finish
+        - inbox 
+            - figure out what it's supposed to be
+            - get it working
+        - today
+            - figure out the api I've added to the project
+            - get it to log tasks with todays date
+        - weekly
+            - get it to log tasks that fall within this week in terms of their deadline date
+        - project  
+            
+            - when project is clicked it becomes a header
+                - all tasks associated with and inside of that project will print
+            
+        */

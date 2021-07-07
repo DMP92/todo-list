@@ -6,18 +6,14 @@ import { tabbedPrint, taskPrint } from "./printTasks";
 import { sidebarTab } from "./updateDOM";
 import { tabSelection } from "./updateDOM";
 import { fi } from "date-fns/locale";
+
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
-
 const itemRef = (function() {
-
-   
 
     // array of each task in the list shared by the factory function that made them
     const itemArray = [];
     
-   
-
         function fillArray() {
             // gets stored array from localStorage
             const fillArray = JSON.parse(localStorage.getItem('itemArray'));
@@ -30,54 +26,56 @@ const itemRef = (function() {
                     }
                 break;
             }
-
         }
-
 
         // pushes todo item into Item array & other functions inside the itemRef Module
         function pushItem(item) {
             // pushes item to array
             itemArray.push(item);
-            // pushes array item to localStorage
-
-            // gets array from local storage
-          
-
-            // let myItem = JSON.stringify(item);
-            // shareItem(item, index);
-            // shareArrayItems(item, index, 'index');
-            // unsure what I will do with this call
-            // if (item.project != '') {
-            //     projectCreate.fetch(item);
-            //     console.log(myItem);                
-            // } else {
-            //     localStorage.setItem(`T${index}`, myItem);
-            //     console.log(localStorage.getItem(`T${2}`.status));
-            // }
-            _storagePush(item);
+            
+            storagePush(item);
         }
 
         // pushes each item into localStorage 
-        function _storagePush(item) {
+        function storagePush(item) {
 
             // gives index position
             const index = itemArray.indexOf(item);
-           
+           console.log(itemArray);
             // stores the itemArray in localStorage
             const storeArray = JSON.stringify(itemArray);
             localStorage.setItem('itemArray', storeArray);
             
             // variable that contains the obtained reference to the locallyStored 'itemArray'
             let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-            console.log(storedArray[index].task);    
+            // console.log(storedArray[index].task);   
             shareItem(item, index);
             shareArrayItems(item, index, 'index');
+              
+        }
 
+        function arrayUpdate(action, index, amount) {
+            let storeArray = JSON.stringify(itemArray);
+
+            switch(true) {
+                case action === 'delete':
+                    itemArray.splice(index, 1);
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                break;
+                case action === 'edit':
+                    console.log(action);
+                break;
+                case action === 'complete':
+                    itemArray[index].status = amount;
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                break;
+            }
         }
 
         function arrayShare(item) {
             
-            console.log(itemArray)
             return itemArray;
         }
 
@@ -130,7 +128,8 @@ const itemRef = (function() {
         notes: shareProject,
         task: shareTask,
         share: shareArrayItems,
-        shareItem: shareItem
+        shareItem: shareItem, 
+        update: arrayUpdate,
     }
 })();
 
