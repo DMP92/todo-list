@@ -54,27 +54,29 @@ const taskPrint = (function() {
         if (status === 'complete') {
             editItems.complete(item);
         }
+
+        if (task.project != '') {
+            appendProjectName(task, index, status)
+        }
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
     }
 
-    // function that returns taskObjects array
-    function createItemObject(item) {
-        
-        // if (typeof item != 'undefined') {
-        //     const task = {};
-        //     task.project = item.children[0].textContent;
-        //     task.taskName = item.children[4].textContent;
-        //     task.date = item.children[5].textContent;
-        //     task.notes = item.children[6].textContent;
-        //     taskObjects.push(task);
-        //     console.log(task)
-        // } else {
-        //     console.log(taskObjects);
-        //     return task
-        // }
-        return item
+    function appendProjectName(task, index, status) {
+
+        // variable that fetches project panel
+        const projectPanel = document.querySelector('.projectScroll');
+
+        // const text span
+        const textSpan = document.createElement('span');
+        textSpan.classList.add('textSpans');
+
+        // breaks up task
+        const name = task.project;
+
+        projectPanel.appendChild(textSpan);
+        textSpan.textContent = name;
     }
     
         // variable for task container
@@ -152,7 +154,6 @@ const taskPrint = (function() {
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
-        createArray: createItemObject
     }
 
 })();

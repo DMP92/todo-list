@@ -114,5 +114,15 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
             
             - when project is clicked it becomes a header
                 - all tasks associated with and inside of that project will print
-            
-        */
+                
+
+
+                
+                 get items printed properly inside textSpans scroll area
+                        be able to click on each item
+                        have it change the header for projects
+                        be able to add tasks to a project 
+
+                        also, get edit button to function properly to update all arrays
+                    */
+        

@@ -79,8 +79,7 @@ const editItems = (function() {
         checkBox.classList.remove('completeTask');
         checkBox.classList.add('checkedTask');
         item.style.cssText = `${gray}`;
-        console.log(performance.now());
-    }
+    } 
 
     // private function that marks task item as completed
     function _completeTask() {

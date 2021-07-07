@@ -95,8 +95,7 @@ const editItems = (function() {
         checkBox.classList.remove('completeTask');
         checkBox.classList.add('checkedTask');
         item.style.cssText = `${gray}`;
-        console.log(performance.now());
-    }
+    } 
 
     // private function that marks task item as completed
     function _completeTask() {
@@ -424,6 +423,7 @@ const grabTask = (function() {
         // variables that help the switch statement below decide what to do based on if repeat data is found
         let existing = false;
         let dataSet = undefined;
+        let projectPrompt = false;
 
         // loop that runs through each locallyStored item and checks if there are repeated values
         switch(true) {
@@ -445,6 +445,7 @@ const grabTask = (function() {
                 if (arrays[i].project === project && arrays[i].project != '') {
                     existing = true;
                     dataSet = 'projects';
+                    projectPrompt = true;
                 }
             }
         }
@@ -461,7 +462,14 @@ const grabTask = (function() {
             break;
 
             case existing === true:
-               return alert(`All ${dataSet} must be unique. `);
+                if (projectPrompt === true) {
+                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
+                     alert(`All ${dataSet} must be unique. `);
+                     console.log('top');
+                } else {
+                    console.log('bottom');
+                    return alert(`All ${dataSet} must be unique. `);
+                }
             break;
         }
        
@@ -811,27 +819,29 @@ const taskPrint = (function() {
         if (status === 'complete') {
             _editTasks__WEBPACK_IMPORTED_MODULE_1__.editItems.complete(item);
         }
+
+        if (task.project != '') {
+            appendProjectName(task, index, status)
+        }
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
     }
 
-    // function that returns taskObjects array
-    function createItemObject(item) {
-        
-        // if (typeof item != 'undefined') {
-        //     const task = {};
-        //     task.project = item.children[0].textContent;
-        //     task.taskName = item.children[4].textContent;
-        //     task.date = item.children[5].textContent;
-        //     task.notes = item.children[6].textContent;
-        //     taskObjects.push(task);
-        //     console.log(task)
-        // } else {
-        //     console.log(taskObjects);
-        //     return task
-        // }
-        return item
+    function appendProjectName(task, index, status) {
+
+        // variable that fetches project panel
+        const projectPanel = document.querySelector('.projectScroll');
+
+        // const text span
+        const textSpan = document.createElement('span');
+        textSpan.classList.add('textSpans');
+
+        // breaks up task
+        const name = task.project;
+
+        projectPanel.appendChild(textSpan);
+        textSpan.textContent = name;
     }
     
         // variable for task container
@@ -909,7 +919,6 @@ const taskPrint = (function() {
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
-        createArray: createItemObject
     }
 
 })();
@@ -1040,7 +1049,7 @@ const sideBarHighlight = (function () {
     function defaultTab() {
         const all = document.querySelector('.all');
         all.classList.add('hovered');
-        operator(4);
+        operator(0);
     }
 
     // function that highlights the tab that is clicked and unhighlights the tabs that aren't
@@ -1048,7 +1057,7 @@ const sideBarHighlight = (function () {
 
         sideBarArray.forEach(tab => tab.addEventListener('click', () => {
             const index = sideBarArray.indexOf(event.target);
-
+            console.log(index);
             switch (true) {
                 case event.target.classList.contains('hovered'):
                     event.target.classList.remove('hovered');
@@ -1087,19 +1096,19 @@ const sideBarHighlight = (function () {
 function operator(index) {
     switch (true) {
         case index === 0:
-            tabSelection.inbox();
+            tabSelection.all();
             break;
         case index === 1:
-            tabSelection.today();
+            tabSelection.inbox();
             break;
         case index === 2:
-            tabSelection.weekly();
+            tabSelection.today();
             break;
         case index === 3:
-            tabSelection.projects();
+            tabSelection.weekly();
             break;
         case index === 4:
-            tabSelection.all();
+            tabSelection.projects();
             break;
     }
 }
@@ -1148,16 +1157,52 @@ const tabSelection = (function () {
     }
 
     function projectsTab() {
+        
+        // erases all tasks from prior tabs
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
 
+        // variable for targeting the 'mainSection' div
+        const mainSection = document.querySelector('.mainSection');
+        mainSection.style.cssText = `
+        position: relative;
+        grid-area: "main";
+        grid-column: 4/11;
+        grid-row: 1/11;
+        background-color: var(--dark-color);
+        z-index: 5;
+        display: grid;
+        grid-template-columns: repeat(4, 24%);
+        grid-template-rows: repeat(10, 10%);
+        grid-template-areas: 
+                "form form"
+                "project project"
+                "items items";
+        width: min(100%, 1200px);
+        `;
+
+        // const targets projectPanel div
+        const projectPanel = document.createElement('div');
+        projectPanel.classList.add('projectPanel');
+
+        // variable that targets taskPanel div
+        const taskPanel = document.querySelector('.taskPanel');
+
+        taskPanel.style.cssText = `grid-row: 5/11`;
+        
+        // appends projectPanel to section
+        mainSection.appendChild(projectPanel);
+
+
+    
+
+        // variable that contains the locallyStored array
         const projectItems = JSON.parse(localStorage.getItem('itemArray'));
-        console.log(projectItems);
 
         for (var i = 0; i < projectItems.length; i++) {
             if (projectItems[i].project === '') {
             } else if (projectItems[i].project != '') {
                 _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(projectItems[i]);
-                console.log(projectItems[i].project);
+
             }
         }
         // tasks associated with certain projects will show up in the DOM
@@ -1165,6 +1210,31 @@ const tabSelection = (function () {
 
     function allTab(array) {
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
+        // const targets projectPanel div
+        const projectPanel = document.querySelector('.projectPanel');
+
+        // variable that targets taskPanel div
+        const taskPanel = document.querySelector('.taskPanel');
+
+        // variable for targeting the 'mainSection' div
+        const mainSection = document.querySelector('.mainSection');
+
+        const isPresent = mainSection.contains(projectPanel);
+        // appends projectPanel to section
+
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
+
 
         let storedArray = JSON.parse(localStorage.getItem('itemArray'));
 

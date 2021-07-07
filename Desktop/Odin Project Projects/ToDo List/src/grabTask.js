@@ -41,6 +41,7 @@ const grabTask = (function() {
         // variables that help the switch statement below decide what to do based on if repeat data is found
         let existing = false;
         let dataSet = undefined;
+        let projectPrompt = false;
 
         // loop that runs through each locallyStored item and checks if there are repeated values
         switch(true) {
@@ -62,6 +63,7 @@ const grabTask = (function() {
                 if (arrays[i].project === project && arrays[i].project != '') {
                     existing = true;
                     dataSet = 'projects';
+                    projectPrompt = true;
                 }
             }
         }
@@ -78,7 +80,14 @@ const grabTask = (function() {
             break;
 
             case existing === true:
-               return alert(`All ${dataSet} must be unique. `);
+                if (projectPrompt === true) {
+                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
+                     alert(`All ${dataSet} must be unique. `);
+                     console.log('top');
+                } else {
+                    console.log('bottom');
+                    return alert(`All ${dataSet} must be unique. `);
+                }
             break;
         }
        

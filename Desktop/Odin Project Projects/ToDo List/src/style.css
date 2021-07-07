@@ -178,42 +178,78 @@ body {
                     box-shadow: inset 0px 0px 10px black;
                 }
 
-                .inbox {
+                .all {
+                    grid-area: "all";
+                    grid-column: 2/10;
+                    grid-row: 2/3;
                     border-top-left-radius: 5px;
                     border-top-right-radius: 5px;
+                }
+
+                .inbox {
+                   
                     place-content: end;
                     grid-area: "inbox";
                     grid-column: 2/10;
-                    grid-row: 2/3;
+                    grid-row: 3/4;
                     
                 }
 
                 .today { 
                     grid-area: "today";
                     grid-column: 2/10;
-                    grid-row: 3/4;
+                    grid-row: 4/5;
                 }
 
                 .weekly {
                     grid-area: "weekly";
                     grid-column: 2/10;
-                    grid-row: 4/5;
+                    grid-row: 5/6;
                 }
+
+                
 
                 .projects {
                     grid-area: "projects";
                     grid-column: 2/10;
-                    grid-row: 5/6;
-                }
-
-                .all {
-                    grid-area: "all";
-                    grid-column: 2/10;
                     grid-row: 6/7;
                     border-bottom-right-radius: 5px;
                     border-bottom-left-radius: 5px;
-                    
                 }
+
+                .projectScroll {
+                    display: grid;
+                    grid-row: 7/10;
+                    grid-column: 2/10;
+                    width: 90%;
+                    height: 100%;
+                    justify-content: center;
+                    align-content: start;
+                    justify-self: center;
+                    grid-template-columns: 100%;
+                    grid-template-rows: repeat(autofill, 100px);
+                    grid-template-areas: 
+                                "projects";
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    word-wrap: normal;
+                    word-break: break-all;
+                }
+
+                .textSpans {
+                    display: grid;
+                    border-top: 1px solid rgba(255, 255, 255, 0.288);
+                    grid-area: "projects";
+                    background-color: var(--dark-color);
+                    grid-column: 1/2;
+                    width: 98%;
+                    height: 1fr;
+                    grid-area: "projects";
+                    justify-content: center;
+                    justify-self: center;
+                    text-align: center;
+                }
+                
 
         .mainSection {
             position: relative;
@@ -266,7 +302,6 @@ body {
                         grid-column: 1/5;
                         width: 98%;
                         overflow-y: auto;
-
                     }
 
                     .date {
@@ -339,6 +374,28 @@ button:hover {
     grid-gap: 2px;
     border-right: 3px solid white;
 }
+
+.projectPanel {
+    overflow-y: auto;
+    position: relative;
+    grid-area: "items";
+    grid-column: 1/11;
+    grid-row: 4/5;
+    background-color: green;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 300px repeat(auto, minmax(300px, 300px));
+    justify-content: center;
+    align-content: start;
+    grid-gap: 2px;
+    border-right: 3px solid white;
+}
+
+    .projectName {
+        background-color: #ddbf37;
+        grid-row: 1/2;
+        grid-column: 1/2;
+    }
 
 .taskItem {
     position: relative;
