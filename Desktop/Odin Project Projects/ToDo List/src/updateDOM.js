@@ -32,31 +32,47 @@ const sideBarHighlight = (function () {
     }
 
     // function that highlights the tab that is clicked and unhighlights the tabs that aren't
-    function sideBarEventListeners() {
+    function sideBarEventListeners(number) {
 
-        sideBarArray.forEach(tab => tab.addEventListener('click', () => {
-            const index = sideBarArray.indexOf(event.target);
-            console.log(index);
-            switch (true) {
-                case event.target.classList.contains('hovered'):
-                    event.target.classList.remove('hovered');
-                    defaultTab();
-                    break;
-                case !event.target.classList.contains('hovered'):
-                    child1.classList.remove('hovered');
-                    child2.classList.remove('hovered');
-                    child3.classList.remove('hovered');
-                    child4.classList.remove('hovered');
-                    child5.classList.remove('hovered');
-                    event.target.classList.add('hovered');
-                    operator(index);
-                    break;
-            }
+        
 
-            const hover = document.querySelector('.hovered');
+            if (number != undefined) {
+                child1.classList.remove('hovered');
+                child2.classList.remove('hovered');
+                child3.classList.remove('hovered');
+                child4.classList.remove('hovered');
+                child5.classList.remove('hovered');
+                // added by 'number'
+                child5.classList.add('hovered');
+
+            } else if (number === undefined) {
+
+            sideBarArray.forEach(tab => tab.addEventListener('click', () => {
+                const index = sideBarArray.indexOf(event.target);
+                switch (true) {
+                    case event.target.classList.contains('hovered'):
+                        event.target.classList.remove('hovered');
+                        defaultTab();
+                        tabSelection.eventListeners();
+                        break;
+                    case !event.target.classList.contains('hovered'):
+                        child1.classList.remove('hovered');
+                        child2.classList.remove('hovered');
+                        child3.classList.remove('hovered');
+                        child4.classList.remove('hovered');
+                        child5.classList.remove('hovered');
+                        event.target.classList.add('hovered');
+                        operator(index);
+                        tabSelection.eventListeners();
+                        break;
+                    
+                }
+
+                const hover = document.querySelector('.hovered');
 
 
-        }))
+            }))
+        }
     }
 
     // shares the array that contains each sidebar element
@@ -104,6 +120,26 @@ const tabSelection = (function () {
     const projectArray = [];
     const itemArray = [];
 
+    // listens for which project title is clicked on and prints it to the project tab display
+    function eventListeners() {
+        const textSpans = document.querySelectorAll('.textSpans');
+
+        const textArray = Array.from(textSpans);
+        textArray.forEach(text => text.addEventListener('click', _eventListen));
+    
+    }
+
+    function _eventListen() {
+        const projectPanel = document.querySelector('.projectPanel'); 
+        if (projectPanel != undefined) {
+                    projectName();               
+        } else {
+            projectsTab(true);
+            taskPrint.project();
+            projectName();
+        }
+    }
+
     function receiveProjects(project) {
         projectArray.push(project);
 
@@ -135,12 +171,34 @@ const tabSelection = (function () {
         // whatever tasks happen this week show up in the DOM
     }
 
-    function projectsTab() {
+    function projectName() {
+        const projectPanel = document.querySelector('.projectPanel');
+        projectPanel.textContent = event.target.textContent;
+        let currentText = event.target.textContent;
+
+        eventListeners(currentText);
         
-        // erases all tasks from prior tabs
+    }
+
+    // controls both ways that you can get to the project tab
+            // by clicking on the project tab itself
+            // or, but clicking on a project name in the scroll section
+    function projectsTab(condition) {
+        const projectText = event.target.textContent;
+        if (condition === true) {
+            sideBarHighlight.children(4);
+        } else {}
+        // erases all tasks from prior tabs and all scroll items
         taskUpdate.erase();
 
-        // variable for targeting the 'mainSection' div
+        // variables for finding taskSpan elements
+        const text = document.querySelectorAll('.taskSpans');
+        // if taskSpan elements are found, clear the projectScroll element of them
+        if (text != null) {
+            taskUpdate.clear();
+        } 
+
+        // variable for targeting the 'mainSection' div && adding a place for chosen project title to go
         const mainSection = document.querySelector('.mainSection');
         mainSection.style.cssText = `
         position: relative;
@@ -162,7 +220,6 @@ const tabSelection = (function () {
         // const targets projectPanel div
         const projectPanel = document.createElement('div');
         projectPanel.classList.add('projectPanel');
-
         // variable that targets taskPanel div
         const taskPanel = document.querySelector('.taskPanel');
 
@@ -170,6 +227,7 @@ const tabSelection = (function () {
         
         // appends projectPanel to section
         mainSection.appendChild(projectPanel);
+        
 
 
     
@@ -177,6 +235,7 @@ const tabSelection = (function () {
         // variable that contains the locallyStored array
         const projectItems = JSON.parse(localStorage.getItem('itemArray'));
 
+        // pushes each project item to interface that prints them to DOM
         for (var i = 0; i < projectItems.length; i++) {
             if (projectItems[i].project === '') {
             } else if (projectItems[i].project != '') {
@@ -184,11 +243,22 @@ const tabSelection = (function () {
 
             }
         }
-        // tasks associated with certain projects will show up in the DOM
+        
     }
 
+    // controls logic involved in the selection of the All tab. Prints all tasks and projects
     function allTab(array) {
+        
+        // erases tasks from DOM so they don't spam themselves
         taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            taskUpdate.clear();
+        } 
 
         // const targets projectPanel div
         const projectPanel = document.querySelector('.projectPanel');
@@ -226,7 +296,10 @@ const tabSelection = (function () {
 
     }
 
+    
+
     return {
+        eventListeners: eventListeners,
         receive: receiveArrayItems,
         receiveProjects: receiveProjects,
         inbox: inboxTab,
@@ -243,5 +316,6 @@ window.addEventListener('load', () => {
     sideBarHighlight.default();
     sideBarHighlight.children();
 });
+
 
 export { sideBarHighlight, tabSelection }

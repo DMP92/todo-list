@@ -5,7 +5,7 @@
 ************************************************************************************
 */
 
-import { itemRef } from ".";
+import { itemRef, projectCreate } from ".";
 import { editItems } from "./editTasks";
 
 // Module that prints each task item to UI
@@ -13,6 +13,8 @@ const taskPrint = (function() {
     // variables for task parent
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
+
+   
 
     function receiveLocalStorage(archive) {
         console.log(archive);
@@ -64,22 +66,33 @@ const taskPrint = (function() {
     }
 
     function appendProjectName(task, index, status) {
+        
+        const scrollContainer = document.querySelector('.scrollContainer');
 
-        // variable that fetches project panel
-        const projectPanel = document.querySelector('.projectScroll');
+        if (status != true) {
+            // const text span
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('textSpans');
+            const name = task.project;
+            textSpan.textContent = name;
 
-        // const text span
-        const textSpan = document.createElement('span');
-        textSpan.classList.add('textSpans');
+            scrollContainer.appendChild(textSpan);
+        } else if (status === true) {
+            const textSpan = document.querySelectorAll('.textSpans');
+            for(var i = 0; i < textSpan.length; i++) {
+                if (textSpan[i].textContent === '') {
+                    const name = task.project;
+                    textSpan[i].textContent = name;
+                }
+            }
+        }
 
         // breaks up task
-        const name = task.project;
-
-        projectPanel.appendChild(textSpan);
-        textSpan.textContent = name;
+        
     }
     
-        // variable for task container
+    
+                // variable for task container
                 // prints the name of the project
                 function _printProjectName(item, project) {
 
@@ -95,6 +108,8 @@ const taskPrint = (function() {
                         item.appendChild(projectName);
                     }
                 }
+
+                
 
                 // prints the buttons (delete, complete, edit)
                 function _printButtons(item) {
@@ -147,13 +162,12 @@ const taskPrint = (function() {
                 }
 
 
-            
-
     return {
         localStore: receiveLocalStorage,
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
+        project: appendProjectName
     }
 
 })();
@@ -173,6 +187,7 @@ const tabbedPrint = (function() {
             _arrayItem(array[i]);
         }
     }
+
 
     function _arrayItem(index) {
         const item = {};

@@ -13,7 +13,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "editItems": () => (/* binding */ editItems),
 /* harmony export */   "taskUpdate": () => (/* binding */ taskUpdate)
 /* harmony export */ });
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var _grabTask_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./grabTask.js */ "./src/grabTask.js");
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
+
+
 
 
 /* 
@@ -24,6 +28,9 @@ __webpack_require__.r(__webpack_exports__);
 
 // module made for editing and interacting with each task item
 const editItems = (function() {
+
+    // array for replacing .textSpans items
+    let newTextArray = [];
 
     // variables that target DOM elements for deletion and editing
     const taskPanel = document.querySelector('.taskPanel');
@@ -44,7 +51,7 @@ const editItems = (function() {
     }
 
     // private function that removes task item nodes from taskPanel
-    function _deleteItem(event){
+    function _deleteItem(event) {
 
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
@@ -54,10 +61,10 @@ const editItems = (function() {
         let index = searchItem(task);
 
         // variable that fetches array 
-        let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.arrayShare();
+        let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
 
         // removes items from both the array, localStorage, and the DOM
-        _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, 1);
+        _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, 1);
         taskPanel.removeChild(parent);   
     }
 
@@ -70,7 +77,7 @@ const editItems = (function() {
 
     function searchItem(data) {
 
-        const array = _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.arrayShare();
+        const array = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
@@ -119,21 +126,21 @@ const editItems = (function() {
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
                 status = 'complete'
-                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
+                _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
             break;
             case parent.style.cssText === "filter: grayscale(1);":
                 event.target.classList.remove('checkedTask');
                 event.target.classList.add('completeTask');
                 parent.style.cssText = `${normal}`;
                 status = 'incomplete';
-                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
+                _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
             break;
             case parent.style.cssText === "filter: grayscale(0);":
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
                 status = 'complete';
-                _index_js__WEBPACK_IMPORTED_MODULE_0__.itemRef.update(action, index, status);
+                _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
             break;
         }
         completeLocalStorage(parent);
@@ -184,12 +191,25 @@ const editItems = (function() {
         const date = parent.children[5];
         const notes = parent.children[6];
 
+
+        const projectTextArray = document.querySelectorAll('.textSpans');
+        
+
+        for (var i = 0; i < projectTextArray.length; i++) {
+            if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
+                
+                newTextArray.push(projectTextArray[i]);
+            } else if (projectTextArray[i].textContent === undefined) {
+                console.log('hmm');
+            }
+        }
+
+
         // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
         // ELSE it will run the function called below which appends the newly edited info to the DOM
         if (name.tagName === 'DIV') {
         // variables for appending input items to taskItem
-        
-        
+
         const editProject = document.createElement('input');
             editProject.classList.add('projectName');
             editProject.style.cssText = 'text-align: center;';
@@ -224,7 +244,7 @@ const editItems = (function() {
     // parent.appendChild();
         
         } else {
-            _appendTask();
+            _appendTask(newTextArray[0]);
         }
     }
 
@@ -236,7 +256,7 @@ const editItems = (function() {
 
 
     // function that takes newly edited information and publishes them to the DOM
-    function _appendTask() {
+    function _appendTask(textIndex) {
 
         // variable for grabbing all task items
         const taskItems = document.querySelectorAll('.taskItem');
@@ -272,6 +292,19 @@ const editItems = (function() {
             projectName.classList.add('projectName');
             projectName.textContent = project.value;
 
+            
+            if(textIndex != undefined && project.value != '') {
+                const projectScroll = document.querySelector('.scrollContainer');
+                projectScroll.appendChild(textIndex);
+                textIndex.textContent = project.value;
+                newTextArray.pop();
+            } else if (project.value === '') {
+                const projectScroll = document.querySelector('.scrollContainer');
+                projectScroll.removeChild(textIndex);
+                console.log('hey');
+            }
+
+
         parent.replaceChild(projectName, project);
         parent.replaceChild(taskName, name);
         parent.replaceChild(taskDate, date);
@@ -279,15 +312,76 @@ const editItems = (function() {
 
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
-
-        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
+        
+        // conditional that prints project to scroll container if project name exists
+        if (project.value != '') {
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project(project.value, index, true);
+        }
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
     }
 
     
+    // function to confirm there are no repeating task values
+    function _checkItemData(target, taskName, notes, date, project, status, index) {
 
-    function projectArray() {
+        // variable for fetching the itemArray inside localStorage and assigning it a variable
+        const arrays = JSON.parse(localStorage.getItem('itemArray'));
+
+        // variables that help the switch statement below decide what to do based on if repeat data is found
+        let existing = false;
+        let dataSet = undefined;
+        let projectPrompt = false;
+
+        // loop that runs through each locallyStored item and checks if there are repeated values
+        switch(true) {
+            case arrays === null:     
+            break;
+            
+            case arrays != null:
+            for ( var i = 0; i < arrays.length; i++) {
+                if (arrays[i].task === taskName && arrays[i].task != '') {
+                    existing = true;
+                    dataSet = 'tasks';
+                }
+
+                if (arrays[i].notes === notes && arrays[i].notes != '') {
+                    existing = true;
+                    dataSet = 'notes';
+                }
+
+                if (arrays[i].project === project && arrays[i].project != '') {
+                    existing = true;
+                    dataSet = 'projects';
+                    projectPrompt = true;
+                }
+            }
+        }
+        // if no repeated data, print the task
+            // if there IS repeated data, alert the user, and refuse their task
+        switch(true) {
+            case existing === false && taskName === '':
+                return alert('Tasks cannot be blank!');
+            break;
+
+            case existing === false && taskName != '':
+                grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
+
+            break;
+
+            case existing === true:
+                if (projectPrompt === true) {
+                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
+                     alert(`All ${dataSet} must be unique. `);
+                     console.log('top');
+                } else {
+                    console.log('bottom');
+                    return alert(`All ${dataSet} must be unique. `);
+                }
+            break;
+        }
 
     }
+
 
     return {
     eventListeners: buttonEventListeners,
@@ -319,12 +413,16 @@ const editItems = (function() {
             editedTask.notes = notes,
             editedTask.date = date,
             editedTask.project = project,
-            editedTask.status = status,
+            editedTask.status = 'incomplete',
             _updateArrays(editedTask, index)
+
         }
 
         function _updateArrays(task, index) {
-            _index_js__WEBPACK_IMPORTED_MODULE_0__.manipulateTaskArray.replace(task, index)
+            console.log(task);
+            // variable that tells itemRef that the action being taken is 'edit'
+            const edit = 'edit';
+            _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(edit, index, task)
         }
 
         return {
@@ -359,8 +457,22 @@ const editItems = (function() {
 
         }
 
+        // function that deletes each .textSpans element so they don't spam
+        function clearProjectName() {
+
+            // variable that fetches project panel
+            const scrollContainer = document.querySelector('.scrollContainer');
+            var child = document.querySelectorAll('.textSpans');
+
+            for(var i = 0; i < child.length; i++) {
+                scrollContainer.removeChild(child[i]);
+            }
+
+        }
+
         return {
-            erase: eraseTasks
+            erase: eraseTasks,
+            clear: clearProjectName
         }
     })();
 
@@ -585,7 +697,23 @@ const itemRef = (function() {
                     localStorage.setItem('itemArray', storeArray);
                 break;
                 case action === 'edit':
-                    console.log(action);
+                    console.log(amount);
+                    const newItem = {};
+                    newItem.task = amount.name;
+                    newItem.notes = amount.notes;
+                    newItem.date = amount.date;
+                    newItem.project = amount.project;
+                    newItem.status = amount.status;
+
+                   
+                    itemArray.splice(index, 1, newItem);
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                    let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+                    console.log(storedArray);
+
+                    
+                    
                 break;
                 case action === 'complete':
                     itemArray[index].status = amount;
@@ -728,12 +856,13 @@ const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
     _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
-
 });
 
 window.addEventListener('load', () => {
     _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
     itemRef.fillArray();
+    _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.eventListeners();
+
 })
 
 
@@ -778,6 +907,8 @@ const taskPrint = (function() {
     // variables for task parent
     const taskPanel = document.querySelector('.taskPanel');
     let item = document.querySelector('.taskItem');
+
+   
 
     function receiveLocalStorage(archive) {
         console.log(archive);
@@ -829,22 +960,33 @@ const taskPrint = (function() {
     }
 
     function appendProjectName(task, index, status) {
+        
+        const scrollContainer = document.querySelector('.scrollContainer');
 
-        // variable that fetches project panel
-        const projectPanel = document.querySelector('.projectScroll');
+        if (status != true) {
+            // const text span
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('textSpans');
+            const name = task.project;
+            textSpan.textContent = name;
 
-        // const text span
-        const textSpan = document.createElement('span');
-        textSpan.classList.add('textSpans');
+            scrollContainer.appendChild(textSpan);
+        } else if (status === true) {
+            const textSpan = document.querySelectorAll('.textSpans');
+            for(var i = 0; i < textSpan.length; i++) {
+                if (textSpan[i].textContent === '') {
+                    const name = task.project;
+                    textSpan[i].textContent = name;
+                }
+            }
+        }
 
         // breaks up task
-        const name = task.project;
-
-        projectPanel.appendChild(textSpan);
-        textSpan.textContent = name;
+        
     }
     
-        // variable for task container
+    
+                // variable for task container
                 // prints the name of the project
                 function _printProjectName(item, project) {
 
@@ -860,6 +1002,8 @@ const taskPrint = (function() {
                         item.appendChild(projectName);
                     }
                 }
+
+                
 
                 // prints the buttons (delete, complete, edit)
                 function _printButtons(item) {
@@ -912,13 +1056,12 @@ const taskPrint = (function() {
                 }
 
 
-            
-
     return {
         localStore: receiveLocalStorage,
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
+        project: appendProjectName
     }
 
 })();
@@ -938,6 +1081,7 @@ const tabbedPrint = (function() {
             _arrayItem(array[i]);
         }
     }
+
 
     function _arrayItem(index) {
         const item = {};
@@ -1053,31 +1197,47 @@ const sideBarHighlight = (function () {
     }
 
     // function that highlights the tab that is clicked and unhighlights the tabs that aren't
-    function sideBarEventListeners() {
+    function sideBarEventListeners(number) {
 
-        sideBarArray.forEach(tab => tab.addEventListener('click', () => {
-            const index = sideBarArray.indexOf(event.target);
-            console.log(index);
-            switch (true) {
-                case event.target.classList.contains('hovered'):
-                    event.target.classList.remove('hovered');
-                    defaultTab();
-                    break;
-                case !event.target.classList.contains('hovered'):
-                    child1.classList.remove('hovered');
-                    child2.classList.remove('hovered');
-                    child3.classList.remove('hovered');
-                    child4.classList.remove('hovered');
-                    child5.classList.remove('hovered');
-                    event.target.classList.add('hovered');
-                    operator(index);
-                    break;
-            }
+        
 
-            const hover = document.querySelector('.hovered');
+            if (number != undefined) {
+                child1.classList.remove('hovered');
+                child2.classList.remove('hovered');
+                child3.classList.remove('hovered');
+                child4.classList.remove('hovered');
+                child5.classList.remove('hovered');
+                // added by 'number'
+                child5.classList.add('hovered');
+
+            } else if (number === undefined) {
+
+            sideBarArray.forEach(tab => tab.addEventListener('click', () => {
+                const index = sideBarArray.indexOf(event.target);
+                switch (true) {
+                    case event.target.classList.contains('hovered'):
+                        event.target.classList.remove('hovered');
+                        defaultTab();
+                        tabSelection.eventListeners();
+                        break;
+                    case !event.target.classList.contains('hovered'):
+                        child1.classList.remove('hovered');
+                        child2.classList.remove('hovered');
+                        child3.classList.remove('hovered');
+                        child4.classList.remove('hovered');
+                        child5.classList.remove('hovered');
+                        event.target.classList.add('hovered');
+                        operator(index);
+                        tabSelection.eventListeners();
+                        break;
+                    
+                }
+
+                const hover = document.querySelector('.hovered');
 
 
-        }))
+            }))
+        }
     }
 
     // shares the array that contains each sidebar element
@@ -1125,6 +1285,26 @@ const tabSelection = (function () {
     const projectArray = [];
     const itemArray = [];
 
+    // listens for which project title is clicked on and prints it to the project tab display
+    function eventListeners() {
+        const textSpans = document.querySelectorAll('.textSpans');
+
+        const textArray = Array.from(textSpans);
+        textArray.forEach(text => text.addEventListener('click', _eventListen));
+    
+    }
+
+    function _eventListen() {
+        const projectPanel = document.querySelector('.projectPanel'); 
+        if (projectPanel != undefined) {
+                    projectName();               
+        } else {
+            projectsTab(true);
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project();
+            projectName();
+        }
+    }
+
     function receiveProjects(project) {
         projectArray.push(project);
 
@@ -1156,12 +1336,34 @@ const tabSelection = (function () {
         // whatever tasks happen this week show up in the DOM
     }
 
-    function projectsTab() {
+    function projectName() {
+        const projectPanel = document.querySelector('.projectPanel');
+        projectPanel.textContent = event.target.textContent;
+        let currentText = event.target.textContent;
+
+        eventListeners(currentText);
         
-        // erases all tasks from prior tabs
+    }
+
+    // controls both ways that you can get to the project tab
+            // by clicking on the project tab itself
+            // or, but clicking on a project name in the scroll section
+    function projectsTab(condition) {
+        const projectText = event.target.textContent;
+        if (condition === true) {
+            sideBarHighlight.children(4);
+        } else {}
+        // erases all tasks from prior tabs and all scroll items
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
 
-        // variable for targeting the 'mainSection' div
+        // variables for finding taskSpan elements
+        const text = document.querySelectorAll('.taskSpans');
+        // if taskSpan elements are found, clear the projectScroll element of them
+        if (text != null) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+        } 
+
+        // variable for targeting the 'mainSection' div && adding a place for chosen project title to go
         const mainSection = document.querySelector('.mainSection');
         mainSection.style.cssText = `
         position: relative;
@@ -1183,7 +1385,6 @@ const tabSelection = (function () {
         // const targets projectPanel div
         const projectPanel = document.createElement('div');
         projectPanel.classList.add('projectPanel');
-
         // variable that targets taskPanel div
         const taskPanel = document.querySelector('.taskPanel');
 
@@ -1191,6 +1392,7 @@ const tabSelection = (function () {
         
         // appends projectPanel to section
         mainSection.appendChild(projectPanel);
+        
 
 
     
@@ -1198,6 +1400,7 @@ const tabSelection = (function () {
         // variable that contains the locallyStored array
         const projectItems = JSON.parse(localStorage.getItem('itemArray'));
 
+        // pushes each project item to interface that prints them to DOM
         for (var i = 0; i < projectItems.length; i++) {
             if (projectItems[i].project === '') {
             } else if (projectItems[i].project != '') {
@@ -1205,11 +1408,22 @@ const tabSelection = (function () {
 
             }
         }
-        // tasks associated with certain projects will show up in the DOM
+        
     }
 
+    // controls logic involved in the selection of the All tab. Prints all tasks and projects
     function allTab(array) {
+        
+        // erases tasks from DOM so they don't spam themselves
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+        } 
 
         // const targets projectPanel div
         const projectPanel = document.querySelector('.projectPanel');
@@ -1247,7 +1461,10 @@ const tabSelection = (function () {
 
     }
 
+    
+
     return {
+        eventListeners: eventListeners,
         receive: receiveArrayItems,
         receiveProjects: receiveProjects,
         inbox: inboxTab,
@@ -1264,6 +1481,7 @@ window.addEventListener('load', () => {
     sideBarHighlight.default();
     sideBarHighlight.children();
 });
+
 
 
 

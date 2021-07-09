@@ -1,7 +1,7 @@
 import { ItemFactory } from "./taskFactory";
 import  exampe  from "./updateDOM";
 import { grabTask } from "./grabTask";
-import { editItems } from "./editTasks";
+import { editItems, taskUpdate } from "./editTasks";
 import { tabbedPrint, taskPrint } from "./printTasks";
 import { sidebarTab } from "./updateDOM";
 import { tabSelection } from "./updateDOM";
@@ -64,7 +64,23 @@ const itemRef = (function() {
                     localStorage.setItem('itemArray', storeArray);
                 break;
                 case action === 'edit':
-                    console.log(action);
+                    console.log(amount);
+                    const newItem = {};
+                    newItem.task = amount.name;
+                    newItem.notes = amount.notes;
+                    newItem.date = amount.date;
+                    newItem.project = amount.project;
+                    newItem.status = amount.status;
+
+                   
+                    itemArray.splice(index, 1, newItem);
+                    storeArray = JSON.stringify(itemArray);
+                    localStorage.setItem('itemArray', storeArray);
+                    let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+                    console.log(storedArray);
+
+                    
+                    
                 break;
                 case action === 'complete':
                     itemArray[index].status = amount;
@@ -207,12 +223,13 @@ const submit = document.querySelector('.submit');
 submit.addEventListener('click', () => {
     grabTask.send();
     editItems.eventListeners();
-
 });
 
 window.addEventListener('load', () => {
     editItems.eventListeners();
     itemRef.fillArray();
+    tabSelection.eventListeners();
+
 })
 
 

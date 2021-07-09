@@ -116,13 +116,30 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
                 - all tasks associated with and inside of that project will print
                 
 
+*********************************************************************************************************
+                I think that if I started at index.js and made two arrays. 
+                    one for tasks
+                    one for projects
 
-                
-                 get items printed properly inside textSpans scroll area
-                        be able to click on each item
+                    THEN made each task made underneath of a project, get pushed into the array 
+                    that belongs to whatever project is listed on the project panel as text content
+                    THEN print those tasks to the DOM, and change the DOM appended tasks based on which 
+                    project was showing - that's gonna be fine.
+
+                    Also, I need to get the form verification finished for edited items as well
+
+                    THEN I need to understand the date api
+                    it should be easy enough to make arrays with map to print them to the DOM after that
+                    then - done
+
+                    EXCEPT I still have to make the sizes have both, a minimum and a maximum
+                    also, I need the scoll list to update automatically on deletion - look at the edit
+                            if you don't use a project name, it deletes it automatically. recycle recycle recycle 
+
                         have it change the header for projects
                         be able to add tasks to a project 
 
-                        also, get edit button to function properly to update all arrays
                     */
         
+
+

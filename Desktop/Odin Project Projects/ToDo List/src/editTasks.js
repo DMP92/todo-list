@@ -1,4 +1,6 @@
+import { grabTask } from "./grabTask.js";
 import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
+import { taskPrint } from "./printTasks.js";
 
 /* 
 ************************************************************************************
@@ -8,6 +10,9 @@ import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
 
 // module made for editing and interacting with each task item
 const editItems = (function() {
+
+    // array for replacing .textSpans items
+    let newTextArray = [];
 
     // variables that target DOM elements for deletion and editing
     const taskPanel = document.querySelector('.taskPanel');
@@ -28,7 +33,7 @@ const editItems = (function() {
     }
 
     // private function that removes task item nodes from taskPanel
-    function _deleteItem(event){
+    function _deleteItem(event) {
 
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
@@ -168,12 +173,25 @@ const editItems = (function() {
         const date = parent.children[5];
         const notes = parent.children[6];
 
+
+        const projectTextArray = document.querySelectorAll('.textSpans');
+        
+
+        for (var i = 0; i < projectTextArray.length; i++) {
+            if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
+                
+                newTextArray.push(projectTextArray[i]);
+            } else if (projectTextArray[i].textContent === undefined) {
+                console.log('hmm');
+            }
+        }
+
+
         // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
         // ELSE it will run the function called below which appends the newly edited info to the DOM
         if (name.tagName === 'DIV') {
         // variables for appending input items to taskItem
-        
-        
+
         const editProject = document.createElement('input');
             editProject.classList.add('projectName');
             editProject.style.cssText = 'text-align: center;';
@@ -208,7 +226,7 @@ const editItems = (function() {
     // parent.appendChild();
         
         } else {
-            _appendTask();
+            _appendTask(newTextArray[0]);
         }
     }
 
@@ -220,7 +238,7 @@ const editItems = (function() {
 
 
     // function that takes newly edited information and publishes them to the DOM
-    function _appendTask() {
+    function _appendTask(textIndex) {
 
         // variable for grabbing all task items
         const taskItems = document.querySelectorAll('.taskItem');
@@ -256,6 +274,19 @@ const editItems = (function() {
             projectName.classList.add('projectName');
             projectName.textContent = project.value;
 
+            
+            if(textIndex != undefined && project.value != '') {
+                const projectScroll = document.querySelector('.scrollContainer');
+                projectScroll.appendChild(textIndex);
+                textIndex.textContent = project.value;
+                newTextArray.pop();
+            } else if (project.value === '') {
+                const projectScroll = document.querySelector('.scrollContainer');
+                projectScroll.removeChild(textIndex);
+                console.log('hey');
+            }
+
+
         parent.replaceChild(projectName, project);
         parent.replaceChild(taskName, name);
         parent.replaceChild(taskDate, date);
@@ -263,15 +294,76 @@ const editItems = (function() {
 
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
-
-        grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
+        
+        // conditional that prints project to scroll container if project name exists
+        if (project.value != '') {
+            taskPrint.project(project.value, index, true);
+        }
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
     }
 
     
+    // function to confirm there are no repeating task values
+    function _checkItemData(target, taskName, notes, date, project, status, index) {
 
-    function projectArray() {
+        // variable for fetching the itemArray inside localStorage and assigning it a variable
+        const arrays = JSON.parse(localStorage.getItem('itemArray'));
+
+        // variables that help the switch statement below decide what to do based on if repeat data is found
+        let existing = false;
+        let dataSet = undefined;
+        let projectPrompt = false;
+
+        // loop that runs through each locallyStored item and checks if there are repeated values
+        switch(true) {
+            case arrays === null:     
+            break;
+            
+            case arrays != null:
+            for ( var i = 0; i < arrays.length; i++) {
+                if (arrays[i].task === taskName && arrays[i].task != '') {
+                    existing = true;
+                    dataSet = 'tasks';
+                }
+
+                if (arrays[i].notes === notes && arrays[i].notes != '') {
+                    existing = true;
+                    dataSet = 'notes';
+                }
+
+                if (arrays[i].project === project && arrays[i].project != '') {
+                    existing = true;
+                    dataSet = 'projects';
+                    projectPrompt = true;
+                }
+            }
+        }
+        // if no repeated data, print the task
+            // if there IS repeated data, alert the user, and refuse their task
+        switch(true) {
+            case existing === false && taskName === '':
+                return alert('Tasks cannot be blank!');
+            break;
+
+            case existing === false && taskName != '':
+                grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
+
+            break;
+
+            case existing === true:
+                if (projectPrompt === true) {
+                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
+                     alert(`All ${dataSet} must be unique. `);
+                     console.log('top');
+                } else {
+                    console.log('bottom');
+                    return alert(`All ${dataSet} must be unique. `);
+                }
+            break;
+        }
 
     }
+
 
     return {
     eventListeners: buttonEventListeners,
@@ -303,12 +395,16 @@ const editItems = (function() {
             editedTask.notes = notes,
             editedTask.date = date,
             editedTask.project = project,
-            editedTask.status = status,
+            editedTask.status = 'incomplete',
             _updateArrays(editedTask, index)
+
         }
 
         function _updateArrays(task, index) {
-            manipulateTaskArray.replace(task, index)
+            console.log(task);
+            // variable that tells itemRef that the action being taken is 'edit'
+            const edit = 'edit';
+            itemRef.update(edit, index, task)
         }
 
         return {
@@ -343,8 +439,22 @@ const editItems = (function() {
 
         }
 
+        // function that deletes each .textSpans element so they don't spam
+        function clearProjectName() {
+
+            // variable that fetches project panel
+            const scrollContainer = document.querySelector('.scrollContainer');
+            var child = document.querySelectorAll('.textSpans');
+
+            for(var i = 0; i < child.length; i++) {
+                scrollContainer.removeChild(child[i]);
+            }
+
+        }
+
         return {
-            erase: eraseTasks
+            erase: eraseTasks,
+            clear: clearProjectName
         }
     })();
 
