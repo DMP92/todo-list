@@ -16,6 +16,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _grabTask_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./grabTask.js */ "./src/grabTask.js");
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
 /* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
+/* harmony import */ var _project_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./project.js */ "./src/project.js");
 
 
 
@@ -61,14 +62,15 @@ const editItems = (function() {
         // variable for task index
         
         let index = searchItem(task);
-        
+        let projectIndex = searchProjectItems(project);
         // variable that fetches array 
         let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
         
         // removes items from both the array, localStorage, and the DOM
         _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.removeProject(project);
         _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, 1);
-        taskPanel.removeChild(parent);   
+        taskPanel.removeChild(parent);  
+        _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.delete(projectIndex); 
     }
 
 
@@ -89,6 +91,19 @@ const editItems = (function() {
             }
         }
 
+    }
+
+    function searchProjectItems(project) {
+        const array = _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.share();
+
+        for (var i = 0; i < array.length; i++) {
+            let index = array[i].projectName;
+
+            if (index === project) {
+                console.log(array.indexOf(array[i]));
+                return array.indexOf(array[i]);
+            }
+        }
     }
 
 
@@ -495,6 +510,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
 /* harmony import */ var _taskFactory_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./taskFactory.js */ "./src/taskFactory.js");
+/* harmony import */ var _project_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./project.js */ "./src/project.js");
+
 
 
 /* 
@@ -561,6 +578,8 @@ const grabTask = (function() {
                     existing = true;
                     dataSet = 'projects';
                     projectPrompt = true;
+                    const newProject = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ProjectFactory)();
+                    newProject.receiveProjects(taskName, notes, date, project, status);
                 }
             }
         }
@@ -578,9 +597,7 @@ const grabTask = (function() {
 
             case existing === true:
                 if (projectPrompt === true) {
-                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
-                     alert(`All ${dataSet} must be unique. `);
-                     console.log('top');
+                   console.log('hmm')
                 } else {
                     console.log('bottom');
                     return alert(`All ${dataSet} must be unique. `);
@@ -593,13 +610,23 @@ const grabTask = (function() {
     // function that gathers all task data from each form, and pushes to the above function 'checkItemData()'
     function sendItemData() {
 
+        const input = document.querySelector('.task');
+        const notesInput = document.querySelector('.notes');
+        const dateInput = document.querySelector('.date');
+        const projectTitle = document.querySelector('.project'); 
+        
         const taskName = toDoInput();
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
+        
         const status = 'incomplete'
-
         checkItemData(taskName, notes, date, project, status);
+
+        projectTitle.value = '';
+        dateInput.value = '';
+        input.value = '';
+        notesInput.value = '';
     }
 
     return {
@@ -634,6 +661,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _grabTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./grabTask */ "./src/grabTask.js");
 /* harmony import */ var _editTasks__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./editTasks */ "./src/editTasks.js");
 /* harmony import */ var _printTasks__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./printTasks */ "./src/printTasks.js");
+/* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./project */ "./src/project.js");
 
 
 
@@ -677,7 +705,6 @@ const itemRef = (function() {
 
             // gives index position
             const index = itemArray.indexOf(item);
-           console.log(itemArray);
             // stores the itemArray in localStorage
             const storeArray = JSON.stringify(itemArray);
             localStorage.setItem('itemArray', storeArray);
@@ -849,24 +876,26 @@ const projectCreate = (function() {
     }
 })();
 
-// keeps all event listeners active
-const sidebar = document.querySelector('.sidebar');
-    sidebar.addEventListener('click', () => {
+    // keeps all event listeners active
+    const sidebar = document.querySelector('.sidebar');
+        sidebar.addEventListener('click', () => {
+            _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+        });
+
+    const submit = document.querySelector('.submit');
+    submit.addEventListener('click', () => {
+        _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
         _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+        return false;
+    });
+
+    window.addEventListener('load', () => {
+        _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
+        itemRef.fillArray();
+        _project__WEBPACK_IMPORTED_MODULE_5__.projects.update();
+        _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.eventListeners();
+
     })
-
-const submit = document.querySelector('.submit');
-submit.addEventListener('click', () => {
-    _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
-    _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
-});
-
-window.addEventListener('load', () => {
-    _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
-    itemRef.fillArray();
-    _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.eventListeners();
-
-})
 
 
 
@@ -1138,6 +1167,112 @@ const tabbedPrint = (function() {
 
 /***/ }),
 
+/***/ "./src/project.js":
+/*!************************!*\
+  !*** ./src/project.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "projects": () => (/* binding */ projects)
+/* harmony export */ });
+
+
+/* 
+************************************************************************************
+***************** MODULE THAT CONTROLS PROJECT FUNCTIONALITY************************
+************************************************************************************
+*/
+
+// module that stores projects into localStorage
+const projects = (function() {
+
+    // array that stores each project obj
+    let projectArray = [];
+    const existing = JSON.parse(localStorage.getItem('projectArray'));
+  
+
+    function arrayShare() {
+        return projectArray;
+    }
+        // on window load this pushes each locally stored project into the projectArray 
+        function projectArrayUpdate() {
+            // gets all contents of the project array from localStorage
+
+            if (existing != null) {
+                // one by one pushes each project into projectArray
+                for (var i = 0; i < existing.length; i++) {
+    
+                    projectArray.push(existing[i]);
+                    
+                }
+            }
+        }
+
+
+
+    // function that adds tasks to locally stored array
+    function addTasks(project, index, task) {
+
+        project.tasks.push(task);
+
+        projectArray.splice(index, 1, project);
+        const locallyStored = JSON.stringify(projectArray);
+        localStorage.setItem('projectArray', locallyStored);
+        
+
+        console.log(existing);
+    }
+
+    function deleteProject(index) {
+        projectArray.splice(index, 1);
+
+        const locallyStored = JSON.stringify(projectArray);
+        localStorage.setItem('projectArray', locallyStored);
+
+    }
+
+    function convey() {
+        if (existing != null) {
+            console.log(existing);
+        }
+    }
+
+    // receives each project, pushes them into the array and passes them off to be sored
+    function receiveProjects(project) {
+      
+        projectArray.push(project);
+        const index = projectArray.indexOf(project);
+        storeProjects(project, index);
+    }
+
+    // stores each project in localStorage
+    function storeProjects(project, index) {
+
+        const locallyStored = JSON.stringify(projectArray);
+        localStorage.setItem('projectArray', locallyStored);
+
+    }
+       
+
+    return {
+        share: arrayShare,
+        receiving: receiveProjects,
+        update: projectArrayUpdate,
+        add: addTasks,
+        convey: convey,
+        delete: deleteProject,
+    }
+
+})();
+
+projects.convey();
+
+
+
+/***/ }),
+
 /***/ "./src/taskFactory.js":
 /*!****************************!*\
   !*** ./src/taskFactory.js ***!
@@ -1146,11 +1281,14 @@ const tabbedPrint = (function() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ItemFactory": () => (/* binding */ ItemFactory)
+/* harmony export */   "ItemFactory": () => (/* binding */ ItemFactory),
+/* harmony export */   "ProjectFactory": () => (/* binding */ ProjectFactory)
 /* harmony export */ });
 /* harmony import */ var _grabTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./grabTask */ "./src/grabTask.js");
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index */ "./src/index.js");
+/* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./project */ "./src/project.js");
  
+
 
 
 // Module that turns task data into an object
@@ -1170,16 +1308,101 @@ const ItemFactory = () => {
 
         _pushItem(item);
     }
-
     // pushes each task into index.js where it is added to the taskArray
     function _pushItem(item) {
         _index__WEBPACK_IMPORTED_MODULE_1__.itemRef.printItem(item);
+        const newProject = ProjectFactory();
+        newProject.qualify(item);
     }
    
     return { receiveTasks }
 }
 
 
+
+const ProjectFactory = () => {
+
+    // variable that gets locallyStored projectArray
+    const existing = JSON.parse(localStorage.getItem('projectArray'));
+
+    function qualify (item) {
+        const projectName = item.project;
+        if (projectName != undefined) {
+            _breakDown(item);
+        }
+       
+    }
+
+    function _breakDown(item) {
+        const taskName = item.task;
+        const notes = item.notes;
+        const date = item.date;
+        const project = item.project;
+        const status = item.status;
+        receiveProjects(taskName, notes, date, project, status);
+    }
+
+    function receiveProjects(taskName, notes, date, project, status) {
+
+        // variables for repeat or new projects
+        let repeat = false;
+        let newProject = false;
+
+        // creates each project that contains each task inside of it
+        const container = {};
+        container.projectName = project;
+        container.tasks = [];
+
+        const task = {};
+        task.task = taskName;
+        task.notes = notes;
+        task.date = date;
+        task.project = project;
+        task.status = status;
+
+        if (existing != null) { 
+            for (var i = 0; i < existing.length; i++) {
+                if (existing[i].projectName === project) {
+                    repeat = true; 
+                    var projectItem = existing[i];
+                    var index = [i];
+                } else {
+                    newProject = true;
+
+                }
+            }
+
+            if ( repeat === true ) {
+                _project__WEBPACK_IMPORTED_MODULE_2__.projects.add(projectItem, index, task);
+                repeat = false;
+            } else if ( newProject === true ) {
+                container.tasks.push(task);
+                _project__WEBPACK_IMPORTED_MODULE_2__.projects.receiving(container);
+                newProject = false;
+            }
+
+        } else {
+            container.tasks.push(task);
+            _project__WEBPACK_IMPORTED_MODULE_2__.projects.receiving(container);
+        }
+
+
+
+    }
+
+    return {qualify, receiveProjects}
+}
+
+
+
+
+
+/* 
+I may need **************************
+    - something to reference all items in itemArray and check for matching projects
+    - it will grab that matching project and push the new data inside of that project's array
+    - then format it so it can push THAT data on to be printed or used however is needed
+ */
 
 /***/ }),
 

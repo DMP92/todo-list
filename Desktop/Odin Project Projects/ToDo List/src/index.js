@@ -6,7 +6,7 @@ import { tabbedPrint, taskPrint } from "./printTasks";
 import { sidebarTab } from "./updateDOM";
 import { tabSelection } from "./updateDOM";
 import { fi } from "date-fns/locale";
-
+import { projects } from "./project";
 // This module will be used as the reference interface. It has an array of all todo list items, and 
 // functions that break each list item down into its individual peices which can then be accessed as needed
 const itemRef = (function() {
@@ -41,7 +41,6 @@ const itemRef = (function() {
 
             // gives index position
             const index = itemArray.indexOf(item);
-           console.log(itemArray);
             // stores the itemArray in localStorage
             const storeArray = JSON.stringify(itemArray);
             localStorage.setItem('itemArray', storeArray);
@@ -213,24 +212,26 @@ const projectCreate = (function() {
     }
 })();
 
-// keeps all event listeners active
-const sidebar = document.querySelector('.sidebar');
-    sidebar.addEventListener('click', () => {
+    // keeps all event listeners active
+    const sidebar = document.querySelector('.sidebar');
+        sidebar.addEventListener('click', () => {
+            editItems.eventListeners();
+        });
+
+    const submit = document.querySelector('.submit');
+    submit.addEventListener('click', () => {
+        grabTask.send();
         editItems.eventListeners();
+        return false;
+    });
+
+    window.addEventListener('load', () => {
+        editItems.eventListeners();
+        itemRef.fillArray();
+        projects.update();
+        tabSelection.eventListeners();
+
     })
-
-const submit = document.querySelector('.submit');
-submit.addEventListener('click', () => {
-    grabTask.send();
-    editItems.eventListeners();
-});
-
-window.addEventListener('load', () => {
-    editItems.eventListeners();
-    itemRef.fillArray();
-    tabSelection.eventListeners();
-
-})
 
 
 

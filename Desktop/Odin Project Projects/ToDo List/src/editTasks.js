@@ -1,7 +1,7 @@
 import { grabTask } from "./grabTask.js";
 import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
 import { taskPrint } from "./printTasks.js";
-
+import { projects } from "./project.js";
 /* 
 ************************************************************************************
 **********************************EDIT ITEMS MODULE*********************************
@@ -43,14 +43,15 @@ const editItems = (function() {
         // variable for task index
         
         let index = searchItem(task);
-        
+        let projectIndex = searchProjectItems(project);
         // variable that fetches array 
         let itemArray = itemRef.arrayShare();
         
         // removes items from both the array, localStorage, and the DOM
         taskPrint.removeProject(project);
         itemRef.update(action, index, 1);
-        taskPanel.removeChild(parent);   
+        taskPanel.removeChild(parent);  
+        projects.delete(projectIndex); 
     }
 
 
@@ -71,6 +72,19 @@ const editItems = (function() {
             }
         }
 
+    }
+
+    function searchProjectItems(project) {
+        const array = projects.share();
+
+        for (var i = 0; i < array.length; i++) {
+            let index = array[i].projectName;
+
+            if (index === project) {
+                console.log(array.indexOf(array[i]));
+                return array.indexOf(array[i]);
+            }
+        }
     }
 
 

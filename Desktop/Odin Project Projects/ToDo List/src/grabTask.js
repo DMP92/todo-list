@@ -1,5 +1,6 @@
 import { taskPrint } from "./printTasks.js";
-import { ItemFactory } from "./taskFactory.js";
+import { ItemFactory, ProjectFactory } from "./taskFactory.js";
+import { projects } from "./project.js";
 /* 
 ************************************************************************************
 ***************** MODULE THAT GRABS INFO FOR TASKS FROM INPUT FIELDS ***************
@@ -64,6 +65,8 @@ const grabTask = (function() {
                     existing = true;
                     dataSet = 'projects';
                     projectPrompt = true;
+                    const newProject = ProjectFactory();
+                    newProject.receiveProjects(taskName, notes, date, project, status);
                 }
             }
         }
@@ -81,9 +84,7 @@ const grabTask = (function() {
 
             case existing === true:
                 if (projectPrompt === true) {
-                    alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
-                     alert(`All ${dataSet} must be unique. `);
-                     console.log('top');
+                   console.log('hmm')
                 } else {
                     console.log('bottom');
                     return alert(`All ${dataSet} must be unique. `);
@@ -96,13 +97,23 @@ const grabTask = (function() {
     // function that gathers all task data from each form, and pushes to the above function 'checkItemData()'
     function sendItemData() {
 
+        const input = document.querySelector('.task');
+        const notesInput = document.querySelector('.notes');
+        const dateInput = document.querySelector('.date');
+        const projectTitle = document.querySelector('.project'); 
+        
         const taskName = toDoInput();
         const notes = itemNotes();
         const date = itemDate();
         const project = itemProject();
+        
         const status = 'incomplete'
-
         checkItemData(taskName, notes, date, project, status);
+
+        projectTitle.value = '';
+        dateInput.value = '';
+        input.value = '';
+        notesInput.value = '';
     }
 
     return {
