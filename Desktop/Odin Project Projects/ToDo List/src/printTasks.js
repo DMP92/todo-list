@@ -66,7 +66,6 @@ const taskPrint = (function() {
     }
 
     function appendProjectName(task, index, status) {
-        
         const scrollContainer = document.querySelector('.scrollContainer');
 
         if (status != true) {
@@ -90,6 +89,31 @@ const taskPrint = (function() {
         // breaks up task
         
     }
+
+    function removeProjectName (project) {
+
+        // variable that gets each scroll project span ele
+        const projectSpan = document.querySelectorAll('.textSpans');
+        const scrollContainer = document.querySelector('.scrollContainer');
+
+        for (var i = 0; i < projectSpan.length; i++) {
+            if (project === projectSpan[i].textContent) {
+                scrollContainer.removeChild(projectSpan[i]);
+            }
+        }
+    }
+
+    // function that specifically prints each clicked project item to projectPanel
+    function projectToPanel(task) {
+
+        // variable that fetches project panel
+        const panel = document.querySelector('.projectPanel');
+
+        panel.textContent = `${task}`;
+
+    }
+
+    
     
     
                 // variable for task container
@@ -102,7 +126,7 @@ const taskPrint = (function() {
 
                     projectName.textContent = project;
                     if(projectName.textContent === '') {
-                        projectName.textContent = 'Project Name: None';
+                        projectName.textContent = '';
                         item.appendChild(projectName);
                     } else {
                         item.appendChild(projectName);
@@ -167,7 +191,9 @@ const taskPrint = (function() {
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
-        project: appendProjectName
+        project: appendProjectName,
+        pPanel: projectToPanel,
+        removeProject: removeProjectName
     }
 
 })();
@@ -205,5 +231,10 @@ const tabbedPrint = (function() {
 })();
 
 
+/* 
+************************************************************************************
+*************************MODULE THAT PRINTS TAB SPECIFIC CONTENT********************
+************************************************************************************
+*/
 
 export { taskPrint, tabbedPrint }

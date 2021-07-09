@@ -38,14 +38,17 @@ const editItems = (function() {
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
+        const project = parent.children[0].textContent;
         const action = 'delete';
         // variable for task index
+        
         let index = searchItem(task);
-
+        
         // variable that fetches array 
         let itemArray = itemRef.arrayShare();
-
+        
         // removes items from both the array, localStorage, and the DOM
+        taskPrint.removeProject(project);
         itemRef.update(action, index, 1);
         taskPanel.removeChild(parent);   
     }

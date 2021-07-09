@@ -112,14 +112,12 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
             - get it to log tasks that fall within this week in terms of their deadline date
         - project  
             
-            - when project is clicked it becomes a header
+            
                 - all tasks associated with and inside of that project will print
                 
 
 *********************************************************************************************************
-                I think that if I started at index.js and made two arrays. 
-                    one for tasks
-                    one for projects
+                use .map to create new arrays based on required info (if it has an empty project or a filled one)
 
                     THEN made each task made underneath of a project, get pushed into the array 
                     that belongs to whatever project is listed on the project panel as text content

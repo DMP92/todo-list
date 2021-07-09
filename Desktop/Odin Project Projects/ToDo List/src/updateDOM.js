@@ -135,7 +135,6 @@ const tabSelection = (function () {
                     projectName();               
         } else {
             projectsTab(true);
-            taskPrint.project();
             projectName();
         }
     }
@@ -153,23 +152,83 @@ const tabSelection = (function () {
                 break;
         }
     }
+    
     // functions for each tab
-
     function inboxTab() {
+
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes project panel
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         taskUpdate.erase();
     }
 
+
     function todayTab() {
+        
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes projectpanel
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         taskUpdate.erase();
         console.log(1);
         // whatever taks are dated for today show up in the DOM
     }
 
+
     function weeklyTab() {
+
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes projectPanel 
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         taskUpdate.erase();
         console.log(2);
         // whatever tasks happen this week show up in the DOM
     }
+    
 
     function projectName() {
         const projectPanel = document.querySelector('.projectPanel');
@@ -228,19 +287,23 @@ const tabSelection = (function () {
         // appends projectPanel to section
         mainSection.appendChild(projectPanel);
         
+        // variable that allows task to print
+        let check = false;
+        
 
-
-    
+        
 
         // variable that contains the locallyStored array
         const projectItems = JSON.parse(localStorage.getItem('itemArray'));
 
         // pushes each project item to interface that prints them to DOM
         for (var i = 0; i < projectItems.length; i++) {
-            if (projectItems[i].project === '') {
+            if (projectItems[i].project === undefined) {
+                taskPrint.project();
+
             } else if (projectItems[i].project != '') {
                 taskPrint.unpack(projectItems[i]);
-
+                check = true;
             }
         }
         

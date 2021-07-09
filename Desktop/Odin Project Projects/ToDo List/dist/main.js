@@ -56,14 +56,17 @@ const editItems = (function() {
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
+        const project = parent.children[0].textContent;
         const action = 'delete';
         // variable for task index
+        
         let index = searchItem(task);
-
+        
         // variable that fetches array 
         let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
-
+        
         // removes items from both the array, localStorage, and the DOM
+        _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.removeProject(project);
         _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, 1);
         taskPanel.removeChild(parent);   
     }
@@ -960,7 +963,6 @@ const taskPrint = (function() {
     }
 
     function appendProjectName(task, index, status) {
-        
         const scrollContainer = document.querySelector('.scrollContainer');
 
         if (status != true) {
@@ -984,6 +986,31 @@ const taskPrint = (function() {
         // breaks up task
         
     }
+
+    function removeProjectName (project) {
+
+        // variable that gets each scroll project span ele
+        const projectSpan = document.querySelectorAll('.textSpans');
+        const scrollContainer = document.querySelector('.scrollContainer');
+
+        for (var i = 0; i < projectSpan.length; i++) {
+            if (project === projectSpan[i].textContent) {
+                scrollContainer.removeChild(projectSpan[i]);
+            }
+        }
+    }
+
+    // function that specifically prints each clicked project item to projectPanel
+    function projectToPanel(task) {
+
+        // variable that fetches project panel
+        const panel = document.querySelector('.projectPanel');
+
+        panel.textContent = `${task}`;
+
+    }
+
+    
     
     
                 // variable for task container
@@ -996,7 +1023,7 @@ const taskPrint = (function() {
 
                     projectName.textContent = project;
                     if(projectName.textContent === '') {
-                        projectName.textContent = 'Project Name: None';
+                        projectName.textContent = '';
                         item.appendChild(projectName);
                     } else {
                         item.appendChild(projectName);
@@ -1061,7 +1088,9 @@ const taskPrint = (function() {
         receive: receiveItem,
         unpack: unpackItem,
         print: printTask,
-        project: appendProjectName
+        project: appendProjectName,
+        pPanel: projectToPanel,
+        removeProject: removeProjectName
     }
 
 })();
@@ -1099,6 +1128,11 @@ const tabbedPrint = (function() {
 })();
 
 
+/* 
+************************************************************************************
+*************************MODULE THAT PRINTS TAB SPECIFIC CONTENT********************
+************************************************************************************
+*/
 
 
 
@@ -1300,7 +1334,6 @@ const tabSelection = (function () {
                     projectName();               
         } else {
             projectsTab(true);
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project();
             projectName();
         }
     }
@@ -1318,23 +1351,83 @@ const tabSelection = (function () {
                 break;
         }
     }
+    
     // functions for each tab
-
     function inboxTab() {
+
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes project panel
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
     }
 
+
     function todayTab() {
+        
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes projectpanel
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         console.log(1);
         // whatever taks are dated for today show up in the DOM
     }
 
+
     function weeklyTab() {
+
+        // variables that target elements of DOM needed to remove projectPanel
+        const taskPanel = document.querySelector('.taskPanel');
+        const projectPanel = document.querySelector('.projectPanel');
+        const mainSection = document.querySelector('.mainSection');
+        const isPresent = mainSection.contains(projectPanel);
+        
+        // removes projectPanel 
+        if (isPresent === true) {
+            mainSection.removeChild(projectPanel);
+            mainSection.style.cssText = `
+            grid-template-areas: 
+            "form form"
+            "items items";
+            `;
+            
+            taskPanel.style.cssText = `grid-row: 4/11`;
+    
+        } 
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         console.log(2);
         // whatever tasks happen this week show up in the DOM
     }
+    
 
     function projectName() {
         const projectPanel = document.querySelector('.projectPanel');
@@ -1393,19 +1486,23 @@ const tabSelection = (function () {
         // appends projectPanel to section
         mainSection.appendChild(projectPanel);
         
+        // variable that allows task to print
+        let check = false;
+        
 
-
-    
+        
 
         // variable that contains the locallyStored array
         const projectItems = JSON.parse(localStorage.getItem('itemArray'));
 
         // pushes each project item to interface that prints them to DOM
         for (var i = 0; i < projectItems.length; i++) {
-            if (projectItems[i].project === '') {
+            if (projectItems[i].project === undefined) {
+                _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project();
+
             } else if (projectItems[i].project != '') {
                 _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.unpack(projectItems[i]);
-
+                check = true;
             }
         }
         
