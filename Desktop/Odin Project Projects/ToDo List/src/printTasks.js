@@ -7,6 +7,8 @@
 
 import { itemRef, projectCreate } from ".";
 import { editItems } from "./editTasks";
+import { sideBarHighlight } from "./updateDOM";
+
 
 // Module that prints each task item to UI
 const taskPrint = (function() {
@@ -37,32 +39,85 @@ const taskPrint = (function() {
                 task.project = item.project;
                 task.status = item.status;
                 printTask(task, index, task.status);
-                // console.log(task, index);    
+                   
     }
 
     // function that calls each appendChild method in order to create the task
     function printTask(task, index, status) {
         const item = document.createElement('div');
         item.classList.add('taskItem');
+            // appends taskItem container DIV to task item section
+            taskPanel.appendChild(item);
         
-        // appends taskItem container DIV to task item section
-        taskPanel.appendChild(item);
+              // project panel
+        const projectPanel = document.querySelector('.projectPanel');
 
-        _printProjectName(item, task.project);
-        _printButtons(item);
-        _printTaskName(item, task.task);
-        _printTaskDate(item, task.date);
-        _printDescription(item, task.notes);
-        if (status === 'complete') {
-            editItems.complete(item);
+        switch(true) {
+            case projectPanel === null:
+                _printProjectName(item, task.project);
+                _printButtons(item);
+                _printTaskName(item, task.task);
+                _printTaskDate(item, task.date);
+                _printDescription(item, task.notes);
+                if (status === 'complete') {
+                    editItems.complete(item);
+                }
+            break;
+            case projectPanel != null:
+                console.log('who?')
+                printProjects(task, index, status, item);
+            break;
         }
-
-        if (task.project != '') {
-            appendProjectName(task, index, status)
-        }
+            
+            if (task.project != '') {
+                appendProjectName(task, index, status)
+            }
         // shareTaskItem(item);
         // itemRef.share(); // not sure why this was here?
         // createItemObject(item);
+    }
+
+    function printProjects(task, index, status, items) {
+
+        const item = document.createElement('div');
+        item.classList.add('taskItem');
+            // appends taskItem container DIV to task item section
+        taskPanel.appendChild(item);
+        // variable for fetching each tab element
+        const tabList = document.querySelector('.sidebar');
+        let selectedTab = ''
+        
+        for ( var i = 0; i < tabList.children.length; i++) {
+            if (tabList.children[i].classList.contains('hovered')) {
+                selectedTab = tabList.children[i].textContent;
+            }
+        }
+        switch(true) {
+            case selectedTab === 'All Projects' && task.project === '':
+            break;
+
+            case selectedTab === 'All Projects' && task.project != '':
+                if (task.project === '') {
+                    console.log('cannot print on this screen, but will print when in "All" tab.');
+                } else if (task.project != '') {
+                    _printProjectName(item, task.project);
+                    _printButtons(item);
+                    _printTaskName(item, task.task);
+                    _printTaskDate(item, task.date);
+                    _printDescription(item, task.notes);
+                        if (status === 'complete') {
+                            editItems.complete(item);
+                        }
+                    
+                }
+                
+                if (status === 'complete') {
+                    editItems.complete(item);
+                }
+            break;
+        }
+        
+        
     }
 
     function appendProjectName(task, index, status) {
@@ -72,16 +127,19 @@ const taskPrint = (function() {
             // const text span
             const textSpan = document.createElement('span');
             textSpan.classList.add('textSpans');
-            const name = task.project;
+            let name = task[0].project;
             textSpan.textContent = name;
+            textSpan.title = "Click to see this project's tasks";
 
             scrollContainer.appendChild(textSpan);
         } else if (status === true) {
             const textSpan = document.querySelectorAll('.textSpans');
+            
             for(var i = 0; i < textSpan.length; i++) {
                 if (textSpan[i].textContent === '') {
-                    const name = task.project;
+                    name = task.project;
                     textSpan[i].textContent = name;
+                   
                 }
             }
         }
@@ -119,7 +177,6 @@ const taskPrint = (function() {
                 // variable for task container
                 // prints the name of the project
                 function _printProjectName(item, project) {
-
                     const projectName = document.createElement('div');
 
                     projectName.classList.add('projectName');
@@ -193,7 +250,8 @@ const taskPrint = (function() {
         print: printTask,
         project: appendProjectName,
         pPanel: projectToPanel,
-        removeProject: removeProjectName
+        removeProject: removeProjectName,
+        projectPrint: printProjects,
     }
 
 })();
@@ -236,5 +294,8 @@ const tabbedPrint = (function() {
 *************************MODULE THAT PRINTS TAB SPECIFIC CONTENT********************
 ************************************************************************************
 */
+
+
+
 
 export { taskPrint, tabbedPrint }

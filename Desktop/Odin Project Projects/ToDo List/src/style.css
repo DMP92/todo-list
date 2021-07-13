@@ -241,8 +241,20 @@ body {
                     grid-template-rows: 100%;
                     grid-template-areas: 
                                 "projects";
-                    
+                    box-shadow: none !important;
+
                 
+                }
+
+                .projectScroll:hover {
+                    grid-area: "projects";
+                    height: 100%;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    word-wrap: normal;
+                    word-break: break-all;
+                    background-color: transparent !important;
+                    color: white;
                 }
 
                 .scrollContainer {
@@ -252,25 +264,27 @@ body {
                     overflow-x: hidden;
                     word-wrap: normal;
                     word-break: break-all;
+                    box-shadow: none !important;
                 }
 
-                .projectScroll:hover {
-                    color: white;
-                }
+                
+
+                
 
                 .textSpans {
                     display: flex;
                     border-top: 1px solid rgba(255, 255, 255, 0.288);
-                    
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.288);
                     background-color: var(--dark-color);
                     grid-column: 1/2;
                     width: 100%;
-                    height: 15px !important;
+                    height: 20px !important;
                     grid-area: "projects";
                     justify-content: center;
                     justify-self: center;
                     text-align: center;
                     cursor: pointer;
+                    align-items: center;
                 }
 
                 .textSpans:hover {

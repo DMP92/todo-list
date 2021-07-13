@@ -82,9 +82,13 @@ const itemRef = (function() {
                     
                 break;
                 case action === 'complete':
-                    itemArray[index].status = amount;
-                    storeArray = JSON.stringify(itemArray);
-                    localStorage.setItem('itemArray', storeArray);
+                    if (itemArray[index] === undefined) {
+                        projects.complete();
+                    } else {
+                        itemArray[index].status = amount;
+                        storeArray = JSON.stringify(itemArray);
+                        localStorage.setItem('itemArray', storeArray);
+                    }
                 break;
             }
         }
@@ -100,7 +104,22 @@ const itemRef = (function() {
         }
 
         function shareItem(item, index) {
-            taskPrint.receive(item, index);
+            const tabList = document.querySelector('.sidebar');
+        let selectedTab = ''
+        
+        for ( var i = 0; i < tabList.children.length; i++) {
+            if (tabList.children[i].classList.contains('hovered')) {
+                selectedTab = tabList.children[i].textContent;
+            }
+        }
+
+            if (item.project === '' && selectedTab === 'All Projects') {
+                console.log('item.project === "" && selectedTab === "All Projects"');
+            } else {
+                
+                taskPrint.receive(item, index);
+            }
+            
 
         }
 
@@ -222,14 +241,14 @@ const projectCreate = (function() {
     submit.addEventListener('click', () => {
         grabTask.send();
         editItems.eventListeners();
-        return false;
+    
     });
 
     window.addEventListener('load', () => {
         editItems.eventListeners();
+        tabSelection.eventListeners();
         itemRef.fillArray();
         projects.update();
-        tabSelection.eventListeners();
 
     })
 

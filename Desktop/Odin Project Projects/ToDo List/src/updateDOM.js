@@ -2,6 +2,7 @@ import { itemRef } from "./index.js";
 import { formatDistance, subDays } from 'date-fns'
 import { editItems, taskUpdate } from "./editTasks.js";
 import { taskPrint, tabbedPrint } from "./printTasks.js";
+import { projects } from "./project.js";
 /* 
 ************************************************************************************
 ****************************CONTROLS WHICH SIDEBAR IS LIT UP************************
@@ -29,6 +30,7 @@ const sideBarHighlight = (function () {
         const all = document.querySelector('.all');
         all.classList.add('hovered');
         operator(0);
+        
     }
 
     // function that highlights the tab that is clicked and unhighlights the tabs that aren't
@@ -36,25 +38,31 @@ const sideBarHighlight = (function () {
 
         
 
-            if (number != undefined) {
-                child1.classList.remove('hovered');
-                child2.classList.remove('hovered');
-                child3.classList.remove('hovered');
-                child4.classList.remove('hovered');
-                child5.classList.remove('hovered');
-                // added by 'number'
-                child5.classList.add('hovered');
-
-            } else if (number === undefined) {
-
-            sideBarArray.forEach(tab => tab.addEventListener('click', () => {
+            // if (number != undefined) {
+            //     child1.classList.remove('hovered');
+            //     child2.classList.remove('hovered');
+            //     child3.classList.remove('hovered');
+            //     child4.classList.remove('hovered');
+            //     child5.classList.remove('hovered');
+            //     // added by 'number'
+            //     child5.classList.add('hovered');
+            //     console.log('soop')
+            // } else 
+            // gives each tab an event listener
+            if (number === undefined) {
+                sideBarArray.forEach(tab => tab.addEventListener('click', () => {
                 const index = sideBarArray.indexOf(event.target);
+
                 switch (true) {
+                    // If event target contains hovered class, it will remove it, and give the hovered class
+                    // to the default tab 'all'
                     case event.target.classList.contains('hovered'):
                         event.target.classList.remove('hovered');
                         defaultTab();
                         tabSelection.eventListeners();
                         break;
+                    // if the event target doesn't contain the hovered class, it will remove it from all other tabs
+                    // and give it to the target
                     case !event.target.classList.contains('hovered'):
                         child1.classList.remove('hovered');
                         child2.classList.remove('hovered');
@@ -69,8 +77,6 @@ const sideBarHighlight = (function () {
                 }
 
                 const hover = document.querySelector('.hovered');
-
-
             }))
         }
     }
@@ -92,21 +98,33 @@ function operator(index) {
     switch (true) {
         case index === 0:
             tabSelection.all();
+            // communicates that the selected tab is the 'all' tab'
+            
             break;
         case index === 1:
             tabSelection.inbox();
+            // communicates that the selected tab is the 'all' tab'
+            
             break;
         case index === 2:
             tabSelection.today();
+            // communicates that the selected tab is the 'all' tab'
+            
             break;
         case index === 3:
             tabSelection.weekly();
+            // communicates that the selected tab is the 'all' tab'
+            
             break;
         case index === 4:
             tabSelection.projects();
+            // communicates that the selected tab is the 'all' tab'
+            
             break;
     }
 }
+
+
 
 /* 
 ************************************************************************************
@@ -131,8 +149,8 @@ const tabSelection = (function () {
 
     function _eventListen() {
         const projectPanel = document.querySelector('.projectPanel'); 
-        if (projectPanel != undefined) {
-                    projectName();               
+        if (projectPanel != null) {
+            projectName();               
         } else {
             projectsTab(true);
             projectName();
@@ -234,9 +252,8 @@ const tabSelection = (function () {
         const projectPanel = document.querySelector('.projectPanel');
         projectPanel.textContent = event.target.textContent;
         let currentText = event.target.textContent;
-
         eventListeners(currentText);
-        
+        projectPrint.print(currentText);
     }
 
     // controls both ways that you can get to the project tab
@@ -248,7 +265,6 @@ const tabSelection = (function () {
             sideBarHighlight.children(4);
         } else {}
         // erases all tasks from prior tabs and all scroll items
-        taskUpdate.erase();
 
         // variables for finding taskSpan elements
         const text = document.querySelectorAll('.taskSpans');
@@ -279,6 +295,7 @@ const tabSelection = (function () {
         // const targets projectPanel div
         const projectPanel = document.createElement('div');
         projectPanel.classList.add('projectPanel');
+
         // variable that targets taskPanel div
         const taskPanel = document.querySelector('.taskPanel');
 
@@ -294,23 +311,26 @@ const tabSelection = (function () {
         
 
         // variable that contains the locallyStored array
-        const projectItems = JSON.parse(localStorage.getItem('itemArray'));
-
+        const projectItems = JSON.parse(localStorage.getItem('projectArray'));
         // pushes each project item to interface that prints them to DOM
-        for (var i = 0; i < projectItems.length; i++) {
-            if (projectItems[i].project === undefined) {
-                taskPrint.project();
 
-            } else if (projectItems[i].project != '') {
-                taskPrint.unpack(projectItems[i]);
-                check = true;
-            }
-        }
-        
+    //     const projectNames = JSON.parse(localStorage.getItem('projectArray'));
+    //    for (var i = 0; i < projectNames.length; i++) {
+    //        taskPrint.print(projectNames[i].projectName);
+    //    }
+
+        const projectNames = projectItems.map((a) => a.tasks);
+
+        for (var i = 0; i < projectNames.length; i++) {           
+            taskPrint.print(projectNames[i]);                
+        } 
+        taskUpdate.erase();
+
     }
 
     // controls logic involved in the selection of the All tab. Prints all tasks and projects
     function allTab(array) {
+        
         
         // erases tasks from DOM so they don't spam themselves
         taskUpdate.erase();
@@ -334,7 +354,8 @@ const tabSelection = (function () {
 
         const isPresent = mainSection.contains(projectPanel);
         // appends projectPanel to section
-
+        
+        // if the project panel is present, it's removed
         if (isPresent === true) {
             mainSection.removeChild(projectPanel);
             mainSection.style.cssText = `
@@ -352,7 +373,13 @@ const tabSelection = (function () {
 
         if (storedArray != null) {
             for (var i = 0; i < storedArray.length; i++) {
-                taskPrint.unpack(storedArray[i]);
+                
+                if(storedArray[i].project === '') {
+                    taskPrint.unpack(storedArray[i]);
+                    
+                } else {
+                    
+                }
             }
         }
 
@@ -374,6 +401,124 @@ const tabSelection = (function () {
 })();
 
 
+const projectPrint = (function () {
+
+    const projectArray = projects.share();
+    
+    const projectStorage = JSON.parse(localStorage.getItem('projectArray'));
+    // returns each project name
+    if (projectStorage != null) {
+        const taskNames = projectStorage.map((a) => a.projectName);
+    }
+
+    
+    // function for printing a selected project's task items 
+    function findTasks(project) {
+        
+        taskUpdate.erase();
+        
+        for (var i = 0; i < projectStorage.length; i++) {
+            if (projectStorage[i].projectName === project) {
+                
+                
+                return projectStorage[i].tasks;
+            }
+        }
+    }
+    
+    function printTasks(project) {
+        console.log(project);
+        let tasks = findTasks(project);
+        console.log(tasks);
+        for (var i = 0; i < tasks.length; i++) {
+            let index = i;
+            taskPrint.projectPrint(tasks[i], index);
+        }
+    }
+
+
+    // updates each project task item with each edit
+    function projectArrayUpdate(action, index, amount) {
+        let storeArray = JSON.stringify(projectArray);
+        console.log(index);
+        switch(true) {
+            case action === 'delete':
+                projectArray.splice(index, 1);
+                storeArray = JSON.stringify(projectArray);
+                localStorage.setItem('projectArray', projectArray);
+            break;
+            case action === 'edit':
+                console.log(amount);
+                const newItem = {};
+                newItem.task = amount.name;
+                newItem.notes = amount.notes;
+                newItem.date = amount.date;
+                newItem.project = amount.project;
+                newItem.status = amount.status;
+
+               
+                projectArray.splice(index, 1, newItem);
+                storeArray = JSON.stringify(projectArray);
+                localStorage.setItem('itemArray', projectArray);
+                let storedArray = JSON.parse(localStorage.getItem('itemArray'));
+                console.log(storedArray);
+
+                
+                
+            break;
+            case action === 'complete':
+                projectArray[index].status = amount;
+                storeArray = JSON.stringify(projectArray);
+                localStorage.setItem('itemArray', storeArray);
+            break;
+        }
+    }
+
+    function searchItem(task, project) {
+
+        const array = JSON.parse(localStorage.getItem('itemArray'));
+
+        const projectPanel = document.querySelector('.projectPanel');
+
+        parent = event.target.parentElement;
+        
+        const projectItem = parent.children[0];
+        const taskItem = parent.children[4];
+
+        switch(true) {
+            case projectPanel.textContent === projectItem.textContent:
+                for ( var i = 0; i < array.length; i++){
+                    let taskMap = array.map((a) => a.tasks);
+
+                    if (array[i].projectName === projectItem.textContent) {
+                        for (var i = 0; i < taskMap.length; i++) {
+                            console.log(taskMap[i]);
+                        }
+                    }
+                }
+            break;
+        }
+        // for (var i = 0; i < currentTask.length; i++) {
+        //     if (currentProject.tasks[i] === task) {
+        //         currentTask = currentProject.tasks[i];
+        //         currentTask.indexOf(task);
+        //     }
+        // }
+
+        // console.log(projectIndex);
+        // console.log(taskIndex);
+
+    }
+    
+    return {
+        tasks: findTasks,
+        print: printTasks,
+        update: projectArrayUpdate,
+        search: searchItem
+    }
+
+})();
+
 window.addEventListener('load', () => {
 
     sideBarHighlight.default();
@@ -381,4 +526,4 @@ window.addEventListener('load', () => {
 });
 
 
-export { sideBarHighlight, tabSelection }
+export { sideBarHighlight, tabSelection, projectPrint }

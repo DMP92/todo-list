@@ -35,10 +35,10 @@ const grabTask = (function() {
 
     // function to confirm there are no repeating task values
     function checkItemData(taskName, notes, date, project, status) {
-
+        
         // variable for fetching the itemArray inside localStorage and assigning it a variable
         const arrays = JSON.parse(localStorage.getItem('itemArray'));
-
+        const projectArray = JSON.parse(localStorage.getItem('projectArray'));
         // variables that help the switch statement below decide what to do based on if repeat data is found
         let existing = false;
         let dataSet = undefined;
@@ -61,20 +61,29 @@ const grabTask = (function() {
                     dataSet = 'notes';
                 }
 
-                if (arrays[i].project === project && arrays[i].project != '') {
+                if (arrays[i].project === project && project != '') {
                     existing = true;
                     dataSet = 'projects';
                     projectPrompt = true;
                     const newProject = ProjectFactory();
                     newProject.receiveProjects(taskName, notes, date, project, status);
+                } else {
+
                 }
             }
         }
         // if no repeated data, print the task
             // if there IS repeated data, alert the user, and refuse their task
+            console.log(existing);
         switch(true) {
             case existing === false && taskName === '':
                 return alert('Tasks cannot be blank!');
+            break;
+
+            case existing === false && project != '':
+                console.log('lower')
+                const newProject = ProjectFactory();
+                newProject.receiveProjects(taskName, notes, date, project, status);
             break;
 
             case existing === false && taskName != '':
@@ -127,3 +136,4 @@ const grabTask = (function() {
 })()
 
 export { grabTask }
+

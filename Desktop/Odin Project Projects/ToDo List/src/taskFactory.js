@@ -21,9 +21,14 @@ const ItemFactory = () => {
     }
     // pushes each task into index.js where it is added to the taskArray
     function _pushItem(item) {
-        itemRef.printItem(item);
-        const newProject = ProjectFactory();
-        newProject.qualify(item);
+        if (item.project != '') {
+            const newProject = ProjectFactory();
+            newProject.qualify(item);    
+        } else {
+
+            itemRef.printItem(item);
+        }
+        
     }
    
     return { receiveTasks }
@@ -35,7 +40,7 @@ const ProjectFactory = () => {
 
     // variable that gets locallyStored projectArray
     const existing = JSON.parse(localStorage.getItem('projectArray'));
-
+   
     function qualify (item) {
         const projectName = item.project;
         if (projectName != undefined) {
@@ -58,7 +63,7 @@ const ProjectFactory = () => {
         // variables for repeat or new projects
         let repeat = false;
         let newProject = false;
-
+        console.log(existing);
         // creates each project that contains each task inside of it
         const container = {};
         container.projectName = project;
@@ -71,9 +76,9 @@ const ProjectFactory = () => {
         task.project = project;
         task.status = status;
 
-        if (existing != null) { 
+        if (existing.length != 0) { 
             for (var i = 0; i < existing.length; i++) {
-                if (existing[i].projectName === project) {
+                if (existing[i].projectName === project && project != undefined) {
                     repeat = true; 
                     var projectItem = existing[i];
                     var index = [i];
@@ -83,7 +88,7 @@ const ProjectFactory = () => {
                 }
             }
 
-            if ( repeat === true ) {
+            if ( repeat === true && project != '') {
                 projects.add(projectItem, index, task);
                 repeat = false;
             } else if ( newProject === true ) {
@@ -92,7 +97,7 @@ const ProjectFactory = () => {
                 newProject = false;
             }
 
-        } else {
+        } else if (existing.length === 0) {
             container.tasks.push(task);
             projects.receiving(container);
         }

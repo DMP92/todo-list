@@ -2,6 +2,7 @@ import { grabTask } from "./grabTask.js";
 import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
 import { taskPrint } from "./printTasks.js";
 import { projects } from "./project.js";
+import { projectPrint } from "./updateDOM.js";
 /* 
 ************************************************************************************
 **********************************EDIT ITEMS MODULE*********************************
@@ -42,6 +43,8 @@ const editItems = (function() {
         const action = 'delete';
         // variable for task index
         
+        
+
         let index = searchItem(task);
         let projectIndex = searchProjectItems(project);
         // variable that fetches array 
@@ -67,7 +70,9 @@ const editItems = (function() {
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
+
             if (index === data) {
+                console.log(array.indexOf(array[i]));
                 return array.indexOf(array[i]);
             }
         }
@@ -107,16 +112,17 @@ const editItems = (function() {
     function _completeTask() {
         // variables that fetch and assign the cssText for the clicked completeTask button
         const parent = event.target.parentElement;
+        const project = parent.children[0].textContent;
         const gray = "filter: grayscale(1);";
         const normal = "filter: grayscale(0);";
         const action = 'complete';
-
+        
         // targets specific element interacted with and returns a usable index position
         const task = parent.children[4].textContent;
-        const index = searchItem(task);
+        let index = searchItem(task);
         let status = 'incomplete';
-        console.log(index);
-        
+        const projectColor = document.querySelector('.projects');
+
         // switch statement that (based on the cssText of the clicked element) either grays out, or 
         // fills in the taskItem container div
         switch(true) {
@@ -124,8 +130,19 @@ const editItems = (function() {
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
-                status = 'complete'
-                itemRef.update(action, index, status);
+                status = 'complete';
+
+                // if the project tab is highlighted, then it updates the project array
+                // else it will update item array
+                if (projectColor.classList.contains('hovered')) {
+                    
+                    index = projectPrint.search(task, project);
+                    console.log(index);
+                    projectPrint.update(action, index, status);
+                } else {
+
+                    itemRef.update(action, index, status);
+                }
             break;
             case parent.style.cssText === "filter: grayscale(1);":
                 event.target.classList.remove('checkedTask');

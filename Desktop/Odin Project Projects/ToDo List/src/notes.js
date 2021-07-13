@@ -113,18 +113,13 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
         - project  
             
             
-                - all tasks associated with and inside of that project will print
+                
                 
 
 *********************************************************************************************************
                 use .map to create new arrays based on required info (if it has an empty project or a filled one)
 
-                    THEN made each task made underneath of a project, get pushed into the array 
-                    that belongs to whatever project is listed on the project panel as text content
-                    THEN print those tasks to the DOM, and change the DOM appended tasks based on which 
-                    project was showing - that's gonna be fine.
-
-                    Also, I need to get the form verification finished for edited items as well
+                    I NEED TO MAKE THE PROJECTS ACCEPT THEIR EDITING CAPABILITIES
 
                     THEN I need to understand the date api
                     it should be easy enough to make arrays with map to print them to the DOM after that
@@ -136,6 +131,30 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
 
                         have it change the header for projects
                         be able to add tasks to a project 
+
+                        **********************************************************************
+                                ALL I'VE LEFT TO DO IS
+                                    date api
+                                        - inbox tab
+                                        - today tab
+                                        - weekly tab
+                                    projects tab
+                                        - delete project tasks
+                                        - edit project tasks
+                                        - complete project tasks
+                                    finishing touches
+                                        - min and max sizes of elements
+                                        - delete button should dump all arrays
+                                    possibly add
+                                        - personalized logo link to github
+                                        - sample task button
+
+                                    
+                            possibly add a tab dependent print function, or try to figure a way 
+                            to stop all projects from being printed to the screen, or maybe just try to figure a way
+                            to get them printed correctly 
+
+
 
                     */
         
