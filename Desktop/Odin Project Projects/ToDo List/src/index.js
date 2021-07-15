@@ -1,5 +1,5 @@
 import { ItemFactory } from "./taskFactory";
-import  exampe  from "./updateDOM";
+import  exampe, { projectPrint }  from "./updateDOM";
 import { grabTask } from "./grabTask";
 import { editItems, taskUpdate } from "./editTasks";
 import { tabbedPrint, taskPrint } from "./printTasks";
@@ -55,7 +55,7 @@ const itemRef = (function() {
 
         function arrayUpdate(action, index, amount) {
             let storeArray = JSON.stringify(itemArray);
-
+            
             switch(true) {
                 case action === 'delete':
                     itemArray.splice(index, 1);
@@ -63,16 +63,10 @@ const itemRef = (function() {
                     localStorage.setItem('itemArray', storeArray);
                 break;
                 case action === 'edit':
-                    console.log(amount);
-                    const newItem = {};
-                    newItem.task = amount.name;
-                    newItem.notes = amount.notes;
-                    newItem.date = amount.date;
-                    newItem.project = amount.project;
-                    newItem.status = amount.status;
-
+                    
+                  
                    
-                    itemArray.splice(index, 1, newItem);
+                    itemArray.splice(index, 1, amount);
                     storeArray = JSON.stringify(itemArray);
                     localStorage.setItem('itemArray', storeArray);
                     let storedArray = JSON.parse(localStorage.getItem('itemArray'));
@@ -83,7 +77,7 @@ const itemRef = (function() {
                 break;
                 case action === 'complete':
                     if (itemArray[index] === undefined) {
-                        projects.complete();
+                        projectPrint.update();
                     } else {
                         itemArray[index].status = amount;
                         storeArray = JSON.stringify(itemArray);
@@ -193,41 +187,17 @@ const manipulateTaskArray = (function() {
 
 
 // module for creating projects
-const projectCreate = (function() {
+const getProject = (function() {
 
-    // array that contains each project
-    const projectArray = [];
+    function currentProjectArray() {
+        const currentProjectArray = JSON.parse(localStorage.getItem('projectArray'));
 
-    // function that gathers data about each item
-    function fetchItems(item) {
-        const project = {  };
-        project.task = item.task;
-        project.notes = item.notes;
-        project.date = item.date;
-        project.project = item.project;
-        project.status = 'unfinished';
-        tabSelection.receiveProjects(project);
-
-        projectArray.push(project);
-        const index = projectArray.indexOf(project);
-        
+        return currentProjectArray;
     }
-
-    // function that shares projectArray
-    function shareProjectArray() {
-        return projectArray;
-    }
-
-    // creates project container for all sub tasks
-    function createProject(project) {
-        
-
-    }
+    
 
     return {
-        fetch: fetchItems,
-        shareArray: shareProjectArray,
-        create: createProject
+        array: currentProjectArray,
     }
 })();
 
@@ -239,9 +209,16 @@ const projectCreate = (function() {
 
     const submit = document.querySelector('.submit');
     submit.addEventListener('click', () => {
+        const projectPanel = document.querySelector('.projectPanel');
         grabTask.send();
+        projectPrint.reprint();
+        if ( projectPanel != null) {
+            taskPrint.project();
+        }
+
+
         editItems.eventListeners();
-    
+        
     });
 
     window.addEventListener('load', () => {
@@ -259,6 +236,6 @@ const projectCreate = (function() {
 */
 
 
-export { itemRef, projectCreate, manipulateTaskArray }
+export { itemRef, getProject, manipulateTaskArray }
 
 

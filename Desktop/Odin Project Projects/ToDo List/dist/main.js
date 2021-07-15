@@ -14,9 +14,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "taskUpdate": () => (/* binding */ taskUpdate)
 /* harmony export */ });
 /* harmony import */ var _grabTask_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./grabTask.js */ "./src/grabTask.js");
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
-/* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
-/* harmony import */ var _project_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./project.js */ "./src/project.js");
+/* harmony import */ var _project_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.js */ "./src/project.js");
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
 /* harmony import */ var _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./updateDOM.js */ "./src/updateDOM.js");
 
 
@@ -35,6 +35,9 @@ const editItems = (function() {
     // array for replacing .textSpans items
     let newTextArray = [];
 
+    // variables for the locallyStored projectArray
+    const projectPanel = document.querySelector('.projectPanel');
+    const projects = JSON.parse(localStorage.getItem('projectArray'));
     // variables that target DOM elements for deletion and editing
     const taskPanel = document.querySelector('.taskPanel');
 
@@ -48,33 +51,105 @@ const editItems = (function() {
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
-        editButtons.forEach(button => button.addEventListener('click', _editTask));     
+        editButtons.forEach(button => button.addEventListener('click', () => {
+            const projectPanel = document.querySelector('.projectPanel');
+            if(projectPanel === null ) {
+                _editTask() 
+            } else if (projectPanel != null) {
+                console.log('this is a start');
+            }
+
+        }));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
         checkedButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event) {
-
+        console.log('what?')
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
         const project = parent.children[0].textContent;
         const action = 'delete';
+        const parentGroup = document.querySelectorAll('.taskItem');
+        const projectPanel = document.querySelector('.projectPanel');
+        
         // variable for task index
-        
-        
-
         let index = searchItem(task);
-        let projectIndex = searchProjectItems(project);
-        // variable that fetches array 
-        let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
+        switch(true) {
+            case projectPanel === null:
+                if (task === '') {
+                    index = Array.from(parentGroup).indexOf(parent);
+                   let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
+                    
+                    // removes items from both the array, localStorage, and the DOM
+                    _printTasks_js__WEBPACK_IMPORTED_MODULE_3__.taskPrint.removeProject(project);
+                    _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, 1);
+                    taskPanel.removeChild(parent);  
+                    // projects.delete(projectIndex); 
+                } else {
+                    let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
+                    console.log(project.textContent);
+
+                    // removes items from both the array, localStorage, and the DOM
+                    _printTasks_js__WEBPACK_IMPORTED_MODULE_3__.taskPrint.removeProject(project);
+                    _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, 1);
+                    taskPanel.removeChild(parent);  
+                    // projects.delete(projectIndex); 
+                }
+            break;
+            case projectPanel != null:
+                if (project === undefined) {
+                //     let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+
+                console.log('hey');
+                let projectIndex = searchProjectItems(project);
+                // variable that fetches array 
+                let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                
+                // removes items from both the array, localStorage, and the DOM
+                console.log(projectIndex);
         
-        // removes items from both the array, localStorage, and the DOM
-        _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.removeProject(project);
-        _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, 1);
-        taskPanel.removeChild(parent);  
-        _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.delete(projectIndex); 
+                //    let projectIndex = searchProjectItems(project);
+                //     // variable that fetches array 
+                //     let itemArray = itemRef.arrayShare();
+                    
+                //     // removes items from both the array, localStorage, and the DOM
+                //     taskPrint.removeProject(project);
+                //     itemRef.update(action, index, 1);
+                //     taskPanel.removeChild(parent);  
+                // //     projects.delete(projectIndex); 
+                } else if (project != undefined) {
+                    
+                   
+
+                    console.log('hey');
+                    let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    
+                    // removes items from both the array, localStorage, and the DOM
+                    let tasks = projectItems[projectIndex].tasks;
+
+                    for (var i = 0; i < tasks.length; i++) {
+                        if (tasks[i].task === task) {
+                            
+                            
+                            
+                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.delete(projectIndex, i);
+                            taskPanel.removeChild(parent);  
+                        }
+                    }
+                }
+        }
+       
+        
+        
     }
 
 
@@ -86,11 +161,11 @@ const editItems = (function() {
 
     function searchItem(data) {
 
-        const array = _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.arrayShare();
+        const array = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
-
+            
             if (index === data) {
                 console.log(array.indexOf(array[i]));
                 return array.indexOf(array[i]);
@@ -100,7 +175,7 @@ const editItems = (function() {
     }
 
     function searchProjectItems(project) {
-        const array = _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.share();
+        const array = JSON.parse(localStorage.getItem('projectArray'));;
 
         for (var i = 0; i < array.length; i++) {
             let index = array[i].projectName;
@@ -155,13 +230,12 @@ const editItems = (function() {
                 // if the project tab is highlighted, then it updates the project array
                 // else it will update item array
                 if (projectColor.classList.contains('hovered')) {
-                    
                     index = _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.search(task, project);
-                    console.log(index);
+                    
                     _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
                 } else {
 
-                    _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
+                    _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, status);
                 }
             break;
             case parent.style.cssText === "filter: grayscale(1);":
@@ -169,14 +243,24 @@ const editItems = (function() {
                 event.target.classList.add('completeTask');
                 parent.style.cssText = `${normal}`;
                 status = 'incomplete';
-                _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
+
+
+                 if (projectColor.classList.contains('hovered')) {
+                    index = _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.search(task, project);
+                    console.log(index);
+                    _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
+                } else {
+
+                    _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, status);
+                }
+                
             break;
             case parent.style.cssText === "filter: grayscale(0);":
                 event.target.classList.remove('completeTask');
                 event.target.classList.add('checkedTask');
                 parent.style.cssText = `${gray}`;
                 status = 'complete';
-                _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(action, index, status);
+                _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, status);
             break;
         }
         completeLocalStorage(parent);
@@ -218,6 +302,8 @@ const editItems = (function() {
 
     // private function that allows the task info to be edited
     function _editTask() {
+// ************************IF TASK EXISTS IN EITHER ARRAY AND LOSES THE REASON IT'S IN THAT ARRAY, SWITCH
+// THE ARRAY IT'S CONTAINED IN
 
         // variables that get each nodeList item of the specific container the clicked button is in
         const parent = event.target.parentElement;
@@ -310,7 +396,7 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
-        
+        const defaultProject = '';
 
         const taskName = document.createElement('div');
             taskName.classList.add('taskName');
@@ -335,25 +421,48 @@ const editItems = (function() {
                 textIndex.textContent = project.value;
                 newTextArray.pop();
             } else if (project.value === '') {
-                const projectScroll = document.querySelector('.scrollContainer');
-                projectScroll.removeChild(textIndex);
-                console.log('hey');
+                const projectPanel = document.querySelector('.projectPanel');
+                if (projectPanel != null) {
+                    const projectScroll = document.querySelector('.scrollContainer');
+                    projectScroll.removeChild(textIndex);
+                    console.log('hey');
+                }
             }
 
 
-        parent.replaceChild(projectName, project);
-        parent.replaceChild(taskName, name);
-        parent.replaceChild(taskDate, date);
-        parent.replaceChild(description, notes);
-
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
+
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+
+        if(name.value != '') {
+            
+                parent.replaceChild(projectName, project);
+                parent.replaceChild(taskName, name);
+                parent.replaceChild(taskDate, date);
+                parent.replaceChild(description, notes);
+           
+                projectName.textContent = '';
+            
+           
+        } else if (name.value === '') {
+            
+        }
+
+        const newItem = {};
+        newItem.task = name.value;
+        newItem.notes = notes.value;
+        newItem.date = date.value;
+        newItem.project = projectName.textContent;
+        newItem.status = 'incomplete';
         
         // conditional that prints project to scroll container if project name exists
         if (project.value != '') {
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project(project.value, index, true);
+            alert('Tasks cannot be made into projects.')
         }
-        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+        
+        _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update('edit', index, newItem);
+        
     }
 
     
@@ -458,7 +567,7 @@ const editItems = (function() {
             console.log(task);
             // variable that tells itemRef that the action being taken is 'edit'
             const edit = 'edit';
-            _index_js__WEBPACK_IMPORTED_MODULE_1__.itemRef.update(edit, index, task)
+            _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(edit, index, task)
         }
 
         return {
@@ -617,9 +726,12 @@ const grabTask = (function() {
                 newProject.receiveProjects(taskName, notes, date, project, status);
             break;
 
-            case existing === false && taskName != '':
-                const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
-                sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+            case existing === false && project === '':
+                if ( taskName != '') {
+                    
+                    const sendGrabbedData = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ItemFactory)();
+                    sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+                }
             break;
 
             case existing === true:
@@ -681,7 +793,7 @@ const grabTask = (function() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "itemRef": () => (/* binding */ itemRef),
-/* harmony export */   "projectCreate": () => (/* binding */ projectCreate),
+/* harmony export */   "getProject": () => (/* binding */ getProject),
 /* harmony export */   "manipulateTaskArray": () => (/* binding */ manipulateTaskArray)
 /* harmony export */ });
 /* harmony import */ var _taskFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./taskFactory */ "./src/taskFactory.js");
@@ -747,7 +859,7 @@ const itemRef = (function() {
 
         function arrayUpdate(action, index, amount) {
             let storeArray = JSON.stringify(itemArray);
-
+            
             switch(true) {
                 case action === 'delete':
                     itemArray.splice(index, 1);
@@ -755,16 +867,10 @@ const itemRef = (function() {
                     localStorage.setItem('itemArray', storeArray);
                 break;
                 case action === 'edit':
-                    console.log(amount);
-                    const newItem = {};
-                    newItem.task = amount.name;
-                    newItem.notes = amount.notes;
-                    newItem.date = amount.date;
-                    newItem.project = amount.project;
-                    newItem.status = amount.status;
-
+                    
+                  
                    
-                    itemArray.splice(index, 1, newItem);
+                    itemArray.splice(index, 1, amount);
                     storeArray = JSON.stringify(itemArray);
                     localStorage.setItem('itemArray', storeArray);
                     let storedArray = JSON.parse(localStorage.getItem('itemArray'));
@@ -775,7 +881,7 @@ const itemRef = (function() {
                 break;
                 case action === 'complete':
                     if (itemArray[index] === undefined) {
-                        _project__WEBPACK_IMPORTED_MODULE_5__.projects.complete();
+                        _updateDOM__WEBPACK_IMPORTED_MODULE_1__.projectPrint.update();
                     } else {
                         itemArray[index].status = amount;
                         storeArray = JSON.stringify(itemArray);
@@ -885,41 +991,17 @@ const manipulateTaskArray = (function() {
 
 
 // module for creating projects
-const projectCreate = (function() {
+const getProject = (function() {
 
-    // array that contains each project
-    const projectArray = [];
+    function currentProjectArray() {
+        const currentProjectArray = JSON.parse(localStorage.getItem('projectArray'));
 
-    // function that gathers data about each item
-    function fetchItems(item) {
-        const project = {  };
-        project.task = item.task;
-        project.notes = item.notes;
-        project.date = item.date;
-        project.project = item.project;
-        project.status = 'unfinished';
-        _updateDOM__WEBPACK_IMPORTED_MODULE_1__.tabSelection.receiveProjects(project);
-
-        projectArray.push(project);
-        const index = projectArray.indexOf(project);
-        
+        return currentProjectArray;
     }
-
-    // function that shares projectArray
-    function shareProjectArray() {
-        return projectArray;
-    }
-
-    // creates project container for all sub tasks
-    function createProject(project) {
-        
-
-    }
+    
 
     return {
-        fetch: fetchItems,
-        shareArray: shareProjectArray,
-        create: createProject
+        array: currentProjectArray,
     }
 })();
 
@@ -931,9 +1013,16 @@ const projectCreate = (function() {
 
     const submit = document.querySelector('.submit');
     submit.addEventListener('click', () => {
+        const projectPanel = document.querySelector('.projectPanel');
         _grabTask__WEBPACK_IMPORTED_MODULE_2__.grabTask.send();
+        _updateDOM__WEBPACK_IMPORTED_MODULE_1__.projectPrint.reprint();
+        if ( projectPanel != null) {
+            _printTasks__WEBPACK_IMPORTED_MODULE_4__.taskPrint.project();
+        }
+
+
         _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
-    
+        
     });
 
     window.addEventListener('load', () => {
@@ -971,13 +1060,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! . */ "./src/index.js");
 /* harmony import */ var _editTasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editTasks */ "./src/editTasks.js");
-/* harmony import */ var _updateDOM__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./updateDOM */ "./src/updateDOM.js");
+/* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./project */ "./src/project.js");
+/* harmony import */ var _updateDOM__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./updateDOM */ "./src/updateDOM.js");
 
 /* 
 ************************************************************************************
 *************************MODULE THAT PRINTS INFO TO DOM*****************************
 ************************************************************************************
 */
+
 
 
 
@@ -1038,7 +1129,7 @@ const taskPrint = (function() {
                 }
             break;
             case projectPanel != null:
-                console.log('who?')
+                
                 printProjects(task, index, status, item);
             break;
         }
@@ -1066,6 +1157,8 @@ const taskPrint = (function() {
                 selectedTab = tabList.children[i].textContent;
             }
         }
+
+        
         switch(true) {
             case selectedTab === 'All Projects' && task.project === '':
             break;
@@ -1079,7 +1172,8 @@ const taskPrint = (function() {
                     _printTaskName(item, task.task);
                     _printTaskDate(item, task.date);
                     _printDescription(item, task.notes);
-                        if (status === 'complete') {
+                    
+                        if (task.status === 'complete') {
                             _editTasks__WEBPACK_IMPORTED_MODULE_1__.editItems.complete(item);
                         }
                     
@@ -1094,18 +1188,36 @@ const taskPrint = (function() {
         
     }
 
-    function appendProjectName(task, index, status) {
+    function appendProjectName() {
+
+        const projectPanel = document.querySelector('.projectPanel');
+        _editTasks__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear()
+        
         const scrollContainer = document.querySelector('.scrollContainer');
 
-        if (status != true) {
-            // const text span
-            const textSpan = document.createElement('span');
-            textSpan.classList.add('textSpans');
-            let name = task[0].project;
-            textSpan.textContent = name;
-            textSpan.title = "Click to see this project's tasks";
+        // gets locallyStored project array
+        let array = JSON.parse(localStorage.getItem('projectArray'));
+        
+        
 
-            scrollContainer.appendChild(textSpan);
+        
+        if (status != true && array != null) {
+            // const text span
+            let projectNames = array.map((a) => a.projectName);
+            console.log(projectNames);
+            // variable for fetching last array item
+            let last = array.length - 1;
+
+            for (let i = 0; i < projectNames.length; i++) {
+
+                const textSpan = document.createElement('span');
+                textSpan.classList.add('textSpans');
+                textSpan.textContent = projectNames[i];
+                textSpan.title = "Click to see this project's tasks";
+                scrollContainer.appendChild(textSpan);
+    
+            }
+           
         } else if (status === true) {
             const textSpan = document.querySelectorAll('.textSpans');
             
@@ -1117,7 +1229,7 @@ const taskPrint = (function() {
                 }
             }
         }
-
+        _updateDOM__WEBPACK_IMPORTED_MODULE_3__.tabSelection.eventListeners();
         // breaks up task
         
     }
@@ -1287,6 +1399,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "projects": () => (/* binding */ projects)
 /* harmony export */ });
 /* harmony import */ var _printTasks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./printTasks */ "./src/printTasks.js");
+/* harmony import */ var _updateDOM__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./updateDOM */ "./src/updateDOM.js");
 
 
 /* 
@@ -1297,6 +1410,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 // module that stores projects into localStorage
 const projects = (function() {
 
@@ -1304,10 +1418,12 @@ const projects = (function() {
     let projectArray = [];
     const allProjects = JSON.parse(localStorage.getItem('projectArray'));
     
+    
 
+    console.log(projectArray);
 
     function arrayShare() {
-        return projectArray;
+        return allProjects;
     }
         // on window load this pushes each locally stored project into the projectArray 
         function projectArrayUpdate() {
@@ -1359,10 +1475,10 @@ const projects = (function() {
 
 
         const allTasks = allProjects.map((a) => a.tasks);
-        console.log(allTasks);
+        
         
         const tasks = allTasks.map((a) => a.task);
-        console.log(tasks);
+        
         
         for ( var i = 0; i < allProjects.length; i++) {
             if (project === allProjects[i].projectName) {
@@ -1393,9 +1509,34 @@ const projects = (function() {
     function storeProjects(project, index) {
         const locallyStored = JSON.stringify(projectArray);
         localStorage.setItem('projectArray', locallyStored);
+        const stored = JSON.parse(localStorage.getItem('projectArray'));
+        console.log(stored);
     }
-       
 
+       
+    function splice (index, i, newTask) {
+        console.log (newTask);
+        if (newTask === undefined) {
+            let statusUpdate = projectArray[index].tasks.splice(i, 1);
+            storeProjects(statusUpdate, index);
+            console.log(JSON.parse(localStorage.getItem('projectArray')));
+        } else if (newTask != undefined ) {
+            let statusUpdate = projectArray[index].tasks.splice(i, 1, newTask);
+            storeProjects(statusUpdate, index);
+            console.log(JSON.parse(localStorage.getItem('projectArray')));
+        }
+        
+        if (projectArray[index].tasks.length === 0) {
+            const projectPanel = document.querySelector('.projectPanel');
+
+            _printTasks__WEBPACK_IMPORTED_MODULE_0__.taskPrint.removeProject(projectArray[index].projectName);
+           let statusUpdate = projectArray.splice(index, 1);
+            storeProjects(statusUpdate, index);
+            projectPanel.textContent = '';
+        }
+
+    }
+    
     return {
         share: arrayShare,
         receiving: receiveProjects,
@@ -1404,6 +1545,7 @@ const projects = (function() {
         complete: completeProject,
         convey: convey,
         delete: deleteProject,
+        splice: splice
     }
 
 })();
@@ -1467,8 +1609,7 @@ const ItemFactory = () => {
 
 const ProjectFactory = () => {
 
-    // variable that gets locallyStored projectArray
-    const existing = JSON.parse(localStorage.getItem('projectArray'));
+    
    
     function qualify (item) {
         const projectName = item.project;
@@ -1492,7 +1633,7 @@ const ProjectFactory = () => {
         // variables for repeat or new projects
         let repeat = false;
         let newProject = false;
-        console.log(existing);
+        console.log(_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array());
         // creates each project that contains each task inside of it
         const container = {};
         container.projectName = project;
@@ -1505,11 +1646,11 @@ const ProjectFactory = () => {
         task.project = project;
         task.status = status;
 
-        if (existing.length != 0) { 
-            for (var i = 0; i < existing.length; i++) {
-                if (existing[i].projectName === project && project != undefined) {
+        if (_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array() != null && _index__WEBPACK_IMPORTED_MODULE_1__.getProject.array().length != 0 ) { 
+            for (var i = 0; i < _index__WEBPACK_IMPORTED_MODULE_1__.getProject.array().length; i++) {
+                if (_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array()[i].projectName === project && project != undefined) {
                     repeat = true; 
-                    var projectItem = existing[i];
+                    var projectItem = _index__WEBPACK_IMPORTED_MODULE_1__.getProject.array()[i];
                     var index = [i];
                 } else {
                     newProject = true;
@@ -1526,7 +1667,8 @@ const ProjectFactory = () => {
                 newProject = false;
             }
 
-        } else if (existing.length === 0) {
+        } else if (_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array() === null || _index__WEBPACK_IMPORTED_MODULE_1__.getProject.array().length === 0 ) {
+            console.log(_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array())
             container.tasks.push(task);
             _project__WEBPACK_IMPORTED_MODULE_2__.projects.receiving(container);
         }
@@ -1743,6 +1885,16 @@ const tabSelection = (function () {
     // functions for each tab
     function inboxTab() {
 
+        // erases tasks from DOM so they don't spam themselves
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+} 
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
         const projectPanel = document.querySelector('.projectPanel');
@@ -1766,7 +1918,18 @@ const tabSelection = (function () {
 
 
     function todayTab() {
-        
+
+        // erases tasks from DOM so they don't spam themselves
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+        } 
+
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
         const projectPanel = document.querySelector('.projectPanel');
@@ -1792,6 +1955,17 @@ const tabSelection = (function () {
 
 
     function weeklyTab() {
+
+        // erases tasks from DOM so they don't spam themselves
+        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+        } 
 
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
@@ -1888,12 +2062,13 @@ const tabSelection = (function () {
     //        taskPrint.print(projectNames[i].projectName);
     //    }
 
-        const projectNames = projectItems.map((a) => a.tasks);
+        if (projectItems != null) {
 
-        for (var i = 0; i < projectNames.length; i++) {           
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.print(projectNames[i]);                
-        } 
+            const projectNames = projectItems.map((a) => a.tasks);
+        }
+
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
+       _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.project();
 
     }
 
@@ -1972,49 +2147,75 @@ const tabSelection = (function () {
 
 const projectPrint = (function () {
 
-    const projectArray = _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.share();
+    const projectArray = JSON.parse(localStorage.getItem('projectArray'));
     
     const projectStorage = JSON.parse(localStorage.getItem('projectArray'));
+    
     // returns each project name
     if (projectStorage != null) {
         const taskNames = projectStorage.map((a) => a.projectName);
     }
 
     
+
+        function reprintOnSubmit() {
+        const projectPanel = document.querySelector('.projectPanel');
+        
+        if (projectPanel != null && projectPanel.textContent != '') {
+            let projectName = projectPanel.textContent;
+            console.log(projectName);
+            printTasks(projectName);
+        }
+    }
+
     // function for printing a selected project's task items 
     function findTasks(project) {
         
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-        
-        for (var i = 0; i < projectStorage.length; i++) {
-            if (projectStorage[i].projectName === project) {
+        let allProjects = JSON.parse(localStorage.getItem('projectArray'));
+        console.log(allProjects);
+        for (var i = 0; i < allProjects.length; i++) {
+            if (allProjects[i].projectName === project) {
+                let tasks = allProjects[i].tasks;
                 
-                
-                return projectStorage[i].tasks;
+                return tasks;
             }
         }
+        
     }
-    
+
+
+    // apply a delete all and reprint all function to submit button
     function printTasks(project) {
+        let allProjects = JSON.parse(localStorage.getItem('projectArray'));
+        let stick = findTasks(project);
         console.log(project);
-        let tasks = findTasks(project);
-        console.log(tasks);
-        for (var i = 0; i < tasks.length; i++) {
+        for (var i = 0; i < stick.length; i++) {
             let index = i;
-            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.projectPrint(tasks[i], index);
+            _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.projectPrint(stick[i], index);
         }
     }
 
+    function pushDeletion(index, i) {
+        
+        
+        _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.splice (index, i);
+                
+    }
 
     // updates each project task item with each edit
     function projectArrayUpdate(action, index, amount) {
         let storeArray = JSON.stringify(projectArray);
-        console.log(index);
+        console.log(event.target);
+        console.log(action, index, amount);
+        let projectStorage = JSON.parse(localStorage.getItem('projectArray'));
+
         switch(true) {
             case action === 'delete':
-                projectArray.splice(index, 1);
+                console.log(index);
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('projectArray', projectArray);
+
             break;
             case action === 'edit':
                 console.log(amount);
@@ -2036,37 +2237,96 @@ const projectPrint = (function () {
                 
             break;
             case action === 'complete':
-                projectArray[index].status = amount;
-                storeArray = JSON.stringify(projectArray);
-                localStorage.setItem('itemArray', storeArray);
+                const parent = event.target.parentElement;
+                const taskText = parent.children[4];
+                console.log(index);
+                let completedProject = projectStorage[index].tasks;
+                console.log(completedProject);
+                
+                let position = '';
+                let taskPos = '';
+
+                for ( var i = 0; i < completedProject.length; i++ ) {
+                    if (completedProject[i].task === taskText.textContent) {
+                       position = completedProject[i];
+                       
+                       let newTask = {};
+
+                       newTask.task = position.task,
+                       newTask.notes = position.notes,
+                       newTask.date = position.date,
+                       newTask.project = position.project;
+                       console.log(projectStorage);
+                       if (position.status === 'incomplete') {
+                           newTask.status = 'complete';
+                       } else if (position.status === 'complete') {
+                        newTask.status = 'incomplete';
+                       }
+
+
+                       let sharedArray = _index_js__WEBPACK_IMPORTED_MODULE_0__.getProject.array();
+                
+                       let replacement = sharedArray[index].tasks.splice(i, 1, newTask);
+
+                        _project_js__WEBPACK_IMPORTED_MODULE_3__.projects.splice(index, i, newTask);
+                       
+                    }
+                }
+
+                
+
+
+                
+                // for ( var i = 0; i < tasks.length; i++) {
+                //     tasker = tasks[i].map((a) => a.task);
+                    
+                   
+                // }
+                // // projectArray[index].status = amount;
+                // storeArray = JSON.stringify(projectArray);
+                // localStorage.setItem('itemArray', storeArray);
             break;
         }
     }
 
     function searchItem(task, project) {
 
-        const array = JSON.parse(localStorage.getItem('itemArray'));
+        const array = JSON.parse(localStorage.getItem('projectArray'));
 
         const projectPanel = document.querySelector('.projectPanel');
+        const textSpans = document.querySelectorAll('.textSpans');
 
         parent = event.target.parentElement;
         
         const projectItem = parent.children[0];
-        const taskItem = parent.children[4];
-
-        switch(true) {
-            case projectPanel.textContent === projectItem.textContent:
-                for ( var i = 0; i < array.length; i++){
-                    let taskMap = array.map((a) => a.tasks);
-
-                    if (array[i].projectName === projectItem.textContent) {
-                        for (var i = 0; i < taskMap.length; i++) {
-                            console.log(taskMap[i]);
-                        }
-                    }
-                }
-            break;
+        
+        for ( var i = 0; i < textSpans.length; i++) {
+            if (textSpans[i].textContent === projectItem.textContent) {
+                let index = [i];
+                console.log('no work?')
+                return index
+            }
         }
+        console.log(index);
+
+               
+        // switch(true) {
+        //     case projectPanel.textContent === projectItem.textContent:
+        //         for ( var i = 0; i < array.length; i++){
+                    
+
+        //             if (array[i].projectName === projectItem.textContent) {
+        //                let currentProjectName = array[i].projectName;
+        //                 for (var i = 0; i < currentProjectName.length; i++) {
+                            
+        //                     if (taskMap[i].task === taskItem.textContent) {
+        //                         console.log(taskMap[i]);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     break;
+        // }
         // for (var i = 0; i < currentTask.length; i++) {
         //     if (currentProject.tasks[i] === task) {
         //         currentTask = currentProject.tasks[i];
@@ -2083,7 +2343,9 @@ const projectPrint = (function () {
         tasks: findTasks,
         print: printTasks,
         update: projectArrayUpdate,
-        search: searchItem
+        search: searchItem,
+        reprint: reprintOnSubmit,
+        delete: pushDeletion
     }
 
 })();

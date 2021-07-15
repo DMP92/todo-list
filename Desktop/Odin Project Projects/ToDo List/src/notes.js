@@ -139,9 +139,9 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
                                         - today tab
                                         - weekly tab
                                     projects tab
-                                        - delete project tasks
+                                      
                                         - edit project tasks
-                                        - complete project tasks
+                                       
                                     finishing touches
                                         - min and max sizes of elements
                                         - delete button should dump all arrays
@@ -150,10 +150,10 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
                                         - sample task button
 
                                     
-                            possibly add a tab dependent print function, or try to figure a way 
-                            to stop all projects from being printed to the screen, or maybe just try to figure a way
-                            to get them printed correctly 
-
+                            
+                                
+                              
+                                
 
 
                     */

@@ -86,9 +86,12 @@ const grabTask = (function() {
                 newProject.receiveProjects(taskName, notes, date, project, status);
             break;
 
-            case existing === false && taskName != '':
-                const sendGrabbedData = ItemFactory();
-                sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+            case existing === false && project === '':
+                if ( taskName != '') {
+                    
+                    const sendGrabbedData = ItemFactory();
+                    sendGrabbedData.receiveTasks(taskName, notes, date, project, status);
+                }
             break;
 
             case existing === true:

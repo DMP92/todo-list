@@ -1,7 +1,7 @@
 import { grabTask } from "./grabTask.js";
-import { itemRef, manipulateTaskArray, projectCreate } from "./index.js";
-import { taskPrint } from "./printTasks.js";
 import { projects } from "./project.js";
+import { itemRef, manipulateTaskArray, getProject } from "./index.js";
+import { taskPrint } from "./printTasks.js";
 import { projectPrint } from "./updateDOM.js";
 /* 
 ************************************************************************************
@@ -15,6 +15,9 @@ const editItems = (function() {
     // array for replacing .textSpans items
     let newTextArray = [];
 
+    // variables for the locallyStored projectArray
+    const projectPanel = document.querySelector('.projectPanel');
+    const projects = JSON.parse(localStorage.getItem('projectArray'));
     // variables that target DOM elements for deletion and editing
     const taskPanel = document.querySelector('.taskPanel');
 
@@ -28,33 +31,105 @@ const editItems = (function() {
 
 
         deleteButtons.forEach(button => button.addEventListener('click', _deleteItem));
-        editButtons.forEach(button => button.addEventListener('click', _editTask));     
+        editButtons.forEach(button => button.addEventListener('click', () => {
+            const projectPanel = document.querySelector('.projectPanel');
+            if(projectPanel === null ) {
+                _editTask() 
+            } else if (projectPanel != null) {
+                console.log('this is a start');
+            }
+
+        }));     
         completeButtons.forEach(button => button.addEventListener('click', _completeTask));
         checkedButtons.forEach(button => button.addEventListener('click', _completeTask));
     }
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event) {
-
+        console.log('what?')
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
         const project = parent.children[0].textContent;
         const action = 'delete';
+        const parentGroup = document.querySelectorAll('.taskItem');
+        const projectPanel = document.querySelector('.projectPanel');
+        
         // variable for task index
-        
-        
-
         let index = searchItem(task);
-        let projectIndex = searchProjectItems(project);
-        // variable that fetches array 
-        let itemArray = itemRef.arrayShare();
+        switch(true) {
+            case projectPanel === null:
+                if (task === '') {
+                    index = Array.from(parentGroup).indexOf(parent);
+                   let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let itemArray = itemRef.arrayShare();
+                    
+                    // removes items from both the array, localStorage, and the DOM
+                    taskPrint.removeProject(project);
+                    itemRef.update(action, index, 1);
+                    taskPanel.removeChild(parent);  
+                    // projects.delete(projectIndex); 
+                } else {
+                    let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let itemArray = itemRef.arrayShare();
+                    console.log(project.textContent);
+
+                    // removes items from both the array, localStorage, and the DOM
+                    taskPrint.removeProject(project);
+                    itemRef.update(action, index, 1);
+                    taskPanel.removeChild(parent);  
+                    // projects.delete(projectIndex); 
+                }
+            break;
+            case projectPanel != null:
+                if (project === undefined) {
+                //     let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+
+                console.log('hey');
+                let projectIndex = searchProjectItems(project);
+                // variable that fetches array 
+                let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                
+                // removes items from both the array, localStorage, and the DOM
+                console.log(projectIndex);
         
-        // removes items from both the array, localStorage, and the DOM
-        taskPrint.removeProject(project);
-        itemRef.update(action, index, 1);
-        taskPanel.removeChild(parent);  
-        projects.delete(projectIndex); 
+                //    let projectIndex = searchProjectItems(project);
+                //     // variable that fetches array 
+                //     let itemArray = itemRef.arrayShare();
+                    
+                //     // removes items from both the array, localStorage, and the DOM
+                //     taskPrint.removeProject(project);
+                //     itemRef.update(action, index, 1);
+                //     taskPanel.removeChild(parent);  
+                // //     projects.delete(projectIndex); 
+                } else if (project != undefined) {
+                    
+                   
+
+                    console.log('hey');
+                    let projectIndex = searchProjectItems(project);
+                    // variable that fetches array 
+                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    
+                    // removes items from both the array, localStorage, and the DOM
+                    let tasks = projectItems[projectIndex].tasks;
+
+                    for (var i = 0; i < tasks.length; i++) {
+                        if (tasks[i].task === task) {
+                            
+                            
+                            
+                            projectPrint.delete(projectIndex, i);
+                            taskPanel.removeChild(parent);  
+                        }
+                    }
+                }
+        }
+       
+        
+        
     }
 
 
@@ -70,7 +145,7 @@ const editItems = (function() {
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
-
+            
             if (index === data) {
                 console.log(array.indexOf(array[i]));
                 return array.indexOf(array[i]);
@@ -80,7 +155,7 @@ const editItems = (function() {
     }
 
     function searchProjectItems(project) {
-        const array = projects.share();
+        const array = JSON.parse(localStorage.getItem('projectArray'));;
 
         for (var i = 0; i < array.length; i++) {
             let index = array[i].projectName;
@@ -135,9 +210,8 @@ const editItems = (function() {
                 // if the project tab is highlighted, then it updates the project array
                 // else it will update item array
                 if (projectColor.classList.contains('hovered')) {
-                    
                     index = projectPrint.search(task, project);
-                    console.log(index);
+                    
                     projectPrint.update(action, index, status);
                 } else {
 
@@ -149,7 +223,17 @@ const editItems = (function() {
                 event.target.classList.add('completeTask');
                 parent.style.cssText = `${normal}`;
                 status = 'incomplete';
-                itemRef.update(action, index, status);
+
+
+                 if (projectColor.classList.contains('hovered')) {
+                    index = projectPrint.search(task, project);
+                    console.log(index);
+                    projectPrint.update(action, index, status);
+                } else {
+
+                    itemRef.update(action, index, status);
+                }
+                
             break;
             case parent.style.cssText === "filter: grayscale(0);":
                 event.target.classList.remove('completeTask');
@@ -198,6 +282,8 @@ const editItems = (function() {
 
     // private function that allows the task info to be edited
     function _editTask() {
+// ************************IF TASK EXISTS IN EITHER ARRAY AND LOSES THE REASON IT'S IN THAT ARRAY, SWITCH
+// THE ARRAY IT'S CONTAINED IN
 
         // variables that get each nodeList item of the specific container the clicked button is in
         const parent = event.target.parentElement;
@@ -290,7 +376,7 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
-        
+        const defaultProject = '';
 
         const taskName = document.createElement('div');
             taskName.classList.add('taskName');
@@ -315,25 +401,48 @@ const editItems = (function() {
                 textIndex.textContent = project.value;
                 newTextArray.pop();
             } else if (project.value === '') {
-                const projectScroll = document.querySelector('.scrollContainer');
-                projectScroll.removeChild(textIndex);
-                console.log('hey');
+                const projectPanel = document.querySelector('.projectPanel');
+                if (projectPanel != null) {
+                    const projectScroll = document.querySelector('.scrollContainer');
+                    projectScroll.removeChild(textIndex);
+                    console.log('hey');
+                }
             }
 
 
-        parent.replaceChild(projectName, project);
-        parent.replaceChild(taskName, name);
-        parent.replaceChild(taskDate, date);
-        parent.replaceChild(description, notes);
-
         // variable that fetches index of edited element
         const index = tasks.indexOf(parent);
+
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+
+        if(name.value != '') {
+            
+                parent.replaceChild(projectName, project);
+                parent.replaceChild(taskName, name);
+                parent.replaceChild(taskDate, date);
+                parent.replaceChild(description, notes);
+           
+                projectName.textContent = '';
+            
+           
+        } else if (name.value === '') {
+            
+        }
+
+        const newItem = {};
+        newItem.task = name.value;
+        newItem.notes = notes.value;
+        newItem.date = date.value;
+        newItem.project = projectName.textContent;
+        newItem.status = 'incomplete';
         
         // conditional that prints project to scroll container if project name exists
         if (project.value != '') {
-            taskPrint.project(project.value, index, true);
+            alert('Tasks cannot be made into projects.')
         }
-        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+        
+        itemRef.update('edit', index, newItem);
+        
     }
 
     

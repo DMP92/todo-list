@@ -6,8 +6,9 @@
 */
 
 import { itemRef, projectCreate } from ".";
-import { editItems } from "./editTasks";
-import { sideBarHighlight } from "./updateDOM";
+import { editItems, taskUpdate } from "./editTasks";
+import { projects } from "./project";
+import { sideBarHighlight, tabSelection } from "./updateDOM";
 
 
 // Module that prints each task item to UI
@@ -64,7 +65,7 @@ const taskPrint = (function() {
                 }
             break;
             case projectPanel != null:
-                console.log('who?')
+                
                 printProjects(task, index, status, item);
             break;
         }
@@ -92,6 +93,8 @@ const taskPrint = (function() {
                 selectedTab = tabList.children[i].textContent;
             }
         }
+
+        
         switch(true) {
             case selectedTab === 'All Projects' && task.project === '':
             break;
@@ -105,7 +108,8 @@ const taskPrint = (function() {
                     _printTaskName(item, task.task);
                     _printTaskDate(item, task.date);
                     _printDescription(item, task.notes);
-                        if (status === 'complete') {
+                    
+                        if (task.status === 'complete') {
                             editItems.complete(item);
                         }
                     
@@ -120,18 +124,36 @@ const taskPrint = (function() {
         
     }
 
-    function appendProjectName(task, index, status) {
+    function appendProjectName() {
+
+        const projectPanel = document.querySelector('.projectPanel');
+        taskUpdate.clear()
+        
         const scrollContainer = document.querySelector('.scrollContainer');
 
-        if (status != true) {
-            // const text span
-            const textSpan = document.createElement('span');
-            textSpan.classList.add('textSpans');
-            let name = task[0].project;
-            textSpan.textContent = name;
-            textSpan.title = "Click to see this project's tasks";
+        // gets locallyStored project array
+        let array = JSON.parse(localStorage.getItem('projectArray'));
+        
+        
 
-            scrollContainer.appendChild(textSpan);
+        
+        if (status != true && array != null) {
+            // const text span
+            let projectNames = array.map((a) => a.projectName);
+            console.log(projectNames);
+            // variable for fetching last array item
+            let last = array.length - 1;
+
+            for (let i = 0; i < projectNames.length; i++) {
+
+                const textSpan = document.createElement('span');
+                textSpan.classList.add('textSpans');
+                textSpan.textContent = projectNames[i];
+                textSpan.title = "Click to see this project's tasks";
+                scrollContainer.appendChild(textSpan);
+    
+            }
+           
         } else if (status === true) {
             const textSpan = document.querySelectorAll('.textSpans');
             
@@ -143,7 +165,7 @@ const taskPrint = (function() {
                 }
             }
         }
-
+        tabSelection.eventListeners();
         // breaks up task
         
     }

@@ -1,4 +1,4 @@
-import { itemRef } from "./index.js";
+import { getProject, itemRef } from "./index.js";
 import { formatDistance, subDays } from 'date-fns'
 import { editItems, taskUpdate } from "./editTasks.js";
 import { taskPrint, tabbedPrint } from "./printTasks.js";
@@ -174,6 +174,16 @@ const tabSelection = (function () {
     // functions for each tab
     function inboxTab() {
 
+        // erases tasks from DOM so they don't spam themselves
+        taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            taskUpdate.clear();
+} 
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
         const projectPanel = document.querySelector('.projectPanel');
@@ -197,7 +207,18 @@ const tabSelection = (function () {
 
 
     function todayTab() {
-        
+
+        // erases tasks from DOM so they don't spam themselves
+        taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            taskUpdate.clear();
+        } 
+
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
         const projectPanel = document.querySelector('.projectPanel');
@@ -223,6 +244,17 @@ const tabSelection = (function () {
 
 
     function weeklyTab() {
+
+        // erases tasks from DOM so they don't spam themselves
+        taskUpdate.erase();
+
+        // searches DOM for .taskSpans elements
+        const text = document.querySelectorAll('.taskSpans');
+
+        // clears them if they are found so they don't spam themselves
+        if (text != null) {
+            taskUpdate.clear();
+        } 
 
         // variables that target elements of DOM needed to remove projectPanel
         const taskPanel = document.querySelector('.taskPanel');
@@ -319,12 +351,13 @@ const tabSelection = (function () {
     //        taskPrint.print(projectNames[i].projectName);
     //    }
 
-        const projectNames = projectItems.map((a) => a.tasks);
+        if (projectItems != null) {
 
-        for (var i = 0; i < projectNames.length; i++) {           
-            taskPrint.print(projectNames[i]);                
-        } 
+            const projectNames = projectItems.map((a) => a.tasks);
+        }
+
         taskUpdate.erase();
+       taskPrint.project();
 
     }
 
@@ -403,49 +436,75 @@ const tabSelection = (function () {
 
 const projectPrint = (function () {
 
-    const projectArray = projects.share();
+    const projectArray = JSON.parse(localStorage.getItem('projectArray'));
     
     const projectStorage = JSON.parse(localStorage.getItem('projectArray'));
+    
     // returns each project name
     if (projectStorage != null) {
         const taskNames = projectStorage.map((a) => a.projectName);
     }
 
     
+
+        function reprintOnSubmit() {
+        const projectPanel = document.querySelector('.projectPanel');
+        
+        if (projectPanel != null && projectPanel.textContent != '') {
+            let projectName = projectPanel.textContent;
+            console.log(projectName);
+            printTasks(projectName);
+        }
+    }
+
     // function for printing a selected project's task items 
     function findTasks(project) {
         
         taskUpdate.erase();
-        
-        for (var i = 0; i < projectStorage.length; i++) {
-            if (projectStorage[i].projectName === project) {
+        let allProjects = JSON.parse(localStorage.getItem('projectArray'));
+        console.log(allProjects);
+        for (var i = 0; i < allProjects.length; i++) {
+            if (allProjects[i].projectName === project) {
+                let tasks = allProjects[i].tasks;
                 
-                
-                return projectStorage[i].tasks;
+                return tasks;
             }
         }
+        
     }
-    
+
+
+    // apply a delete all and reprint all function to submit button
     function printTasks(project) {
+        let allProjects = JSON.parse(localStorage.getItem('projectArray'));
+        let stick = findTasks(project);
         console.log(project);
-        let tasks = findTasks(project);
-        console.log(tasks);
-        for (var i = 0; i < tasks.length; i++) {
+        for (var i = 0; i < stick.length; i++) {
             let index = i;
-            taskPrint.projectPrint(tasks[i], index);
+            taskPrint.projectPrint(stick[i], index);
         }
     }
 
+    function pushDeletion(index, i) {
+        
+        
+        projects.splice (index, i);
+                
+    }
 
     // updates each project task item with each edit
     function projectArrayUpdate(action, index, amount) {
         let storeArray = JSON.stringify(projectArray);
-        console.log(index);
+        console.log(event.target);
+        console.log(action, index, amount);
+        let projectStorage = JSON.parse(localStorage.getItem('projectArray'));
+
         switch(true) {
             case action === 'delete':
-                projectArray.splice(index, 1);
+                console.log(index);
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('projectArray', projectArray);
+
             break;
             case action === 'edit':
                 console.log(amount);
@@ -467,37 +526,96 @@ const projectPrint = (function () {
                 
             break;
             case action === 'complete':
-                projectArray[index].status = amount;
-                storeArray = JSON.stringify(projectArray);
-                localStorage.setItem('itemArray', storeArray);
+                const parent = event.target.parentElement;
+                const taskText = parent.children[4];
+                console.log(index);
+                let completedProject = projectStorage[index].tasks;
+                console.log(completedProject);
+                
+                let position = '';
+                let taskPos = '';
+
+                for ( var i = 0; i < completedProject.length; i++ ) {
+                    if (completedProject[i].task === taskText.textContent) {
+                       position = completedProject[i];
+                       
+                       let newTask = {};
+
+                       newTask.task = position.task,
+                       newTask.notes = position.notes,
+                       newTask.date = position.date,
+                       newTask.project = position.project;
+                       console.log(projectStorage);
+                       if (position.status === 'incomplete') {
+                           newTask.status = 'complete';
+                       } else if (position.status === 'complete') {
+                        newTask.status = 'incomplete';
+                       }
+
+
+                       let sharedArray = getProject.array();
+                
+                       let replacement = sharedArray[index].tasks.splice(i, 1, newTask);
+
+                        projects.splice(index, i, newTask);
+                       
+                    }
+                }
+
+                
+
+
+                
+                // for ( var i = 0; i < tasks.length; i++) {
+                //     tasker = tasks[i].map((a) => a.task);
+                    
+                   
+                // }
+                // // projectArray[index].status = amount;
+                // storeArray = JSON.stringify(projectArray);
+                // localStorage.setItem('itemArray', storeArray);
             break;
         }
     }
 
     function searchItem(task, project) {
 
-        const array = JSON.parse(localStorage.getItem('itemArray'));
+        const array = JSON.parse(localStorage.getItem('projectArray'));
 
         const projectPanel = document.querySelector('.projectPanel');
+        const textSpans = document.querySelectorAll('.textSpans');
 
         parent = event.target.parentElement;
         
         const projectItem = parent.children[0];
-        const taskItem = parent.children[4];
-
-        switch(true) {
-            case projectPanel.textContent === projectItem.textContent:
-                for ( var i = 0; i < array.length; i++){
-                    let taskMap = array.map((a) => a.tasks);
-
-                    if (array[i].projectName === projectItem.textContent) {
-                        for (var i = 0; i < taskMap.length; i++) {
-                            console.log(taskMap[i]);
-                        }
-                    }
-                }
-            break;
+        
+        for ( var i = 0; i < textSpans.length; i++) {
+            if (textSpans[i].textContent === projectItem.textContent) {
+                let index = [i];
+                console.log('no work?')
+                return index
+            }
         }
+        console.log(index);
+
+               
+        // switch(true) {
+        //     case projectPanel.textContent === projectItem.textContent:
+        //         for ( var i = 0; i < array.length; i++){
+                    
+
+        //             if (array[i].projectName === projectItem.textContent) {
+        //                let currentProjectName = array[i].projectName;
+        //                 for (var i = 0; i < currentProjectName.length; i++) {
+                            
+        //                     if (taskMap[i].task === taskItem.textContent) {
+        //                         console.log(taskMap[i]);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     break;
+        // }
         // for (var i = 0; i < currentTask.length; i++) {
         //     if (currentProject.tasks[i] === task) {
         //         currentTask = currentProject.tasks[i];
@@ -514,7 +632,9 @@ const projectPrint = (function () {
         tasks: findTasks,
         print: printTasks,
         update: projectArrayUpdate,
-        search: searchItem
+        search: searchItem,
+        reprint: reprintOnSubmit,
+        delete: pushDeletion
     }
 
 })();

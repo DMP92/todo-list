@@ -1,5 +1,5 @@
  import { grabTask } from "./grabTask"
-import {itemRef} from "./index"
+import {getProject, itemRef} from "./index"
 import { projects } from "./project"
 
 // Module that turns task data into an object
@@ -38,8 +38,7 @@ const ItemFactory = () => {
 
 const ProjectFactory = () => {
 
-    // variable that gets locallyStored projectArray
-    const existing = JSON.parse(localStorage.getItem('projectArray'));
+    
    
     function qualify (item) {
         const projectName = item.project;
@@ -63,7 +62,7 @@ const ProjectFactory = () => {
         // variables for repeat or new projects
         let repeat = false;
         let newProject = false;
-        console.log(existing);
+        console.log(getProject.array());
         // creates each project that contains each task inside of it
         const container = {};
         container.projectName = project;
@@ -76,11 +75,11 @@ const ProjectFactory = () => {
         task.project = project;
         task.status = status;
 
-        if (existing.length != 0) { 
-            for (var i = 0; i < existing.length; i++) {
-                if (existing[i].projectName === project && project != undefined) {
+        if (getProject.array() != null && getProject.array().length != 0 ) { 
+            for (var i = 0; i < getProject.array().length; i++) {
+                if (getProject.array()[i].projectName === project && project != undefined) {
                     repeat = true; 
-                    var projectItem = existing[i];
+                    var projectItem = getProject.array()[i];
                     var index = [i];
                 } else {
                     newProject = true;
@@ -97,7 +96,8 @@ const ProjectFactory = () => {
                 newProject = false;
             }
 
-        } else if (existing.length === 0) {
+        } else if (getProject.array() === null || getProject.array().length === 0 ) {
+            console.log(getProject.array())
             container.tasks.push(task);
             projects.receiving(container);
         }
