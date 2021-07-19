@@ -119,6 +119,8 @@ const projects = (function() {
             storeProjects(statusUpdate, index);
             console.log(JSON.parse(localStorage.getItem('projectArray')));
         } else if (newTask != undefined ) {
+            console.log('...o.O')
+
             let statusUpdate = projectArray[index].tasks.splice(i, 1, newTask);
             storeProjects(statusUpdate, index);
             console.log(JSON.parse(localStorage.getItem('projectArray')));
@@ -126,7 +128,6 @@ const projects = (function() {
         
         if (projectArray[index].tasks.length === 0) {
             const projectPanel = document.querySelector('.projectPanel');
-
             taskPrint.removeProject(projectArray[index].projectName);
            let statusUpdate = projectArray.splice(index, 1);
             storeProjects(statusUpdate, index);

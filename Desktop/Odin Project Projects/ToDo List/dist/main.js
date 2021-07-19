@@ -37,7 +37,7 @@ const editItems = (function() {
 
     // variables for the locallyStored projectArray
     const projectPanel = document.querySelector('.projectPanel');
-    const projects = JSON.parse(localStorage.getItem('projectArray'));
+    const projectS = JSON.parse(localStorage.getItem('projectArray'));
     // variables that target DOM elements for deletion and editing
     const taskPanel = document.querySelector('.taskPanel');
 
@@ -56,7 +56,7 @@ const editItems = (function() {
             if(projectPanel === null ) {
                 _editTask() 
             } else if (projectPanel != null) {
-                console.log('this is a start');
+                _editProject ();
             }
 
         }));     
@@ -132,7 +132,6 @@ const editItems = (function() {
                     let projectIndex = searchProjectItems(project);
                     // variable that fetches array 
                     let projectItems = JSON.parse(localStorage.getItem('projectArray'));
-                    
                     // removes items from both the array, localStorage, and the DOM
                     let tasks = projectItems[projectIndex].tasks;
 
@@ -175,7 +174,7 @@ const editItems = (function() {
     }
 
     function searchProjectItems(project) {
-        const array = JSON.parse(localStorage.getItem('projectArray'));;
+        const array = JSON.parse(localStorage.getItem('projectArray'));
 
         for (var i = 0; i < array.length; i++) {
             let index = array[i].projectName;
@@ -296,6 +295,162 @@ const editItems = (function() {
             i++
         }
     }
+
+    function parentIndex ( event ) {
+        const taskPanel = document.querySelector('.taskPanel');
+        const parent = event.parentElement;
+
+        for ( var i = 0; i < taskPanel.children.length; i++ ) {
+            if ( taskPanel.children[i] === parent ) {
+                let taskIndex = i;
+                return i;
+            }
+        }
+        
+    }
+
+    function _editProject () {
+        // variables that get each nodeList item of the specific container the clicked button is in
+        const parent = event.target.parentElement;
+        const project = parent.children[0].textContent;
+        const edit = parent.children[3];
+        const name = parent.children[4];
+        const date = parent.children[5];
+        const notes = parent.children[6];
+
+        const projectTextArray = document.querySelectorAll('.textSpans');
+
+        for (var i = 0; i < projectTextArray.length; i++) {
+            if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
+                
+                newTextArray.push(projectTextArray[i]);
+            } else if (projectTextArray[i].textContent === undefined) {
+                console.log('hmm');
+            }
+        }
+
+        
+        let projectIndex = searchProjectItems(project);
+        // variable that fetches array 
+        let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+        // removes items from both the array, localStorage, and the DOM
+        let tasks = projectItems[projectIndex].tasks;
+        let indecie = undefined;
+
+        let taskIndex = parentIndex( event.target );
+        console.log(taskIndex);
+      
+        // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
+        // ELSE it will run the function called below which appends the newly edited info to the DOM
+        if (name.tagName === 'DIV') {
+            // variables for appending input items to taskItem
+    
+            const editName = document.createElement('input');
+                editName.classList.add('taskName');
+                editName.placeholder = 'Edit Task Name';
+                editName.style.cssText = 'text-align: center;';
+                parent.replaceChild(editName, name);
+    
+    
+            const editDate = document.createElement('input');
+                editDate.classList.add('taskDate');
+                editDate.type = 'date';
+                editDate.style.cssText = "background-color: White; color: black; text-align: center;";
+                editDate.placeholder = 'Edit Date';
+                parent.replaceChild(editDate, date)
+    
+    
+    
+            const editDescription = document.createElement('input');
+                editDescription.classList.add('description');
+                editDescription.placeholder = 'Edit Notes';
+                editDescription.style.cssText = 'text-align: center;';
+                parent.replaceChild(editDescription, notes);
+    
+                event.target.classList.remove('editTask');
+                event.target.classList.add('editingTask');
+            // parent.appendChild();
+        } else {
+            console.log('...o.O')
+
+            _appendProject ( projectIndex, taskIndex );
+        }
+
+    }
+
+    function _appendProject ( ind, i ) {
+        // variable for grabbing all task items
+        const taskItems = document.querySelectorAll('.taskItem');
+        const tasks = Array.from(taskItems);
+
+        event.target.classList.remove('editingTask');
+        event.target.classList.add('editTask');
+
+        // gets the container of the specific edit button clicked
+        const parent = event.target.parentElement;
+
+        // variables for appending finished items to taskItem
+        const project = parent.children[0].textContent
+        const edit = parent.children[3];
+        const name = parent.children[4];
+        const date = parent.children[5];
+        const notes = parent.children[6];
+        const defaultProject = '';
+
+        const taskName = document.createElement('div');
+            taskName.classList.add('taskName');
+            taskName.textContent = name.value;
+
+        const description = document.createElement('div');
+            description.classList.add('description');
+            description.textContent = notes.value;
+
+        const taskDate = document.createElement('div');
+            taskDate.classList.add('taskDate');
+            taskDate.textContent = date.value;
+
+            
+            // if(textIndex != undefined ) {
+            //     const projectScroll = document.querySelector('.scrollContainer');
+            //     projectScroll.appendChild(textIndex);
+            //     textIndex.textContent = project.value;
+            //     newTextArray.pop();
+            // } else if (project.value === '') {
+            //     const projectPanel = document.querySelector('.projectPanel');
+            //     if (projectPanel != null) {
+            //         const projectScroll = document.querySelector('.scrollContainer');
+            //         projectScroll.removeChild(textIndex);
+            //         console.log('hey');
+            //     }
+            // }
+
+
+        // variable that fetches index of edited element
+        const index = tasks.indexOf(parent);
+
+        if(name.value != '') {
+            
+                parent.replaceChild(taskName, name);
+                parent.replaceChild(taskDate, date);
+                parent.replaceChild(description, notes);
+               
+        } else if (name.value === '') {
+            
+        }
+        
+
+        const newItem = {};
+        newItem.task = name.value;
+        newItem.notes = notes.value;
+        newItem.date = date.value;
+        newItem.project = project;
+        newItem.status = 'incomplete';
+        _project_js__WEBPACK_IMPORTED_MODULE_1__.projects.splice( ind, i, newItem );
+        
+  }
+
+
+
     /* 
     **************************** EDIT TASK *******************************    
     */
@@ -365,8 +520,8 @@ const editItems = (function() {
             event.target.classList.add('editingTask');
     // parent.appendChild();
         
-        } else {
-            _appendTask(newTextArray[0]);
+        } else { 
+                _appendTask(newTextArray[0]);
         }
     }
 
@@ -469,9 +624,15 @@ const editItems = (function() {
     // function to confirm there are no repeating task values
     function _checkItemData(target, taskName, notes, date, project, status, index) {
 
+        const projectPanel = document.querySelector('.projectPanel');
         // variable for fetching the itemArray inside localStorage and assigning it a variable
-        const arrays = JSON.parse(localStorage.getItem('itemArray'));
+        if ( projectPanel === null ) {
+            const arrays = JSON.parse(localStorage.getItem('itemArray'));
+        } else if ( projectPanel != null ) {
+            const projectS = JSON.parse(localStorage.getItem('projectArray'));
+        }
 
+        const arrays = JSON.parse(localStorage.getItem('itemArray'));
         // variables that help the switch statement below decide what to do based on if repeat data is found
         let existing = false;
         let dataSet = undefined;
@@ -509,7 +670,12 @@ const editItems = (function() {
             break;
 
             case existing === false && taskName != '':
+            if ( projectPanel === null ) {
                 grabEditedTask.newTask(event.target, name.value, notes.value, date.value, project.value, status, index);
+            } else if ( projectPanel != null ) {
+
+            }
+
 
             break;
 
@@ -578,6 +744,30 @@ const editItems = (function() {
     const deleteButton = document.querySelector('.formDelete');
         deleteButton.addEventListener('click', () => {
     })
+
+    const grabEditedProject = (function () {
+
+        function receiveEditedProject (target, task, notes, date, project, status, index ) {
+            const editedProject = {};
+            editedProject.name = task,
+            editedProject.notes = notes,
+            editedProject.date = date,
+            editedProject.project = project,
+            editedProject.status = 'incomplete',
+            _updateArrays ( task, index )
+        }
+
+        function _updateArrays(task, index) {
+            console.log(task);
+            // variable that tells itemRef that the action being taken is 'edit'
+            const edit = 'edit';
+            _project_js__WEBPACK_IMPORTED_MODULE_1__.projects.update(edit, index, task)
+        }
+
+        return {
+            receiveEditedProject
+        }
+    })()
 
      /* 
     ************************************************************************************
@@ -1521,6 +1711,8 @@ const projects = (function() {
             storeProjects(statusUpdate, index);
             console.log(JSON.parse(localStorage.getItem('projectArray')));
         } else if (newTask != undefined ) {
+            console.log('...o.O')
+
             let statusUpdate = projectArray[index].tasks.splice(i, 1, newTask);
             storeProjects(statusUpdate, index);
             console.log(JSON.parse(localStorage.getItem('projectArray')));
@@ -1528,7 +1720,6 @@ const projects = (function() {
         
         if (projectArray[index].tasks.length === 0) {
             const projectPanel = document.querySelector('.projectPanel');
-
             _printTasks__WEBPACK_IMPORTED_MODULE_0__.taskPrint.removeProject(projectArray[index].projectName);
            let statusUpdate = projectArray.splice(index, 1);
             storeProjects(statusUpdate, index);
@@ -2177,7 +2368,6 @@ const projectPrint = (function () {
         for (var i = 0; i < allProjects.length; i++) {
             if (allProjects[i].projectName === project) {
                 let tasks = allProjects[i].tasks;
-                
                 return tasks;
             }
         }
@@ -2218,6 +2408,9 @@ const projectPrint = (function () {
 
             break;
             case action === 'edit':
+                let indecie = findTasks(amount);
+                console.log(indecie);
+
                 console.log(amount);
                 const newItem = {};
                 newItem.task = amount.name;

@@ -466,7 +466,6 @@ const projectPrint = (function () {
         for (var i = 0; i < allProjects.length; i++) {
             if (allProjects[i].projectName === project) {
                 let tasks = allProjects[i].tasks;
-                
                 return tasks;
             }
         }
@@ -507,6 +506,9 @@ const projectPrint = (function () {
 
             break;
             case action === 'edit':
+                let indecie = findTasks(amount);
+                console.log(indecie);
+
                 console.log(amount);
                 const newItem = {};
                 newItem.task = amount.name;

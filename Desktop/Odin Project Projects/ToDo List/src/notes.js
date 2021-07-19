@@ -138,9 +138,7 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
                                         - inbox tab
                                         - today tab
                                         - weekly tab
-                                    projects tab
-                                      
-                                        - edit project tasks
+                                   
                                        
                                     finishing touches
                                         - min and max sizes of elements
@@ -151,9 +149,7 @@ it acted normally. Not sure why, but it's something to keep in mind for trouble 
 
                                     
                             
-                                
-                              
-                                
+
 
 
                     */
