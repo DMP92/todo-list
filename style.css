@@ -184,7 +184,7 @@ body {
                 "content"
                 "footer";
     background-color: var(--dark-color);
-    
+    min-height: 650px;
 }
 
     .header {
