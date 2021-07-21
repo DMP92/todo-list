@@ -18,7 +18,7 @@ const projects = (function() {
     
     
 
-    console.log(projectArray);
+    
 
     function arrayShare() {
         return allProjects;
@@ -54,7 +54,7 @@ const projects = (function() {
         localStorage.setItem('projectArray', locallyStored);
         
 
-        console.log(allProjects);
+        
     }
 
     // function that deletes specified project from localStorage array
@@ -80,9 +80,9 @@ const projects = (function() {
         
         for ( var i = 0; i < allProjects.length; i++) {
             if (project === allProjects[i].projectName) {
-                console.log(project);
+                
             } else {
-                console.log(project);
+                
             }
         }
     }
@@ -91,7 +91,7 @@ const projects = (function() {
     function convey() {
         if (allProjects != null) {
             taskPrint.projectPrint(allProjects);
-            console.log('shweet')
+            
         }
     }
 
@@ -108,22 +108,22 @@ const projects = (function() {
         const locallyStored = JSON.stringify(projectArray);
         localStorage.setItem('projectArray', locallyStored);
         const stored = JSON.parse(localStorage.getItem('projectArray'));
-        console.log(stored);
+        
     }
 
        
     function splice (index, i, newTask) {
-        console.log (newTask);
+        
         if (newTask === undefined) {
             let statusUpdate = projectArray[index].tasks.splice(i, 1);
             storeProjects(statusUpdate, index);
-            console.log(JSON.parse(localStorage.getItem('projectArray')));
+            
         } else if (newTask != undefined ) {
-            console.log('...o.O')
+            
 
             let statusUpdate = projectArray[index].tasks.splice(i, 1, newTask);
             storeProjects(statusUpdate, index);
-            console.log(JSON.parse(localStorage.getItem('projectArray')));
+            
         }
         
         if (projectArray[index].tasks.length === 0) {
@@ -131,7 +131,9 @@ const projects = (function() {
             taskPrint.removeProject(projectArray[index].projectName);
            let statusUpdate = projectArray.splice(index, 1);
             storeProjects(statusUpdate, index);
-            projectPanel.textContent = '';
+            if ( projectPanel != null ) {
+                projectPanel.textContent = '';
+            }
         }
 
     }

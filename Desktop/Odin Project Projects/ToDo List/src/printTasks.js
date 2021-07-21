@@ -20,7 +20,7 @@ const taskPrint = (function() {
    
 
     function receiveLocalStorage(archive) {
-        console.log(archive);
+        
     }
 
     function receiveItem(item, index) {
@@ -39,12 +39,12 @@ const taskPrint = (function() {
                 task.date = item.date;
                 task.project = item.project;
                 task.status = item.status;
-                printTask(task, index, task.status);
+                printTask(task, task.status, index);
                    
     }
 
     // function that calls each appendChild method in order to create the task
-    function printTask(task, index, status) {
+    function printTask(task, status, index) {
         const item = document.createElement('div');
         item.classList.add('taskItem');
             // appends taskItem container DIV to task item section
@@ -60,7 +60,9 @@ const taskPrint = (function() {
                 _printTaskName(item, task.task);
                 _printTaskDate(item, task.date);
                 _printDescription(item, task.notes);
+                
                 if (status === 'complete') {
+                    
                     editItems.complete(item);
                 }
             break;
@@ -101,7 +103,7 @@ const taskPrint = (function() {
 
             case selectedTab === 'All Projects' && task.project != '':
                 if (task.project === '') {
-                    console.log('cannot print on this screen, but will print when in "All" tab.');
+                    
                 } else if (task.project != '') {
                     _printProjectName(item, task.project);
                     _printButtons(item);
@@ -140,7 +142,7 @@ const taskPrint = (function() {
         if (status != true && array != null) {
             // const text span
             let projectNames = array.map((a) => a.projectName);
-            console.log(projectNames);
+            
             // variable for fetching last array item
             let last = array.length - 1;
 

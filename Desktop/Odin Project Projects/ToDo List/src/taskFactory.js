@@ -62,7 +62,7 @@ const ProjectFactory = () => {
         // variables for repeat or new projects
         let repeat = false;
         let newProject = false;
-        console.log(getProject.array());
+        
         // creates each project that contains each task inside of it
         const container = {};
         container.projectName = project;
@@ -97,7 +97,7 @@ const ProjectFactory = () => {
             }
 
         } else if (getProject.array() === null || getProject.array().length === 0 ) {
-            console.log(getProject.array())
+            
             container.tasks.push(task);
             projects.receiving(container);
         }

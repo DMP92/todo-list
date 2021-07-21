@@ -2,6 +2,746 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/date-fns/esm/_lib/requiredArgs/index.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ requiredArgs)
+/* harmony export */ });
+function requiredArgs(required, args) {
+  if (args.length < required) {
+    throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/_lib/toInteger/index.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/date-fns/esm/_lib/toInteger/index.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ toInteger)
+/* harmony export */ });
+function toInteger(dirtyNumber) {
+  if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
+    return NaN;
+  }
+
+  var number = Number(dirtyNumber);
+
+  if (isNaN(number)) {
+    return number;
+  }
+
+  return number < 0 ? Math.ceil(number) : Math.floor(number);
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/isSameDay/index.js":
+/*!******************************************************!*\
+  !*** ./node_modules/date-fns/esm/isSameDay/index.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isSameDay)
+/* harmony export */ });
+/* harmony import */ var _startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../startOfDay/index.js */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name isSameDay
+ * @category Day Helpers
+ * @summary Are the given dates in the same day?
+ *
+ * @description
+ * Are the given dates in the same day?
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} dateLeft - the first date to check
+ * @param {Date|Number} dateRight - the second date to check
+ * @returns {Boolean} the dates are in the same day
+ * @throws {TypeError} 2 arguments required
+ *
+ * @example
+ * // Are 4 September 06:00:00 and 4 September 18:00:00 in the same day?
+ * var result = isSameDay(new Date(2014, 8, 4, 6, 0), new Date(2014, 8, 4, 18, 0))
+ * //=> true
+ */
+
+function isSameDay(dirtyDateLeft, dirtyDateRight) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var dateLeftStartOfDay = (0,_startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateLeft);
+  var dateRightStartOfDay = (0,_startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateRight);
+  return dateLeftStartOfDay.getTime() === dateRightStartOfDay.getTime();
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/isSameWeek/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/isSameWeek/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isSameWeek)
+/* harmony export */ });
+/* harmony import */ var _startOfWeek_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../startOfWeek/index.js */ "./node_modules/date-fns/esm/startOfWeek/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+/**
+ * @name isSameWeek
+ * @category Week Helpers
+ * @summary Are the given dates in the same week?
+ *
+ * @description
+ * Are the given dates in the same week?
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} dateLeft - the first date to check
+ * @param {Date|Number} dateRight - the second date to check
+ * @param {Object} [options] - an object with options.
+ * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
+ * @param {0|1|2|3|4|5|6} [options.weekStartsOn=0] - the index of the first day of the week (0 - Sunday)
+ * @returns {Boolean} the dates are in the same week
+ * @throws {TypeError} 2 arguments required
+ * @throws {RangeError} `options.weekStartsOn` must be between 0 and 6
+ *
+ * @example
+ * // Are 31 August 2014 and 4 September 2014 in the same week?
+ * var result = isSameWeek(new Date(2014, 7, 31), new Date(2014, 8, 4))
+ * //=> true
+ *
+ * @example
+ * // If week starts with Monday,
+ * // are 31 August 2014 and 4 September 2014 in the same week?
+ * var result = isSameWeek(new Date(2014, 7, 31), new Date(2014, 8, 4), {
+ *   weekStartsOn: 1
+ * })
+ * //=> false
+ */
+function isSameWeek(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var dateLeftStartOfWeek = (0,_startOfWeek_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateLeft, dirtyOptions);
+  var dateRightStartOfWeek = (0,_startOfWeek_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateRight, dirtyOptions);
+  return dateLeftStartOfWeek.getTime() === dateRightStartOfWeek.getTime();
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/isThisWeek/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/isThisWeek/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isThisWeek)
+/* harmony export */ });
+/* harmony import */ var _isSameWeek_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isSameWeek/index.js */ "./node_modules/date-fns/esm/isSameWeek/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+/**
+ * @name isThisWeek
+ * @category Week Helpers
+ * @summary Is the given date in the same week as the current date?
+ * @pure false
+ *
+ * @description
+ * Is the given date in the same week as the current date?
+ *
+ * > ⚠️ Please note that this function is not present in the FP submodule as
+ * > it uses `Date.now()` internally hence impure and can't be safely curried.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the date to check
+ * @param {Object} [options] - the object with options
+ * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
+ * @param {0|1|2|3|4|5|6} [options.weekStartsOn=0] - the index of the first day of the week (0 - Sunday)
+ * @returns {Boolean} the date is in this week
+ * @throws {TypeError} 1 argument required
+ * @throws {RangeError} `options.weekStartsOn` must be between 0 and 6
+ *
+ * @example
+ * // If today is 25 September 2014, is 21 September 2014 in this week?
+ * var result = isThisWeek(new Date(2014, 8, 21))
+ * //=> true
+ *
+ * @example
+ * // If today is 25 September 2014 and week starts with Monday
+ * // is 21 September 2014 in this week?
+ * var result = isThisWeek(new Date(2014, 8, 21), { weekStartsOn: 1 })
+ * //=> false
+ */
+function isThisWeek(dirtyDate, options) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  return (0,_isSameWeek_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate, Date.now(), options);
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/isToday/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/date-fns/esm/isToday/index.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isToday)
+/* harmony export */ });
+/* harmony import */ var _isSameDay_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isSameDay/index.js */ "./node_modules/date-fns/esm/isSameDay/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name isToday
+ * @category Day Helpers
+ * @summary Is the given date today?
+ * @pure false
+ *
+ * @description
+ * Is the given date today?
+ *
+ * > ⚠️ Please note that this function is not present in the FP submodule as
+ * > it uses `Date.now()` internally hence impure and can't be safely curried.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the date to check
+ * @returns {Boolean} the date is today
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // If today is 6 October 2014, is 6 October 14:00:00 today?
+ * var result = isToday(new Date(2014, 9, 6, 14, 0))
+ * //=> true
+ */
+
+function isToday(dirtyDate) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  return (0,_isSameDay_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate, Date.now());
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/parseISO/index.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/date-fns/esm/parseISO/index.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ parseISO)
+/* harmony export */ });
+/* harmony import */ var _lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_lib/toInteger/index.js */ "./node_modules/date-fns/esm/_lib/toInteger/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+var MILLISECONDS_IN_HOUR = 3600000;
+var MILLISECONDS_IN_MINUTE = 60000;
+var DEFAULT_ADDITIONAL_DIGITS = 2;
+var patterns = {
+  dateTimeDelimiter: /[T ]/,
+  timeZoneDelimiter: /[Z ]/i,
+  timezone: /([Z+-].*)$/
+};
+var dateRegex = /^-?(?:(\d{3})|(\d{2})(?:-?(\d{2}))?|W(\d{2})(?:-?(\d{1}))?|)$/;
+var timeRegex = /^(\d{2}(?:[.,]\d*)?)(?::?(\d{2}(?:[.,]\d*)?))?(?::?(\d{2}(?:[.,]\d*)?))?$/;
+var timezoneRegex = /^([+-])(\d{2})(?::?(\d{2}))?$/;
+/**
+ * @name parseISO
+ * @category Common Helpers
+ * @summary Parse ISO string
+ *
+ * @description
+ * Parse the given string in ISO 8601 format and return an instance of Date.
+ *
+ * Function accepts complete ISO 8601 formats as well as partial implementations.
+ * ISO 8601: http://en.wikipedia.org/wiki/ISO_8601
+ *
+ * If the argument isn't a string, the function cannot parse the string or
+ * the values are invalid, it returns Invalid Date.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * - The previous `parse` implementation was renamed to `parseISO`.
+ *
+ *   ```javascript
+ *   // Before v2.0.0
+ *   parse('2016-01-01')
+ *
+ *   // v2.0.0 onward
+ *   parseISO('2016-01-01')
+ *   ```
+ *
+ * - `parseISO` now validates separate date and time values in ISO-8601 strings
+ *   and returns `Invalid Date` if the date is invalid.
+ *
+ *   ```javascript
+ *   parseISO('2018-13-32')
+ *   //=> Invalid Date
+ *   ```
+ *
+ * - `parseISO` now doesn't fall back to `new Date` constructor
+ *   if it fails to parse a string argument. Instead, it returns `Invalid Date`.
+ *
+ * @param {String} argument - the value to convert
+ * @param {Object} [options] - an object with options.
+ * @param {0|1|2} [options.additionalDigits=2] - the additional number of digits in the extended year format
+ * @returns {Date} the parsed date in the local time zone
+ * @throws {TypeError} 1 argument required
+ * @throws {RangeError} `options.additionalDigits` must be 0, 1 or 2
+ *
+ * @example
+ * // Convert string '2014-02-11T11:30:30' to date:
+ * var result = parseISO('2014-02-11T11:30:30')
+ * //=> Tue Feb 11 2014 11:30:30
+ *
+ * @example
+ * // Convert string '+02014101' to date,
+ * // if the additional number of digits in the extended year format is 1:
+ * var result = parseISO('+02014101', { additionalDigits: 1 })
+ * //=> Fri Apr 11 2014 00:00:00
+ */
+
+function parseISO(argument, dirtyOptions) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var options = dirtyOptions || {};
+  var additionalDigits = options.additionalDigits == null ? DEFAULT_ADDITIONAL_DIGITS : (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(options.additionalDigits);
+
+  if (additionalDigits !== 2 && additionalDigits !== 1 && additionalDigits !== 0) {
+    throw new RangeError('additionalDigits must be 0, 1 or 2');
+  }
+
+  if (!(typeof argument === 'string' || Object.prototype.toString.call(argument) === '[object String]')) {
+    return new Date(NaN);
+  }
+
+  var dateStrings = splitDateString(argument);
+  var date;
+
+  if (dateStrings.date) {
+    var parseYearResult = parseYear(dateStrings.date, additionalDigits);
+    date = parseDate(parseYearResult.restDateString, parseYearResult.year);
+  }
+
+  if (isNaN(date) || !date) {
+    return new Date(NaN);
+  }
+
+  var timestamp = date.getTime();
+  var time = 0;
+  var offset;
+
+  if (dateStrings.time) {
+    time = parseTime(dateStrings.time);
+
+    if (isNaN(time) || time === null) {
+      return new Date(NaN);
+    }
+  }
+
+  if (dateStrings.timezone) {
+    offset = parseTimezone(dateStrings.timezone);
+
+    if (isNaN(offset)) {
+      return new Date(NaN);
+    }
+  } else {
+    var dirtyDate = new Date(timestamp + time); // js parsed string assuming it's in UTC timezone
+    // but we need it to be parsed in our timezone
+    // so we use utc values to build date in our timezone.
+    // Year values from 0 to 99 map to the years 1900 to 1999
+    // so set year explicitly with setFullYear.
+
+    var result = new Date(0);
+    result.setFullYear(dirtyDate.getUTCFullYear(), dirtyDate.getUTCMonth(), dirtyDate.getUTCDate());
+    result.setHours(dirtyDate.getUTCHours(), dirtyDate.getUTCMinutes(), dirtyDate.getUTCSeconds(), dirtyDate.getUTCMilliseconds());
+    return result;
+  }
+
+  return new Date(timestamp + time + offset);
+}
+
+function splitDateString(dateString) {
+  var dateStrings = {};
+  var array = dateString.split(patterns.dateTimeDelimiter);
+  var timeString; // The regex match should only return at maximum two array elements.
+  // [date], [time], or [date, time].
+
+  if (array.length > 2) {
+    return dateStrings;
+  }
+
+  if (/:/.test(array[0])) {
+    dateStrings.date = null;
+    timeString = array[0];
+  } else {
+    dateStrings.date = array[0];
+    timeString = array[1];
+
+    if (patterns.timeZoneDelimiter.test(dateStrings.date)) {
+      dateStrings.date = dateString.split(patterns.timeZoneDelimiter)[0];
+      timeString = dateString.substr(dateStrings.date.length, dateString.length);
+    }
+  }
+
+  if (timeString) {
+    var token = patterns.timezone.exec(timeString);
+
+    if (token) {
+      dateStrings.time = timeString.replace(token[1], '');
+      dateStrings.timezone = token[1];
+    } else {
+      dateStrings.time = timeString;
+    }
+  }
+
+  return dateStrings;
+}
+
+function parseYear(dateString, additionalDigits) {
+  var regex = new RegExp('^(?:(\\d{4}|[+-]\\d{' + (4 + additionalDigits) + '})|(\\d{2}|[+-]\\d{' + (2 + additionalDigits) + '})$)');
+  var captures = dateString.match(regex); // Invalid ISO-formatted year
+
+  if (!captures) return {
+    year: null
+  };
+  var year = captures[1] && parseInt(captures[1]);
+  var century = captures[2] && parseInt(captures[2]);
+  return {
+    year: century == null ? year : century * 100,
+    restDateString: dateString.slice((captures[1] || captures[2]).length)
+  };
+}
+
+function parseDate(dateString, year) {
+  // Invalid ISO-formatted year
+  if (year === null) return null;
+  var captures = dateString.match(dateRegex); // Invalid ISO-formatted string
+
+  if (!captures) return null;
+  var isWeekDate = !!captures[4];
+  var dayOfYear = parseDateUnit(captures[1]);
+  var month = parseDateUnit(captures[2]) - 1;
+  var day = parseDateUnit(captures[3]);
+  var week = parseDateUnit(captures[4]);
+  var dayOfWeek = parseDateUnit(captures[5]) - 1;
+
+  if (isWeekDate) {
+    if (!validateWeekDate(year, week, dayOfWeek)) {
+      return new Date(NaN);
+    }
+
+    return dayOfISOWeekYear(year, week, dayOfWeek);
+  } else {
+    var date = new Date(0);
+
+    if (!validateDate(year, month, day) || !validateDayOfYearDate(year, dayOfYear)) {
+      return new Date(NaN);
+    }
+
+    date.setUTCFullYear(year, month, Math.max(dayOfYear, day));
+    return date;
+  }
+}
+
+function parseDateUnit(value) {
+  return value ? parseInt(value) : 1;
+}
+
+function parseTime(timeString) {
+  var captures = timeString.match(timeRegex);
+  if (!captures) return null; // Invalid ISO-formatted time
+
+  var hours = parseTimeUnit(captures[1]);
+  var minutes = parseTimeUnit(captures[2]);
+  var seconds = parseTimeUnit(captures[3]);
+
+  if (!validateTime(hours, minutes, seconds)) {
+    return NaN;
+  }
+
+  return hours * MILLISECONDS_IN_HOUR + minutes * MILLISECONDS_IN_MINUTE + seconds * 1000;
+}
+
+function parseTimeUnit(value) {
+  return value && parseFloat(value.replace(',', '.')) || 0;
+}
+
+function parseTimezone(timezoneString) {
+  if (timezoneString === 'Z') return 0;
+  var captures = timezoneString.match(timezoneRegex);
+  if (!captures) return 0;
+  var sign = captures[1] === '+' ? -1 : 1;
+  var hours = parseInt(captures[2]);
+  var minutes = captures[3] && parseInt(captures[3]) || 0;
+
+  if (!validateTimezone(hours, minutes)) {
+    return NaN;
+  }
+
+  return sign * (hours * MILLISECONDS_IN_HOUR + minutes * MILLISECONDS_IN_MINUTE);
+}
+
+function dayOfISOWeekYear(isoWeekYear, week, day) {
+  var date = new Date(0);
+  date.setUTCFullYear(isoWeekYear, 0, 4);
+  var fourthOfJanuaryDay = date.getUTCDay() || 7;
+  var diff = (week - 1) * 7 + day + 1 - fourthOfJanuaryDay;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date;
+} // Validation functions
+// February is null to handle the leap year (using ||)
+
+
+var daysInMonths = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+function isLeapYearIndex(year) {
+  return year % 400 === 0 || year % 4 === 0 && year % 100;
+}
+
+function validateDate(year, month, date) {
+  return month >= 0 && month <= 11 && date >= 1 && date <= (daysInMonths[month] || (isLeapYearIndex(year) ? 29 : 28));
+}
+
+function validateDayOfYearDate(year, dayOfYear) {
+  return dayOfYear >= 1 && dayOfYear <= (isLeapYearIndex(year) ? 366 : 365);
+}
+
+function validateWeekDate(_year, week, day) {
+  return week >= 1 && week <= 53 && day >= 0 && day <= 6;
+}
+
+function validateTime(hours, minutes, seconds) {
+  if (hours === 24) {
+    return minutes === 0 && seconds === 0;
+  }
+
+  return seconds >= 0 && seconds < 60 && minutes >= 0 && minutes < 60 && hours >= 0 && hours < 25;
+}
+
+function validateTimezone(_hours, minutes) {
+  return minutes >= 0 && minutes <= 59;
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/startOfDay/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/startOfDay/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ startOfDay)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name startOfDay
+ * @category Day Helpers
+ * @summary Return the start of a day for the given date.
+ *
+ * @description
+ * Return the start of a day for the given date.
+ * The result will be in the local timezone.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the original date
+ * @returns {Date} the start of a day
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // The start of a day for 2 September 2014 11:55:00:
+ * const result = startOfDay(new Date(2014, 8, 2, 11, 55, 0))
+ * //=> Tue Sep 02 2014 00:00:00
+ */
+
+function startOfDay(dirtyDate) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var date = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/startOfWeek/index.js":
+/*!********************************************************!*\
+  !*** ./node_modules/date-fns/esm/startOfWeek/index.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ startOfWeek)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_lib/toInteger/index.js */ "./node_modules/date-fns/esm/_lib/toInteger/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+/**
+ * @name startOfWeek
+ * @category Week Helpers
+ * @summary Return the start of a week for the given date.
+ *
+ * @description
+ * Return the start of a week for the given date.
+ * The result will be in the local timezone.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the original date
+ * @param {Object} [options] - an object with options.
+ * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
+ * @param {0|1|2|3|4|5|6} [options.weekStartsOn=0] - the index of the first day of the week (0 - Sunday)
+ * @returns {Date} the start of a week
+ * @throws {TypeError} 1 argument required
+ * @throws {RangeError} `options.weekStartsOn` must be between 0 and 6
+ *
+ * @example
+ * // The start of a week for 2 September 2014 11:55:00:
+ * const result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0))
+ * //=> Sun Aug 31 2014 00:00:00
+ *
+ * @example
+ * // If the week starts on Monday, the start of the week for 2 September 2014 11:55:00:
+ * const result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0), { weekStartsOn: 1 })
+ * //=> Mon Sep 01 2014 00:00:00
+ */
+
+function startOfWeek(dirtyDate, dirtyOptions) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var options = dirtyOptions || {};
+  var locale = options.locale;
+  var localeWeekStartsOn = locale && locale.options && locale.options.weekStartsOn;
+  var defaultWeekStartsOn = localeWeekStartsOn == null ? 0 : (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(localeWeekStartsOn);
+  var weekStartsOn = options.weekStartsOn == null ? defaultWeekStartsOn : (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(options.weekStartsOn); // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
+
+  if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
+    throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
+  }
+
+  var date = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(dirtyDate);
+  var day = date.getDay();
+  var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
+  date.setDate(date.getDate() - diff);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/toDate/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/date-fns/esm/toDate/index.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ toDate)
+/* harmony export */ });
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+/**
+ * @name toDate
+ * @category Common Helpers
+ * @summary Convert the given argument to an instance of Date.
+ *
+ * @description
+ * Convert the given argument to an instance of Date.
+ *
+ * If the argument is an instance of Date, the function returns its clone.
+ *
+ * If the argument is a number, it is treated as a timestamp.
+ *
+ * If the argument is none of the above, the function returns Invalid Date.
+ *
+ * **Note**: *all* Date arguments passed to any *date-fns* function is processed by `toDate`.
+ *
+ * @param {Date|Number} argument - the value to convert
+ * @returns {Date} the parsed date in the local time zone
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // Clone the date:
+ * const result = toDate(new Date(2014, 1, 11, 11, 30, 30))
+ * //=> Tue Feb 11 2014 11:30:30
+ *
+ * @example
+ * // Convert the timestamp to date:
+ * const result = toDate(1392098430000)
+ * //=> Tue Feb 11 2014 11:30:30
+ */
+
+function toDate(argument) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var argStr = Object.prototype.toString.call(argument); // Clone the date
+
+  if (argument instanceof Date || typeof argument === 'object' && argStr === '[object Date]') {
+    // Prevent the date to lose the milliseconds when passed to new Date() in IE10
+    return new Date(argument.getTime());
+  } else if (typeof argument === 'number' || argStr === '[object Number]') {
+    return new Date(argument);
+  } else {
+    if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
+      // eslint-disable-next-line no-console
+      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
+
+      console.warn(new Error().stack);
+    }
+
+    return new Date(NaN);
+  }
+}
+
+/***/ }),
+
 /***/ "./src/editTasks.js":
 /*!**************************!*\
   !*** ./src/editTasks.js ***!
@@ -66,7 +806,6 @@ const editItems = (function() {
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event) {
-        console.log('what?')
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
@@ -74,9 +813,13 @@ const editItems = (function() {
         const action = 'delete';
         const parentGroup = document.querySelectorAll('.taskItem');
         const projectPanel = document.querySelector('.projectPanel');
-        
+        let index = undefined;
+
         // variable for task index
-        let index = searchItem(task);
+        if (project === '') {
+            index = searchItem(task);
+        }
+
         switch(true) {
             case projectPanel === null:
                 if (task === '') {
@@ -90,30 +833,44 @@ const editItems = (function() {
                     _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, 1);
                     taskPanel.removeChild(parent);  
                     // projects.delete(projectIndex); 
-                } else {
+                } else if ( task != '' && project === '' ) {
                     let projectIndex = searchProjectItems(project);
                     // variable that fetches array 
                     let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
-                    console.log(project.textContent);
+                   
 
                     // removes items from both the array, localStorage, and the DOM
                     _printTasks_js__WEBPACK_IMPORTED_MODULE_3__.taskPrint.removeProject(project);
                     _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, 1);
                     taskPanel.removeChild(parent);  
                     // projects.delete(projectIndex); 
+                } else if ( task != '' && project != '') {
+                    let projectIndex = searchProjectItems(project, task);
+                    // variable that fetches array 
+                    console.log(projectIndex);
+                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    // removes items from both the array, localStorage, and the DOM
+                    let tasks = projectItems[projectIndex.project].tasks[projectIndex.task];
+                    
+                            
+                            
+                            
+                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.delete(projectIndex.project, projectIndex.task);
+                            taskPanel.removeChild(parent);  
+                        
+                    
                 }
             break;
             case projectPanel != null:
                 if (project === undefined) {
                 //     let projectItems = JSON.parse(localStorage.getItem('projectArray'));
 
-                console.log('hey');
                 let projectIndex = searchProjectItems(project);
                 // variable that fetches array 
                 let projectItems = JSON.parse(localStorage.getItem('projectArray'));
                 
                 // removes items from both the array, localStorage, and the DOM
-                console.log(projectIndex);
+               
         
                 //    let projectIndex = searchProjectItems(project);
                 //     // variable that fetches array 
@@ -128,22 +885,15 @@ const editItems = (function() {
                     
                    
 
-                    console.log('hey');
-                    let projectIndex = searchProjectItems(project);
+                    let projectIndex = searchProjectItems(project, task);
                     // variable that fetches array 
-                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    
                     // removes items from both the array, localStorage, and the DOM
-                    let tasks = projectItems[projectIndex].tasks;
-
-                    for (var i = 0; i < tasks.length; i++) {
-                        if (tasks[i].task === task) {
-                            
-                            
-                            
-                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.delete(projectIndex, i);
+                    
+                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.delete(projectIndex.project, projectIndex.task);
                             taskPanel.removeChild(parent);  
-                        }
-                    }
+                        
+                    
                 }
         }
        
@@ -158,30 +908,47 @@ const editItems = (function() {
                 then call for a storage Push so it updates the item
          */
 
-    function searchItem(data) {
+    function searchItem(name) {
 
-        const array = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
+        const array = JSON.parse(localStorage.getItem('itemArray'));
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
             
-            if (index === data) {
-                console.log(array.indexOf(array[i]));
+            if (index === name) {
+               
                 return array.indexOf(array[i]);
             }
         }
 
     }
 
-    function searchProjectItems(project) {
+    function searchProjectItems( project, task ) {
+       
         const array = JSON.parse(localStorage.getItem('projectArray'));
 
         for (var i = 0; i < array.length; i++) {
-            let index = array[i].projectName;
 
-            if (index === project) {
-                console.log(array.indexOf(array[i]));
-                return array.indexOf(array[i]);
+            let index = array[i].projectName;
+            let taskArray = array[i].tasks;
+
+            if ( index === project ) {
+
+                for ( var j = 0; j < taskArray.length; j++ ) {
+                    if ( taskArray[j].task === task ) {
+                        //
+                        //
+                        let taskIndex = taskArray.indexOf(taskArray[j]);
+                        let projectIndex = array.indexOf(array[i]);
+                        let newTask = {
+                            task: taskIndex,
+                            project: projectIndex
+                        }
+                        return newTask;
+                    }
+                }
+                
+                
             }
         }
     }
@@ -228,10 +995,15 @@ const editItems = (function() {
 
                 // if the project tab is highlighted, then it updates the project array
                 // else it will update item array
-                if (projectColor.classList.contains('hovered')) {
-                    index = _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.search(task, project);
-                    
-                    _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
+                if (project != '') {
+                    const projectArrays = JSON.parse(localStorage.getItem('projectArray'));
+
+                    for ( var i = 0; i < projectArrays.length; i++ ) {
+                        if ( projectArrays[i].projectName === project ) {
+                            index = projectArrays.indexOf(projectArrays[i]);
+                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
+                        }
+                    }
                 } else {
 
                     _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, status);
@@ -244,12 +1016,22 @@ const editItems = (function() {
                 status = 'incomplete';
 
 
-                 if (projectColor.classList.contains('hovered')) {
+                 if (project != '' && index === undefined) {
+                    const projectArrays = JSON.parse(localStorage.getItem('projectArray'));
+
+                    for ( var i = 0; i < projectArrays.length; i++ ) {
+                        if ( projectArrays[i].projectName === project ) {
+                            index = projectArrays.indexOf(projectArrays[i]);
+                           
+                            _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
+                        }
+                    }
+                } else if (project != '') {
                     index = _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.search(task, project);
-                    console.log(index);
+                   
                     _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.projectPrint.update(action, index, status);
                 } else {
-
+                    
                     _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(action, index, status);
                 }
                 
@@ -289,7 +1071,7 @@ const editItems = (function() {
                 const newest = JSON.stringify(newItems);
                 localStorage.setItem(key, newest);
                 //  localStorage.setItem(items, `{task:${task}, notes: ${notes}, date: ${date}, ${project}, ${status}}`);
-                 console.log(key);
+                 
              }
             
             i++
@@ -300,14 +1082,41 @@ const editItems = (function() {
         const taskPanel = document.querySelector('.taskPanel');
         const parent = event.parentElement;
 
-        for ( var i = 0; i < taskPanel.children.length; i++ ) {
-            if ( taskPanel.children[i] === parent ) {
-                let taskIndex = i;
-                return i;
-            }
+        switch ( true ) {
+            case parent.children[0].textContent === '':
+               const items = JSON.parse(localStorage.getItem('itemArray'));
+
+                for ( var i = 0; i < items.length; i++ ) {
+                    if ( parent.children[4].textContent === items[i].task ) {
+                        items.indexOf ( item[i] );
+                    }
+                }
+
+            break;
+            case parent.children[0].textContent != '':
+                
+                const projects = JSON.parse(localStorage.getItem('projectArray'));
+
+                for ( var i = 0; i < projects.length; i++ ) {
+                    if ( projects[i].projectName === parent.children[0] ) {
+
+                        const projectTasks = projects.map((a) => a.tasks);
+
+                        for ( var j = 0; j < projectTasks.length; j++ ) {
+                            if ( parent.children[4] === projectTasks[i][j].task) {
+                            }
+                        }
+
+                    }
+                }
+            
+            break;
         }
+
         
     }
+
+    const currentProject = [];
 
     function _editProject () {
         // variables that get each nodeList item of the specific container the clicked button is in
@@ -317,6 +1126,7 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
+        const task = parent.children[4].textContent;
 
         const projectTextArray = document.querySelectorAll('.textSpans');
 
@@ -325,20 +1135,20 @@ const editItems = (function() {
                 
                 newTextArray.push(projectTextArray[i]);
             } else if (projectTextArray[i].textContent === undefined) {
-                console.log('hmm');
             }
         }
 
         
-        let projectIndex = searchProjectItems(project);
+        let newTasks = searchProjectItems( project, task );
+        currentProject.push(newTasks);
+       
+        
         // variable that fetches array 
         let projectItems = JSON.parse(localStorage.getItem('projectArray'));
         // removes items from both the array, localStorage, and the DOM
-        let tasks = projectItems[projectIndex].tasks;
-        let indecie = undefined;
+        
 
-        let taskIndex = parentIndex( event.target );
-        console.log(taskIndex);
+        
       
         // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
         // ELSE it will run the function called below which appends the newly edited info to the DOM
@@ -371,11 +1181,12 @@ const editItems = (function() {
                 event.target.classList.add('editingTask');
             // parent.appendChild();
         } else {
-            console.log('...o.O')
+            
+             _appendProject ( currentProject[0].project, currentProject[0].task );
 
-            _appendProject ( projectIndex, taskIndex );
+            currentProject.pop();
+            currentProject.pop();
         }
-
     }
 
     function _appendProject ( ind, i ) {
@@ -420,7 +1231,7 @@ const editItems = (function() {
             //     if (projectPanel != null) {
             //         const projectScroll = document.querySelector('.scrollContainer');
             //         projectScroll.removeChild(textIndex);
-            //         console.log('hey');
+            //        
             //     }
             // }
 
@@ -438,6 +1249,7 @@ const editItems = (function() {
             
         }
         
+        
 
         const newItem = {};
         newItem.task = name.value;
@@ -446,14 +1258,30 @@ const editItems = (function() {
         newItem.project = project;
         newItem.status = 'incomplete';
         _project_js__WEBPACK_IMPORTED_MODULE_1__.projects.splice( ind, i, newItem );
-        
+
+        const hovered = document.querySelector('.hovered');
+        _updatePage ( hovered.textContent );
+
   }
 
+  function _updatePage ( page ) {
+      
+        switch ( true ) {
+            case page === 'Today':
+                _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.tabSelection.today();
+            break;
 
+            case page === 'Weekly':
+                _updateDOM_js__WEBPACK_IMPORTED_MODULE_4__.tabSelection.weekly();
+            break;
+
+        }
+  }
 
     /* 
     **************************** EDIT TASK *******************************    
     */
+    const taskContainer = [];
 
     // private function that allows the task info to be edited
     function _editTask() {
@@ -467,61 +1295,69 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
-
-
-        const projectTextArray = document.querySelectorAll('.textSpans');
+        const task = parent.children[4].textContent;
         
+        if (project.textContent != '' ) {
+            _editProject();
+        } else {
 
-        for (var i = 0; i < projectTextArray.length; i++) {
-            if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
-                
-                newTextArray.push(projectTextArray[i]);
-            } else if (projectTextArray[i].textContent === undefined) {
-                console.log('hmm');
+            const projectTextArray = document.querySelectorAll('.textSpans');
+            
+
+            for (var i = 0; i < projectTextArray.length; i++) {
+                if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
+                    
+                    newTextArray.push(projectTextArray[i]);
+                } else if (projectTextArray[i].textContent === undefined) {
+                }
             }
-        }
+
+            const itemIndex = searchItem(task);
+            taskContainer.push(itemIndex);
+
+            // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
+            // ELSE it will run the function called below which appends the newly edited info to the DOM
+            if (name.tagName === 'DIV') {
+            // variables for appending input items to taskItem
+
+            const editProject = document.createElement('input');
+                editProject.classList.add('projectName');
+                editProject.style.cssText = 'text-align: center;';
+                editProject.placeholder = 'Edit Project Name';
+                parent.replaceChild(editProject, project);
 
 
-        // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
-        // ELSE it will run the function called below which appends the newly edited info to the DOM
-        if (name.tagName === 'DIV') {
-        // variables for appending input items to taskItem
-
-        const editProject = document.createElement('input');
-            editProject.classList.add('projectName');
-            editProject.style.cssText = 'text-align: center;';
-            editProject.placeholder = 'Edit Project Name';
-            parent.replaceChild(editProject, project);
+            const editName = document.createElement('input');
+                editName.classList.add('taskName');
+                editName.placeholder = 'Edit Task Name';
+                editName.style.cssText = 'text-align: center;';
+                parent.replaceChild(editName, name);
 
 
-        const editName = document.createElement('input');
-            editName.classList.add('taskName');
-            editName.placeholder = 'Edit Task Name';
-            editName.style.cssText = 'text-align: center;';
-            parent.replaceChild(editName, name);
-
-
-        const editDate = document.createElement('input');
-            editDate.classList.add('taskDate');
-            editDate.type = 'date';
-            editDate.style.cssText = "background-color: White; color: black; text-align: center;";
-            editDate.placeholder = 'Edit Date';
-            parent.replaceChild(editDate, date)
+            const editDate = document.createElement('input');
+                editDate.classList.add('taskDate');
+                editDate.type = 'date';
+                editDate.style.cssText = "background-color: White; color: black; text-align: center;";
+                editDate.placeholder = 'Edit Date';
+                parent.replaceChild(editDate, date)
 
 
 
-        const editDescription = document.createElement('input');
-            editDescription.classList.add('description');
-            editDescription.placeholder = 'Edit Notes';
-            editDescription.style.cssText = 'text-align: center;';
-            parent.replaceChild(editDescription, notes);
+            const editDescription = document.createElement('input');
+                editDescription.classList.add('description');
+                editDescription.placeholder = 'Edit Notes';
+                editDescription.style.cssText = 'text-align: center;';
+                parent.replaceChild(editDescription, notes);
 
-            event.target.classList.remove('editTask');
-            event.target.classList.add('editingTask');
-    // parent.appendChild();
-        
-        } else { 
-                _appendTask(newTextArray[0]);
+                event.target.classList.remove('editTask');
+                event.target.classList.add('editingTask');
+        // parent.appendChild();
+            
+            } else { 
+                    let tempIndex = taskContainer[0];
+                    _appendTask(tempIndex);
+                    taskContainer.pop();
+            }
         }
     }
 
@@ -533,7 +1369,7 @@ const editItems = (function() {
 
 
     // function that takes newly edited information and publishes them to the DOM
-    function _appendTask(textIndex) {
+    function _appendTask(textIndex, itemIndex) {
 
         // variable for grabbing all task items
         const taskItems = document.querySelectorAll('.taskItem');
@@ -580,15 +1416,14 @@ const editItems = (function() {
                 if (projectPanel != null) {
                     const projectScroll = document.querySelector('.scrollContainer');
                     projectScroll.removeChild(textIndex);
-                    console.log('hey');
                 }
             }
 
 
         // variable that fetches index of edited element
-        const index = tasks.indexOf(parent);
+        textIndex
 
-        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, textIndex)
 
         if(name.value != '') {
             
@@ -616,8 +1451,10 @@ const editItems = (function() {
             alert('Tasks cannot be made into projects.')
         }
         
-        _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update('edit', index, newItem);
+        _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update('edit', textIndex, newItem);
         
+        const hovered = document.querySelector('.hovered');
+        _updatePage ( hovered.textContent );
     }
 
     
@@ -683,9 +1520,9 @@ const editItems = (function() {
                 if (projectPrompt === true) {
                     alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
                      alert(`All ${dataSet} must be unique. `);
-                     console.log('top');
+                    
                 } else {
-                    console.log('bottom');
+                   
                     return alert(`All ${dataSet} must be unique. `);
                 }
             break;
@@ -730,7 +1567,6 @@ const editItems = (function() {
         }
 
         function _updateArrays(task, index) {
-            console.log(task);
             // variable that tells itemRef that the action being taken is 'edit'
             const edit = 'edit';
             _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.update(edit, index, task)
@@ -741,9 +1577,7 @@ const editItems = (function() {
         }
     })();
 
-    const deleteButton = document.querySelector('.formDelete');
-        deleteButton.addEventListener('click', () => {
-    })
+    
 
     const grabEditedProject = (function () {
 
@@ -758,7 +1592,6 @@ const editItems = (function() {
         }
 
         function _updateArrays(task, index) {
-            console.log(task);
             // variable that tells itemRef that the action being taken is 'edit'
             const edit = 'edit';
             _project_js__WEBPACK_IMPORTED_MODULE_1__.projects.update(edit, index, task)
@@ -904,14 +1737,14 @@ const grabTask = (function() {
         }
         // if no repeated data, print the task
             // if there IS repeated data, alert the user, and refuse their task
-            console.log(existing);
+            
         switch(true) {
             case existing === false && taskName === '':
                 return alert('Tasks cannot be blank!');
             break;
 
             case existing === false && project != '':
-                console.log('lower')
+                
                 const newProject = (0,_taskFactory_js__WEBPACK_IMPORTED_MODULE_1__.ProjectFactory)();
                 newProject.receiveProjects(taskName, notes, date, project, status);
             break;
@@ -926,9 +1759,9 @@ const grabTask = (function() {
 
             case existing === true:
                 if (projectPrompt === true) {
-                   console.log('hmm')
+                   
                 } else {
-                    console.log('bottom');
+                    
                     return alert(`All ${dataSet} must be unique. `);
                 }
             break;
@@ -1059,13 +1892,13 @@ const itemRef = (function() {
                 case action === 'edit':
                     
                   
-                   
+                    
                     itemArray.splice(index, 1, amount);
                     storeArray = JSON.stringify(itemArray);
                     localStorage.setItem('itemArray', storeArray);
                     let storedArray = JSON.parse(localStorage.getItem('itemArray'));
                     console.log(storedArray);
-
+                    
                     
                     
                 break;
@@ -1208,8 +2041,9 @@ const getProject = (function() {
         _updateDOM__WEBPACK_IMPORTED_MODULE_1__.projectPrint.reprint();
         if ( projectPanel != null) {
             _printTasks__WEBPACK_IMPORTED_MODULE_4__.taskPrint.project();
-        }
+        } 
 
+        
 
         _editTasks__WEBPACK_IMPORTED_MODULE_3__.editItems.eventListeners();
         
@@ -1274,7 +2108,7 @@ const taskPrint = (function() {
    
 
     function receiveLocalStorage(archive) {
-        console.log(archive);
+        
     }
 
     function receiveItem(item, index) {
@@ -1293,12 +2127,12 @@ const taskPrint = (function() {
                 task.date = item.date;
                 task.project = item.project;
                 task.status = item.status;
-                printTask(task, index, task.status);
+                printTask(task, task.status, index);
                    
     }
 
     // function that calls each appendChild method in order to create the task
-    function printTask(task, index, status) {
+    function printTask(task, status, index) {
         const item = document.createElement('div');
         item.classList.add('taskItem');
             // appends taskItem container DIV to task item section
@@ -1314,7 +2148,9 @@ const taskPrint = (function() {
                 _printTaskName(item, task.task);
                 _printTaskDate(item, task.date);
                 _printDescription(item, task.notes);
+                
                 if (status === 'complete') {
+                    
                     _editTasks__WEBPACK_IMPORTED_MODULE_1__.editItems.complete(item);
                 }
             break;
@@ -1355,7 +2191,7 @@ const taskPrint = (function() {
 
             case selectedTab === 'All Projects' && task.project != '':
                 if (task.project === '') {
-                    console.log('cannot print on this screen, but will print when in "All" tab.');
+                    
                 } else if (task.project != '') {
                     _printProjectName(item, task.project);
                     _printButtons(item);
@@ -1394,7 +2230,7 @@ const taskPrint = (function() {
         if (status != true && array != null) {
             // const text span
             let projectNames = array.map((a) => a.projectName);
-            console.log(projectNames);
+            
             // variable for fetching last array item
             let last = array.length - 1;
 
@@ -1610,7 +2446,7 @@ const projects = (function() {
     
     
 
-    console.log(projectArray);
+    
 
     function arrayShare() {
         return allProjects;
@@ -1646,7 +2482,7 @@ const projects = (function() {
         localStorage.setItem('projectArray', locallyStored);
         
 
-        console.log(allProjects);
+        
     }
 
     // function that deletes specified project from localStorage array
@@ -1672,9 +2508,9 @@ const projects = (function() {
         
         for ( var i = 0; i < allProjects.length; i++) {
             if (project === allProjects[i].projectName) {
-                console.log(project);
+                
             } else {
-                console.log(project);
+                
             }
         }
     }
@@ -1683,7 +2519,7 @@ const projects = (function() {
     function convey() {
         if (allProjects != null) {
             _printTasks__WEBPACK_IMPORTED_MODULE_0__.taskPrint.projectPrint(allProjects);
-            console.log('shweet')
+            
         }
     }
 
@@ -1700,22 +2536,22 @@ const projects = (function() {
         const locallyStored = JSON.stringify(projectArray);
         localStorage.setItem('projectArray', locallyStored);
         const stored = JSON.parse(localStorage.getItem('projectArray'));
-        console.log(stored);
+        
     }
 
        
     function splice (index, i, newTask) {
-        console.log (newTask);
+        
         if (newTask === undefined) {
             let statusUpdate = projectArray[index].tasks.splice(i, 1);
             storeProjects(statusUpdate, index);
-            console.log(JSON.parse(localStorage.getItem('projectArray')));
+            
         } else if (newTask != undefined ) {
-            console.log('...o.O')
+            
 
             let statusUpdate = projectArray[index].tasks.splice(i, 1, newTask);
             storeProjects(statusUpdate, index);
-            console.log(JSON.parse(localStorage.getItem('projectArray')));
+            
         }
         
         if (projectArray[index].tasks.length === 0) {
@@ -1723,7 +2559,9 @@ const projects = (function() {
             _printTasks__WEBPACK_IMPORTED_MODULE_0__.taskPrint.removeProject(projectArray[index].projectName);
            let statusUpdate = projectArray.splice(index, 1);
             storeProjects(statusUpdate, index);
-            projectPanel.textContent = '';
+            if ( projectPanel != null ) {
+                projectPanel.textContent = '';
+            }
         }
 
     }
@@ -1824,7 +2662,7 @@ const ProjectFactory = () => {
         // variables for repeat or new projects
         let repeat = false;
         let newProject = false;
-        console.log(_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array());
+        
         // creates each project that contains each task inside of it
         const container = {};
         container.projectName = project;
@@ -1859,7 +2697,7 @@ const ProjectFactory = () => {
             }
 
         } else if (_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array() === null || _index__WEBPACK_IMPORTED_MODULE_1__.getProject.array().length === 0 ) {
-            console.log(_index__WEBPACK_IMPORTED_MODULE_1__.getProject.array())
+            
             container.tasks.push(task);
             _project__WEBPACK_IMPORTED_MODULE_2__.projects.receiving(container);
         }
@@ -1897,9 +2735,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "projectPrint": () => (/* binding */ projectPrint)
 /* harmony export */ });
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
 /* harmony import */ var _editTasks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editTasks.js */ "./src/editTasks.js");
 /* harmony import */ var _printTasks_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./printTasks.js */ "./src/printTasks.js");
 /* harmony import */ var _project_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./project.js */ "./src/project.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/isToday/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/isThisWeek/index.js");
+
+
+
 
 
 
@@ -1922,11 +2766,11 @@ const sideBarHighlight = (function () {
     const child2 = sideBarChildren[1];
     const child3 = sideBarChildren[2];
     const child4 = sideBarChildren[3];
-    const child5 = sideBarChildren[4];
+    
 
     // array to contain sidebar tabs
     const sideBarArray = [];
-    sideBarArray.push(child1, child2, child3, child4, child5);
+    sideBarArray.push(child1, child2, child3, child4);
 
     function defaultTab() {
         const all = document.querySelector('.all');
@@ -1948,7 +2792,7 @@ const sideBarHighlight = (function () {
             //     child5.classList.remove('hovered');
             //     // added by 'number'
             //     child5.classList.add('hovered');
-            //     console.log('soop')
+            //     
             // } else 
             // gives each tab an event listener
             if (number === undefined) {
@@ -1970,7 +2814,7 @@ const sideBarHighlight = (function () {
                         child2.classList.remove('hovered');
                         child3.classList.remove('hovered');
                         child4.classList.remove('hovered');
-                        child5.classList.remove('hovered');
+                        
                         event.target.classList.add('hovered');
                         operator(index);
                         tabSelection.eventListeners();
@@ -2004,21 +2848,16 @@ function operator(index) {
             
             break;
         case index === 1:
-            tabSelection.inbox();
-            // communicates that the selected tab is the 'all' tab'
-            
-            break;
-        case index === 2:
             tabSelection.today();
             // communicates that the selected tab is the 'all' tab'
             
             break;
-        case index === 3:
+        case index === 2:
             tabSelection.weekly();
             // communicates that the selected tab is the 'all' tab'
             
             break;
-        case index === 4:
+        case index === 3:
             tabSelection.projects();
             // communicates that the selected tab is the 'all' tab'
             
@@ -2073,40 +2912,6 @@ const tabSelection = (function () {
         }
     }
     
-    // functions for each tab
-    function inboxTab() {
-
-        // erases tasks from DOM so they don't spam themselves
-        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-
-        // searches DOM for .taskSpans elements
-        const text = document.querySelectorAll('.taskSpans');
-
-        // clears them if they are found so they don't spam themselves
-        if (text != null) {
-            _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
-} 
-        // variables that target elements of DOM needed to remove projectPanel
-        const taskPanel = document.querySelector('.taskPanel');
-        const projectPanel = document.querySelector('.projectPanel');
-        const mainSection = document.querySelector('.mainSection');
-        const isPresent = mainSection.contains(projectPanel);
-        
-        // removes project panel
-        if (isPresent === true) {
-            mainSection.removeChild(projectPanel);
-            mainSection.style.cssText = `
-            grid-template-areas: 
-            "form form"
-            "items items";
-            `;
-            
-            taskPanel.style.cssText = `grid-row: 4/11`;
-    
-        } 
-        _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-    }
-
 
     function todayTab() {
 
@@ -2140,8 +2945,39 @@ const tabSelection = (function () {
     
         } 
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-        console.log(1);
+       
+        // variables to retrieve both arrays - project and item
+        const projects = JSON.parse(localStorage.getItem('projectArray'));
+        const items = JSON.parse(localStorage.getItem('itemArray'));
+
+        const projectTasks = projects.map((a) => a.tasks);
+
         // whatever taks are dated for today show up in the DOM
+        
+        for ( var i = 0; i < items.length; i++ ) {
+            
+            var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( items[i].date ), 1 );
+            
+            if ( result ) {
+                _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.print(items[i], items[i].status);
+                
+                _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+            }  
+
+         }
+
+        for ( var i = 0; i < projectTasks.length; i++ ) {
+           for ( var j = 0; j < projectTasks[i].length; j++ ) {
+                var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)((0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(projectTasks[i][j].date ), 1)
+
+                if ( result ) {
+                    _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.print(projectTasks[i][j], projectTasks[i][j].status);
+                    _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+                }
+           }
+            
+        }
+       
     }
 
 
@@ -2176,9 +3012,50 @@ const tabSelection = (function () {
             taskPanel.style.cssText = `grid-row: 4/11`;
     
         } 
+        
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
-        console.log(2);
+        
         // whatever tasks happen this week show up in the DOM
+         // variables to retrieve both arrays - project and item
+         const projects = JSON.parse(localStorage.getItem('projectArray'));
+         const items = JSON.parse(localStorage.getItem('itemArray'));
+ 
+         const projectTasks = projects.map((a) => a.tasks);
+        
+         const year = new Date().getFullYear();
+         const month = new Date().getMonth() + 1;
+         const day = new Date().getDate();
+         const today = `${year}, ${month}, ${day}`;
+         
+         // whatever taks are dated for today show up in the DOM
+         
+         for ( var i = 0; i < items.length; i++ ) {
+             
+             var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( items[i].date ) );
+             
+             
+             
+             if ( result ) {
+                 _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.print(items[i], items[i].status);
+                 
+                 _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+             }  
+ 
+          }
+ 
+         for ( var i = 0; i < projectTasks.length; i++ ) {
+            for ( var j = 0; j < projectTasks[i].length; j++ ) {
+                 var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( projectTasks[i][j].date ) )
+ 
+                 if ( result ) {
+                     _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.print(projectTasks[i][j], projectTasks[i][j].status);
+                     _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.clear();
+                 }
+            }
+             
+         }
+        
+
     }
     
 
@@ -2327,7 +3204,6 @@ const tabSelection = (function () {
         eventListeners: eventListeners,
         receive: receiveArrayItems,
         receiveProjects: receiveProjects,
-        inbox: inboxTab,
         today: todayTab,
         weekly: weeklyTab,
         projects: projectsTab,
@@ -2354,7 +3230,7 @@ const projectPrint = (function () {
         
         if (projectPanel != null && projectPanel.textContent != '') {
             let projectName = projectPanel.textContent;
-            console.log(projectName);
+            
             printTasks(projectName);
         }
     }
@@ -2364,7 +3240,7 @@ const projectPrint = (function () {
         
         _editTasks_js__WEBPACK_IMPORTED_MODULE_1__.taskUpdate.erase();
         let allProjects = JSON.parse(localStorage.getItem('projectArray'));
-        console.log(allProjects);
+        
         for (var i = 0; i < allProjects.length; i++) {
             if (allProjects[i].projectName === project) {
                 let tasks = allProjects[i].tasks;
@@ -2379,7 +3255,7 @@ const projectPrint = (function () {
     function printTasks(project) {
         let allProjects = JSON.parse(localStorage.getItem('projectArray'));
         let stick = findTasks(project);
-        console.log(project);
+        
         for (var i = 0; i < stick.length; i++) {
             let index = i;
             _printTasks_js__WEBPACK_IMPORTED_MODULE_2__.taskPrint.projectPrint(stick[i], index);
@@ -2396,22 +3272,22 @@ const projectPrint = (function () {
     // updates each project task item with each edit
     function projectArrayUpdate(action, index, amount) {
         let storeArray = JSON.stringify(projectArray);
-        console.log(event.target);
-        console.log(action, index, amount);
+        
+        
         let projectStorage = JSON.parse(localStorage.getItem('projectArray'));
 
         switch(true) {
             case action === 'delete':
-                console.log(index);
+                
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('projectArray', projectArray);
 
             break;
             case action === 'edit':
                 let indecie = findTasks(amount);
-                console.log(indecie);
+                
 
-                console.log(amount);
+                
                 const newItem = {};
                 newItem.task = amount.name;
                 newItem.notes = amount.notes;
@@ -2424,7 +3300,7 @@ const projectPrint = (function () {
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('itemArray', projectArray);
                 let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-                console.log(storedArray);
+                
 
                 
                 
@@ -2432,9 +3308,9 @@ const projectPrint = (function () {
             case action === 'complete':
                 const parent = event.target.parentElement;
                 const taskText = parent.children[4];
-                console.log(index);
+                
                 let completedProject = projectStorage[index].tasks;
-                console.log(completedProject);
+                
                 
                 let position = '';
                 let taskPos = '';
@@ -2449,7 +3325,7 @@ const projectPrint = (function () {
                        newTask.notes = position.notes,
                        newTask.date = position.date,
                        newTask.project = position.project;
-                       console.log(projectStorage);
+                       
                        if (position.status === 'incomplete') {
                            newTask.status = 'complete';
                        } else if (position.status === 'complete') {
@@ -2496,11 +3372,11 @@ const projectPrint = (function () {
         for ( var i = 0; i < textSpans.length; i++) {
             if (textSpans[i].textContent === projectItem.textContent) {
                 let index = [i];
-                console.log('no work?')
+                
                 return index
             }
         }
-        console.log(index);
+        
 
                
         // switch(true) {
@@ -2513,7 +3389,7 @@ const projectPrint = (function () {
         //                 for (var i = 0; i < currentProjectName.length; i++) {
                             
         //                     if (taskMap[i].task === taskItem.textContent) {
-        //                         console.log(taskMap[i]);
+        //                         
         //                     }
         //                 }
         //             }
@@ -2527,8 +3403,8 @@ const projectPrint = (function () {
         //     }
         // }
 
-        // console.log(projectIndex);
-        // console.log(taskIndex);
+        // 
+        // 
 
     }
     

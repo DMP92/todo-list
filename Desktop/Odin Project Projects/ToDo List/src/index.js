@@ -65,13 +65,13 @@ const itemRef = (function() {
                 case action === 'edit':
                     
                   
-                   
+                    
                     itemArray.splice(index, 1, amount);
                     storeArray = JSON.stringify(itemArray);
                     localStorage.setItem('itemArray', storeArray);
                     let storedArray = JSON.parse(localStorage.getItem('itemArray'));
                     console.log(storedArray);
-
+                    
                     
                     
                 break;
@@ -214,8 +214,9 @@ const getProject = (function() {
         projectPrint.reprint();
         if ( projectPanel != null) {
             taskPrint.project();
-        }
+        } 
 
+        
 
         editItems.eventListeners();
         

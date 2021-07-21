@@ -1,8 +1,11 @@
 import { getProject, itemRef } from "./index.js";
-import { formatDistance, subDays } from 'date-fns'
+import { formatDistance, parseISO, subDays } from 'date-fns'
 import { editItems, taskUpdate } from "./editTasks.js";
 import { taskPrint, tabbedPrint } from "./printTasks.js";
 import { projects } from "./project.js";
+import { fi } from "date-fns/locale";
+import { isToday } from 'date-fns';
+import { isThisWeek } from 'date-fns';
 /* 
 ************************************************************************************
 ****************************CONTROLS WHICH SIDEBAR IS LIT UP************************
@@ -20,11 +23,11 @@ const sideBarHighlight = (function () {
     const child2 = sideBarChildren[1];
     const child3 = sideBarChildren[2];
     const child4 = sideBarChildren[3];
-    const child5 = sideBarChildren[4];
+    
 
     // array to contain sidebar tabs
     const sideBarArray = [];
-    sideBarArray.push(child1, child2, child3, child4, child5);
+    sideBarArray.push(child1, child2, child3, child4);
 
     function defaultTab() {
         const all = document.querySelector('.all');
@@ -46,7 +49,7 @@ const sideBarHighlight = (function () {
             //     child5.classList.remove('hovered');
             //     // added by 'number'
             //     child5.classList.add('hovered');
-            //     console.log('soop')
+            //     
             // } else 
             // gives each tab an event listener
             if (number === undefined) {
@@ -68,7 +71,7 @@ const sideBarHighlight = (function () {
                         child2.classList.remove('hovered');
                         child3.classList.remove('hovered');
                         child4.classList.remove('hovered');
-                        child5.classList.remove('hovered');
+                        
                         event.target.classList.add('hovered');
                         operator(index);
                         tabSelection.eventListeners();
@@ -102,21 +105,16 @@ function operator(index) {
             
             break;
         case index === 1:
-            tabSelection.inbox();
-            // communicates that the selected tab is the 'all' tab'
-            
-            break;
-        case index === 2:
             tabSelection.today();
             // communicates that the selected tab is the 'all' tab'
             
             break;
-        case index === 3:
+        case index === 2:
             tabSelection.weekly();
             // communicates that the selected tab is the 'all' tab'
             
             break;
-        case index === 4:
+        case index === 3:
             tabSelection.projects();
             // communicates that the selected tab is the 'all' tab'
             
@@ -171,40 +169,6 @@ const tabSelection = (function () {
         }
     }
     
-    // functions for each tab
-    function inboxTab() {
-
-        // erases tasks from DOM so they don't spam themselves
-        taskUpdate.erase();
-
-        // searches DOM for .taskSpans elements
-        const text = document.querySelectorAll('.taskSpans');
-
-        // clears them if they are found so they don't spam themselves
-        if (text != null) {
-            taskUpdate.clear();
-} 
-        // variables that target elements of DOM needed to remove projectPanel
-        const taskPanel = document.querySelector('.taskPanel');
-        const projectPanel = document.querySelector('.projectPanel');
-        const mainSection = document.querySelector('.mainSection');
-        const isPresent = mainSection.contains(projectPanel);
-        
-        // removes project panel
-        if (isPresent === true) {
-            mainSection.removeChild(projectPanel);
-            mainSection.style.cssText = `
-            grid-template-areas: 
-            "form form"
-            "items items";
-            `;
-            
-            taskPanel.style.cssText = `grid-row: 4/11`;
-    
-        } 
-        taskUpdate.erase();
-    }
-
 
     function todayTab() {
 
@@ -238,8 +202,39 @@ const tabSelection = (function () {
     
         } 
         taskUpdate.erase();
-        console.log(1);
+       
+        // variables to retrieve both arrays - project and item
+        const projects = JSON.parse(localStorage.getItem('projectArray'));
+        const items = JSON.parse(localStorage.getItem('itemArray'));
+
+        const projectTasks = projects.map((a) => a.tasks);
+
         // whatever taks are dated for today show up in the DOM
+        
+        for ( var i = 0; i < items.length; i++ ) {
+            
+            var result = isToday ( parseISO ( items[i].date ), 1 );
+            
+            if ( result ) {
+                taskPrint.print(items[i], items[i].status);
+                
+                taskUpdate.clear();
+            }  
+
+         }
+
+        for ( var i = 0; i < projectTasks.length; i++ ) {
+           for ( var j = 0; j < projectTasks[i].length; j++ ) {
+                var result = isToday(parseISO(projectTasks[i][j].date ), 1)
+
+                if ( result ) {
+                    taskPrint.print(projectTasks[i][j], projectTasks[i][j].status);
+                    taskUpdate.clear();
+                }
+           }
+            
+        }
+       
     }
 
 
@@ -274,9 +269,50 @@ const tabSelection = (function () {
             taskPanel.style.cssText = `grid-row: 4/11`;
     
         } 
+        
         taskUpdate.erase();
-        console.log(2);
+        
         // whatever tasks happen this week show up in the DOM
+         // variables to retrieve both arrays - project and item
+         const projects = JSON.parse(localStorage.getItem('projectArray'));
+         const items = JSON.parse(localStorage.getItem('itemArray'));
+ 
+         const projectTasks = projects.map((a) => a.tasks);
+        
+         const year = new Date().getFullYear();
+         const month = new Date().getMonth() + 1;
+         const day = new Date().getDate();
+         const today = `${year}, ${month}, ${day}`;
+         
+         // whatever taks are dated for today show up in the DOM
+         
+         for ( var i = 0; i < items.length; i++ ) {
+             
+             var result = isThisWeek ( parseISO ( items[i].date ) );
+             
+             
+             
+             if ( result ) {
+                 taskPrint.print(items[i], items[i].status);
+                 
+                 taskUpdate.clear();
+             }  
+ 
+          }
+ 
+         for ( var i = 0; i < projectTasks.length; i++ ) {
+            for ( var j = 0; j < projectTasks[i].length; j++ ) {
+                 var result = isThisWeek ( parseISO ( projectTasks[i][j].date ) )
+ 
+                 if ( result ) {
+                     taskPrint.print(projectTasks[i][j], projectTasks[i][j].status);
+                     taskUpdate.clear();
+                 }
+            }
+             
+         }
+        
+
     }
     
 
@@ -425,7 +461,6 @@ const tabSelection = (function () {
         eventListeners: eventListeners,
         receive: receiveArrayItems,
         receiveProjects: receiveProjects,
-        inbox: inboxTab,
         today: todayTab,
         weekly: weeklyTab,
         projects: projectsTab,
@@ -452,7 +487,7 @@ const projectPrint = (function () {
         
         if (projectPanel != null && projectPanel.textContent != '') {
             let projectName = projectPanel.textContent;
-            console.log(projectName);
+            
             printTasks(projectName);
         }
     }
@@ -462,7 +497,7 @@ const projectPrint = (function () {
         
         taskUpdate.erase();
         let allProjects = JSON.parse(localStorage.getItem('projectArray'));
-        console.log(allProjects);
+        
         for (var i = 0; i < allProjects.length; i++) {
             if (allProjects[i].projectName === project) {
                 let tasks = allProjects[i].tasks;
@@ -477,7 +512,7 @@ const projectPrint = (function () {
     function printTasks(project) {
         let allProjects = JSON.parse(localStorage.getItem('projectArray'));
         let stick = findTasks(project);
-        console.log(project);
+        
         for (var i = 0; i < stick.length; i++) {
             let index = i;
             taskPrint.projectPrint(stick[i], index);
@@ -494,22 +529,22 @@ const projectPrint = (function () {
     // updates each project task item with each edit
     function projectArrayUpdate(action, index, amount) {
         let storeArray = JSON.stringify(projectArray);
-        console.log(event.target);
-        console.log(action, index, amount);
+        
+        
         let projectStorage = JSON.parse(localStorage.getItem('projectArray'));
 
         switch(true) {
             case action === 'delete':
-                console.log(index);
+                
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('projectArray', projectArray);
 
             break;
             case action === 'edit':
                 let indecie = findTasks(amount);
-                console.log(indecie);
+                
 
-                console.log(amount);
+                
                 const newItem = {};
                 newItem.task = amount.name;
                 newItem.notes = amount.notes;
@@ -522,7 +557,7 @@ const projectPrint = (function () {
                 storeArray = JSON.stringify(projectArray);
                 localStorage.setItem('itemArray', projectArray);
                 let storedArray = JSON.parse(localStorage.getItem('itemArray'));
-                console.log(storedArray);
+                
 
                 
                 
@@ -530,9 +565,9 @@ const projectPrint = (function () {
             case action === 'complete':
                 const parent = event.target.parentElement;
                 const taskText = parent.children[4];
-                console.log(index);
+                
                 let completedProject = projectStorage[index].tasks;
-                console.log(completedProject);
+                
                 
                 let position = '';
                 let taskPos = '';
@@ -547,7 +582,7 @@ const projectPrint = (function () {
                        newTask.notes = position.notes,
                        newTask.date = position.date,
                        newTask.project = position.project;
-                       console.log(projectStorage);
+                       
                        if (position.status === 'incomplete') {
                            newTask.status = 'complete';
                        } else if (position.status === 'complete') {
@@ -594,11 +629,11 @@ const projectPrint = (function () {
         for ( var i = 0; i < textSpans.length; i++) {
             if (textSpans[i].textContent === projectItem.textContent) {
                 let index = [i];
-                console.log('no work?')
+                
                 return index
             }
         }
-        console.log(index);
+        
 
                
         // switch(true) {
@@ -611,7 +646,7 @@ const projectPrint = (function () {
         //                 for (var i = 0; i < currentProjectName.length; i++) {
                             
         //                     if (taskMap[i].task === taskItem.textContent) {
-        //                         console.log(taskMap[i]);
+        //                         
         //                     }
         //                 }
         //             }
@@ -625,8 +660,8 @@ const projectPrint = (function () {
         //     }
         // }
 
-        // console.log(projectIndex);
-        // console.log(taskIndex);
+        // 
+        // 
 
     }
     

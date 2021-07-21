@@ -74,14 +74,14 @@ const grabTask = (function() {
         }
         // if no repeated data, print the task
             // if there IS repeated data, alert the user, and refuse their task
-            console.log(existing);
+            
         switch(true) {
             case existing === false && taskName === '':
                 return alert('Tasks cannot be blank!');
             break;
 
             case existing === false && project != '':
-                console.log('lower')
+                
                 const newProject = ProjectFactory();
                 newProject.receiveProjects(taskName, notes, date, project, status);
             break;
@@ -96,9 +96,9 @@ const grabTask = (function() {
 
             case existing === true:
                 if (projectPrompt === true) {
-                   console.log('hmm')
+                   
                 } else {
-                    console.log('bottom');
+                    
                     return alert(`All ${dataSet} must be unique. `);
                 }
             break;

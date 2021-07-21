@@ -2,7 +2,7 @@ import { grabTask } from "./grabTask.js";
 import { projects } from "./project.js";
 import { itemRef, manipulateTaskArray, getProject } from "./index.js";
 import { taskPrint } from "./printTasks.js";
-import { projectPrint } from "./updateDOM.js";
+import { projectPrint, tabSelection } from "./updateDOM.js";
 /* 
 ************************************************************************************
 **********************************EDIT ITEMS MODULE*********************************
@@ -46,7 +46,6 @@ const editItems = (function() {
 
     // private function that removes task item nodes from taskPanel
     function _deleteItem(event) {
-        console.log('what?')
         // variables that grab each parent + task to pinpoint the index of said task
         const parent = event.target.parentElement;
         const task = parent.children[4].textContent;
@@ -54,9 +53,13 @@ const editItems = (function() {
         const action = 'delete';
         const parentGroup = document.querySelectorAll('.taskItem');
         const projectPanel = document.querySelector('.projectPanel');
-        
+        let index = undefined;
+
         // variable for task index
-        let index = searchItem(task);
+        if (project === '') {
+            index = searchItem(task);
+        }
+
         switch(true) {
             case projectPanel === null:
                 if (task === '') {
@@ -70,30 +73,44 @@ const editItems = (function() {
                     itemRef.update(action, index, 1);
                     taskPanel.removeChild(parent);  
                     // projects.delete(projectIndex); 
-                } else {
+                } else if ( task != '' && project === '' ) {
                     let projectIndex = searchProjectItems(project);
                     // variable that fetches array 
                     let itemArray = itemRef.arrayShare();
-                    console.log(project.textContent);
+                   
 
                     // removes items from both the array, localStorage, and the DOM
                     taskPrint.removeProject(project);
                     itemRef.update(action, index, 1);
                     taskPanel.removeChild(parent);  
                     // projects.delete(projectIndex); 
+                } else if ( task != '' && project != '') {
+                    let projectIndex = searchProjectItems(project, task);
+                    // variable that fetches array 
+                    console.log(projectIndex);
+                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    // removes items from both the array, localStorage, and the DOM
+                    let tasks = projectItems[projectIndex.project].tasks[projectIndex.task];
+                    
+                            
+                            
+                            
+                            projectPrint.delete(projectIndex.project, projectIndex.task);
+                            taskPanel.removeChild(parent);  
+                        
+                    
                 }
             break;
             case projectPanel != null:
                 if (project === undefined) {
                 //     let projectItems = JSON.parse(localStorage.getItem('projectArray'));
 
-                console.log('hey');
                 let projectIndex = searchProjectItems(project);
                 // variable that fetches array 
                 let projectItems = JSON.parse(localStorage.getItem('projectArray'));
                 
                 // removes items from both the array, localStorage, and the DOM
-                console.log(projectIndex);
+               
         
                 //    let projectIndex = searchProjectItems(project);
                 //     // variable that fetches array 
@@ -108,22 +125,15 @@ const editItems = (function() {
                     
                    
 
-                    console.log('hey');
-                    let projectIndex = searchProjectItems(project);
+                    let projectIndex = searchProjectItems(project, task);
                     // variable that fetches array 
-                    let projectItems = JSON.parse(localStorage.getItem('projectArray'));
+                    
                     // removes items from both the array, localStorage, and the DOM
-                    let tasks = projectItems[projectIndex].tasks;
-
-                    for (var i = 0; i < tasks.length; i++) {
-                        if (tasks[i].task === task) {
-                            
-                            
-                            
-                            projectPrint.delete(projectIndex, i);
+                    
+                            projectPrint.delete(projectIndex.project, projectIndex.task);
                             taskPanel.removeChild(parent);  
-                        }
-                    }
+                        
+                    
                 }
         }
        
@@ -138,30 +148,47 @@ const editItems = (function() {
                 then call for a storage Push so it updates the item
          */
 
-    function searchItem(data) {
+    function searchItem(name) {
 
-        const array = itemRef.arrayShare();
+        const array = JSON.parse(localStorage.getItem('itemArray'));
 
         for (var i = 0; i < array.length; i++){
             let index = array[i].task;
             
-            if (index === data) {
-                console.log(array.indexOf(array[i]));
+            if (index === name) {
+               
                 return array.indexOf(array[i]);
             }
         }
 
     }
 
-    function searchProjectItems(project) {
+    function searchProjectItems( project, task ) {
+       
         const array = JSON.parse(localStorage.getItem('projectArray'));
 
         for (var i = 0; i < array.length; i++) {
-            let index = array[i].projectName;
 
-            if (index === project) {
-                console.log(array.indexOf(array[i]));
-                return array.indexOf(array[i]);
+            let index = array[i].projectName;
+            let taskArray = array[i].tasks;
+
+            if ( index === project ) {
+
+                for ( var j = 0; j < taskArray.length; j++ ) {
+                    if ( taskArray[j].task === task ) {
+                        //
+                        //
+                        let taskIndex = taskArray.indexOf(taskArray[j]);
+                        let projectIndex = array.indexOf(array[i]);
+                        let newTask = {
+                            task: taskIndex,
+                            project: projectIndex
+                        }
+                        return newTask;
+                    }
+                }
+                
+                
             }
         }
     }
@@ -208,10 +235,15 @@ const editItems = (function() {
 
                 // if the project tab is highlighted, then it updates the project array
                 // else it will update item array
-                if (projectColor.classList.contains('hovered')) {
-                    index = projectPrint.search(task, project);
-                    
-                    projectPrint.update(action, index, status);
+                if (project != '') {
+                    const projectArrays = JSON.parse(localStorage.getItem('projectArray'));
+
+                    for ( var i = 0; i < projectArrays.length; i++ ) {
+                        if ( projectArrays[i].projectName === project ) {
+                            index = projectArrays.indexOf(projectArrays[i]);
+                            projectPrint.update(action, index, status);
+                        }
+                    }
                 } else {
 
                     itemRef.update(action, index, status);
@@ -224,12 +256,22 @@ const editItems = (function() {
                 status = 'incomplete';
 
 
-                 if (projectColor.classList.contains('hovered')) {
+                 if (project != '' && index === undefined) {
+                    const projectArrays = JSON.parse(localStorage.getItem('projectArray'));
+
+                    for ( var i = 0; i < projectArrays.length; i++ ) {
+                        if ( projectArrays[i].projectName === project ) {
+                            index = projectArrays.indexOf(projectArrays[i]);
+                           
+                            projectPrint.update(action, index, status);
+                        }
+                    }
+                } else if (project != '') {
                     index = projectPrint.search(task, project);
-                    console.log(index);
+                   
                     projectPrint.update(action, index, status);
                 } else {
-
+                    
                     itemRef.update(action, index, status);
                 }
                 
@@ -269,7 +311,7 @@ const editItems = (function() {
                 const newest = JSON.stringify(newItems);
                 localStorage.setItem(key, newest);
                 //  localStorage.setItem(items, `{task:${task}, notes: ${notes}, date: ${date}, ${project}, ${status}}`);
-                 console.log(key);
+                 
              }
             
             i++
@@ -280,14 +322,41 @@ const editItems = (function() {
         const taskPanel = document.querySelector('.taskPanel');
         const parent = event.parentElement;
 
-        for ( var i = 0; i < taskPanel.children.length; i++ ) {
-            if ( taskPanel.children[i] === parent ) {
-                let taskIndex = i;
-                return i;
-            }
+        switch ( true ) {
+            case parent.children[0].textContent === '':
+               const items = JSON.parse(localStorage.getItem('itemArray'));
+
+                for ( var i = 0; i < items.length; i++ ) {
+                    if ( parent.children[4].textContent === items[i].task ) {
+                        items.indexOf ( item[i] );
+                    }
+                }
+
+            break;
+            case parent.children[0].textContent != '':
+                
+                const projects = JSON.parse(localStorage.getItem('projectArray'));
+
+                for ( var i = 0; i < projects.length; i++ ) {
+                    if ( projects[i].projectName === parent.children[0] ) {
+
+                        const projectTasks = projects.map((a) => a.tasks);
+
+                        for ( var j = 0; j < projectTasks.length; j++ ) {
+                            if ( parent.children[4] === projectTasks[i][j].task) {
+                            }
+                        }
+
+                    }
+                }
+            
+            break;
         }
+
         
     }
+
+    const currentProject = [];
 
     function _editProject () {
         // variables that get each nodeList item of the specific container the clicked button is in
@@ -297,6 +366,7 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
+        const task = parent.children[4].textContent;
 
         const projectTextArray = document.querySelectorAll('.textSpans');
 
@@ -305,20 +375,20 @@ const editItems = (function() {
                 
                 newTextArray.push(projectTextArray[i]);
             } else if (projectTextArray[i].textContent === undefined) {
-                console.log('hmm');
             }
         }
 
         
-        let projectIndex = searchProjectItems(project);
+        let newTasks = searchProjectItems( project, task );
+        currentProject.push(newTasks);
+       
+        
         // variable that fetches array 
         let projectItems = JSON.parse(localStorage.getItem('projectArray'));
         // removes items from both the array, localStorage, and the DOM
-        let tasks = projectItems[projectIndex].tasks;
-        let indecie = undefined;
+        
 
-        let taskIndex = parentIndex( event.target );
-        console.log(taskIndex);
+        
       
         // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
         // ELSE it will run the function called below which appends the newly edited info to the DOM
@@ -351,11 +421,12 @@ const editItems = (function() {
                 event.target.classList.add('editingTask');
             // parent.appendChild();
         } else {
-            console.log('...o.O')
+            
+             _appendProject ( currentProject[0].project, currentProject[0].task );
 
-            _appendProject ( projectIndex, taskIndex );
+            currentProject.pop();
+            currentProject.pop();
         }
-
     }
 
     function _appendProject ( ind, i ) {
@@ -400,7 +471,7 @@ const editItems = (function() {
             //     if (projectPanel != null) {
             //         const projectScroll = document.querySelector('.scrollContainer');
             //         projectScroll.removeChild(textIndex);
-            //         console.log('hey');
+            //        
             //     }
             // }
 
@@ -418,6 +489,7 @@ const editItems = (function() {
             
         }
         
+        
 
         const newItem = {};
         newItem.task = name.value;
@@ -426,14 +498,30 @@ const editItems = (function() {
         newItem.project = project;
         newItem.status = 'incomplete';
         projects.splice( ind, i, newItem );
-        
+
+        const hovered = document.querySelector('.hovered');
+        _updatePage ( hovered.textContent );
+
   }
 
+  function _updatePage ( page ) {
+      
+        switch ( true ) {
+            case page === 'Today':
+                tabSelection.today();
+            break;
 
+            case page === 'Weekly':
+                tabSelection.weekly();
+            break;
+
+        }
+  }
 
     /* 
     **************************** EDIT TASK *******************************    
     */
+    const taskContainer = [];
 
     // private function that allows the task info to be edited
     function _editTask() {
@@ -447,61 +535,69 @@ const editItems = (function() {
         const name = parent.children[4];
         const date = parent.children[5];
         const notes = parent.children[6];
-
-
-        const projectTextArray = document.querySelectorAll('.textSpans');
+        const task = parent.children[4].textContent;
         
+        if (project.textContent != '' ) {
+            _editProject();
+        } else {
 
-        for (var i = 0; i < projectTextArray.length; i++) {
-            if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
-                
-                newTextArray.push(projectTextArray[i]);
-            } else if (projectTextArray[i].textContent === undefined) {
-                console.log('hmm');
+            const projectTextArray = document.querySelectorAll('.textSpans');
+            
+
+            for (var i = 0; i < projectTextArray.length; i++) {
+                if (projectTextArray[i].textContent === project.textContent && name.tagName === 'DIV') {
+                    
+                    newTextArray.push(projectTextArray[i]);
+                } else if (projectTextArray[i].textContent === undefined) {
+                }
             }
-        }
+
+            const itemIndex = searchItem(task);
+            taskContainer.push(itemIndex);
+
+            // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
+            // ELSE it will run the function called below which appends the newly edited info to the DOM
+            if (name.tagName === 'DIV') {
+            // variables for appending input items to taskItem
+
+            const editProject = document.createElement('input');
+                editProject.classList.add('projectName');
+                editProject.style.cssText = 'text-align: center;';
+                editProject.placeholder = 'Edit Project Name';
+                parent.replaceChild(editProject, project);
 
 
-        // IF the edit button is clicked and the task.tagName is still a DIV, then the code runs
-        // ELSE it will run the function called below which appends the newly edited info to the DOM
-        if (name.tagName === 'DIV') {
-        // variables for appending input items to taskItem
-
-        const editProject = document.createElement('input');
-            editProject.classList.add('projectName');
-            editProject.style.cssText = 'text-align: center;';
-            editProject.placeholder = 'Edit Project Name';
-            parent.replaceChild(editProject, project);
+            const editName = document.createElement('input');
+                editName.classList.add('taskName');
+                editName.placeholder = 'Edit Task Name';
+                editName.style.cssText = 'text-align: center;';
+                parent.replaceChild(editName, name);
 
 
-        const editName = document.createElement('input');
-            editName.classList.add('taskName');
-            editName.placeholder = 'Edit Task Name';
-            editName.style.cssText = 'text-align: center;';
-            parent.replaceChild(editName, name);
-
-
-        const editDate = document.createElement('input');
-            editDate.classList.add('taskDate');
-            editDate.type = 'date';
-            editDate.style.cssText = "background-color: White; color: black; text-align: center;";
-            editDate.placeholder = 'Edit Date';
-            parent.replaceChild(editDate, date)
+            const editDate = document.createElement('input');
+                editDate.classList.add('taskDate');
+                editDate.type = 'date';
+                editDate.style.cssText = "background-color: White; color: black; text-align: center;";
+                editDate.placeholder = 'Edit Date';
+                parent.replaceChild(editDate, date)
 
 
 
-        const editDescription = document.createElement('input');
-            editDescription.classList.add('description');
-            editDescription.placeholder = 'Edit Notes';
-            editDescription.style.cssText = 'text-align: center;';
-            parent.replaceChild(editDescription, notes);
+            const editDescription = document.createElement('input');
+                editDescription.classList.add('description');
+                editDescription.placeholder = 'Edit Notes';
+                editDescription.style.cssText = 'text-align: center;';
+                parent.replaceChild(editDescription, notes);
 
-            event.target.classList.remove('editTask');
-            event.target.classList.add('editingTask');
-    // parent.appendChild();
-        
-        } else { 
-                _appendTask(newTextArray[0]);
+                event.target.classList.remove('editTask');
+                event.target.classList.add('editingTask');
+        // parent.appendChild();
+            
+            } else { 
+                    let tempIndex = taskContainer[0];
+                    _appendTask(tempIndex);
+                    taskContainer.pop();
+            }
         }
     }
 
@@ -513,7 +609,7 @@ const editItems = (function() {
 
 
     // function that takes newly edited information and publishes them to the DOM
-    function _appendTask(textIndex) {
+    function _appendTask(textIndex, itemIndex) {
 
         // variable for grabbing all task items
         const taskItems = document.querySelectorAll('.taskItem');
@@ -560,15 +656,14 @@ const editItems = (function() {
                 if (projectPanel != null) {
                     const projectScroll = document.querySelector('.scrollContainer');
                     projectScroll.removeChild(textIndex);
-                    console.log('hey');
                 }
             }
 
 
         // variable that fetches index of edited element
-        const index = tasks.indexOf(parent);
+        textIndex
 
-        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, index)
+        _checkItemData(event.target, name.value, notes.value, date.value, project.value, status, textIndex)
 
         if(name.value != '') {
             
@@ -596,8 +691,10 @@ const editItems = (function() {
             alert('Tasks cannot be made into projects.')
         }
         
-        itemRef.update('edit', index, newItem);
+        itemRef.update('edit', textIndex, newItem);
         
+        const hovered = document.querySelector('.hovered');
+        _updatePage ( hovered.textContent );
     }
 
     
@@ -663,9 +760,9 @@ const editItems = (function() {
                 if (projectPrompt === true) {
                     alert(`If you want to add tasks to your ${dataSet}, click on the 'Projects' tab.`);
                      alert(`All ${dataSet} must be unique. `);
-                     console.log('top');
+                    
                 } else {
-                    console.log('bottom');
+                   
                     return alert(`All ${dataSet} must be unique. `);
                 }
             break;
@@ -710,7 +807,6 @@ const editItems = (function() {
         }
 
         function _updateArrays(task, index) {
-            console.log(task);
             // variable that tells itemRef that the action being taken is 'edit'
             const edit = 'edit';
             itemRef.update(edit, index, task)
@@ -721,9 +817,7 @@ const editItems = (function() {
         }
     })();
 
-    const deleteButton = document.querySelector('.formDelete');
-        deleteButton.addEventListener('click', () => {
-    })
+    
 
     const grabEditedProject = (function () {
 
@@ -738,7 +832,6 @@ const editItems = (function() {
         }
 
         function _updateArrays(task, index) {
-            console.log(task);
             // variable that tells itemRef that the action being taken is 'edit'
             const edit = 'edit';
             projects.update(edit, index, task)

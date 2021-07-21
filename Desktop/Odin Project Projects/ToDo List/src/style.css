@@ -1,17 +1,169 @@
-:root {
-    /* --main-color: #8c8c8c;
-    --dark-color: #b7b7b7;
-    --accent-color: white;
-    --accent-color2: #ddbf37;
-     */
-    --main-color: rgb(9, 93, 102);
-    --dark-color: #151515;
-    --accent-color: white;
-    --accent-color2: #ddbf37;
-    /* mix-blend-mode: screen;
-    mix-blend-mode: screen; */
+@media screen and (max-width: 800px) {
+    :root {
+        /* --main-color: #8c8c8c;
+        --dark-color: #b7b7b7;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+         */
+         --overflow: scroll;
+        --main-color: rgb(9, 93, 102);
+        --dark-color: #151515;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+        /* mix-blend-mode: screen;
+        mix-blend-mode: screen; */
 
-    /* orange color - rgb(221, 144, 79) */
+
+        --width: 100%;
+        --height: 100%;
+
+        /* both variables for mainSection and Sidebar */
+        --main-width: 500px;
+        --side-width: 200px;
+
+
+        --form-col: repeat(10, 10%);
+        --form-row: repeat(10, 10%);
+        --form-area: 
+                "task date"
+                "notes project"
+                "submit delete";
+        
+        --submit-col: 3/8;
+        --submit-row: 8/9;
+        --submit-width: 300px;
+        --submit-height: 35px;
+
+        --task-row: 1/3;
+        --task-col: 1/6;
+        
+        --notes-row: 3/7;
+        --notes-col: 1/6;
+
+        --date-row: 1/3;
+        --date-col: 6/10;
+
+        --pro-row: 3/5;
+        --pro-col: 6/10;
+
+        /* orange color - rgb(221, 144, 79) */
+    }
+}
+/* 
+                        grid-row: 2/4;
+                        grid-column: 1/5;
+            
+                        grid-row: 4/8;
+                        grid-column: 1/5;
+
+                        grid-row: 2/4;
+                        grid-column: 5/8;
+
+                        grid-row: 4/7;
+                        grid-column: 5/8;
+            */
+
+@media screen and (min-width: 801px) {
+    :root {
+        /* --main-color: #8c8c8c;
+        --dark-color: #b7b7b7;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+         */
+         --overflow: hidden;
+        --main-color: rgb(9, 93, 102);
+        --dark-color: #151515;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+        /* mix-blend-mode: screen;
+        mix-blend-mode: screen; */
+        --width: 100%;
+        --height: 100%;
+
+        --main-width: 100%;
+        --side-width: 100%;
+
+        --form-col: repeat(10, 10%);
+        --form-row: repeat(10, 10%);
+        --form-area: 
+                "task date submit"
+                "notes project delete";
+
+        --submit-col: 8/9;
+        --submit-row: 3/5;
+        --submit-width: 60px;
+        --submit-height: 50px;
+
+
+        --delete-col: 8/9;
+        --delete-row: 6/8;
+
+        --task-row: 2/4;
+        --task-col: 1/5;
+        
+        --notes-row: 4/8;
+        --notes-col: 1/5;
+
+        --date-row: 2/4;
+        --date-col: 5/8;
+
+        --pro-row: 4/7;
+        --pro-col: 5/8;
+
+        /* orange color - rgb(221, 144, 79) */
+    }
+}
+
+@media screen and (min-width: 1500px) {
+    :root {
+        /* --main-color: #8c8c8c;
+        --dark-color: #b7b7b7;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+         */
+        --overflow: hidden;
+        --main-color: rgb(9, 93, 102);
+        --dark-color: #151515;
+        --accent-color: white;
+        --accent-color2: #ddbf37;
+        /* mix-blend-mode: screen;
+        mix-blend-mode: screen; */
+        --width: 1500px;
+        --height: 100%;
+
+        --main-width: 100%;
+        --side-width: 100%;
+
+        --form-col: repeat(10, 10%);
+        --form-row: repeat(10, 10%);
+        --form-area: 
+                "task date submit"
+                "notes project delete";
+
+        --submit-col: 8/9;
+        --submit-row: 3/5;
+        --submit-width: 60px;
+        --submit-height: 50px;
+
+
+        --delete-col: 8/9;
+        --delete-row: 6/8;
+        
+        --task-row: 2/4;
+        --task-col: 1/5;
+        
+        --notes-row: 4/8;
+        --notes-col: 1/5;
+
+        --date-row: 2/4;
+        --date-col: 5/8;
+
+        --pro-row: 4/7;
+        --pro-col: 5/8;
+
+
+        /* orange color - rgb(221, 144, 79) */
+    }
 }
 
   
@@ -21,7 +173,7 @@ body {
     margin: 0;
     height: 100vh;
     width: 100vw;
-    overflow-x: hidden;
+    overflow-x: var(--overflow);
     display: grid;
     justify-content: center;
     align-items: center;
@@ -46,7 +198,7 @@ body {
         grid-column: 1/10;
         grid-row: 1/2;
         height: 100%;
-        width: 100%;
+        width: var(--main-width);
         font-size: 26px;
         font-family: monospace;
         z-index: 10;
@@ -65,6 +217,7 @@ body {
         border-radius: 2px;
         
     }
+
 
     /* header h1 */
     h1 {
@@ -104,10 +257,28 @@ body {
         grid-column: 1/11;
         grid-row: 10/11;
         height: 100%;
-        width: 100%;
+        width: var(--main-width);
         border-top: 3px solid var(--accent-color);
         z-index: 10;
+        
     }
+
+            .linkContainer {
+                background-image: url('./Images/icons8-github-60.png');
+                background-size: 50px 50px;
+                width: 42px;
+                height: 42px;
+                background-position: center;
+                background-repeat: no-repeat;
+                border-radius: 50%;
+                transform: scale(1);
+                transition: ease .3s;
+            }
+
+            .linkContainer:hover {
+                transform: scale(1.1);
+                transition: ease-in-out .3s;
+            }
 
             .footer > p {
                 margin-left: 5px;
@@ -132,12 +303,9 @@ body {
         grid-template-areas:              
                     "side main"
                     "side main";
-        width: 100%;
+        width: var(--width);
         height: 100%;
         background-color: var(--dark-color);
-                
-
-
     }
 
         .sidebar {
@@ -197,25 +365,16 @@ body {
                     border-top-right-radius: 5px;
                 }
 
-                .inbox {
-                   
-                    place-content: end;
-                    grid-area: "inbox";
-                    grid-column: 2/10;
-                    grid-row: 3/4;
-                    
-                }
-
                 .today { 
                     grid-area: "today";
                     grid-column: 2/10;
-                    grid-row: 4/5;
+                    grid-row: 3/4;
                 }
 
                 .weekly {
                     grid-area: "weekly";
                     grid-column: 2/10;
-                    grid-row: 5/6;
+                    grid-row: 4/5;
                 }
 
                 
@@ -223,14 +382,14 @@ body {
                 .projects {
                     grid-area: "projects";
                     grid-column: 2/10;
-                    grid-row: 6/7;
+                    grid-row: 5/6;
                     border-bottom-right-radius: 5px;
                     border-bottom-left-radius: 5px;
                 }
 
                 .projectScroll {
                     display: grid;
-                    grid-row: 7/10;
+                    grid-row: 6/10;
                     grid-column: 2/10;
                     width: 90%;
                     height: 100%;
@@ -310,7 +469,7 @@ body {
             grid-template-areas: 
                     "form form"
                     "items items";
-            width: min(100%, 1200px);
+            width: 100%;
         }
 
             .form {
@@ -320,21 +479,20 @@ body {
                 background-color: var(--dark-color);
                 display: grid;
                 grid-gap: 5px;
-                grid-template-columns: repeat(10, 10%);
-                grid-template-rows: repeat(10, 10%);
-                grid-template-areas: 
-                            "task date submit"
-                            "notes project delete";
+                grid-template-columns: var(--form-col);
+                grid-template-rows: var(--form-row);
+                grid-template-areas: var(--form-area);
                 padding: 10px;
                 border-bottom: 3px solid var(--accent-color);
                 border-right: 3px solid var(--accent-color);
 
             }
 
+
                     .task {
                         grid-area: "task";
-                        grid-row: 2/4;
-                        grid-column: 1/5;
+                        grid-row: var(--task-row);
+                        grid-column: var(--task-col);
                         width: 98%;
                     }
 
@@ -344,8 +502,8 @@ body {
                         place-content: start;
                         word-wrap: break-word;
                         grid-area: "notes";
-                        grid-row: 4/8;
-                        grid-column: 1/5;
+                        grid-row: var(--notes-row);
+                        grid-column: var(--notes-col);
                         width: 98%;
                         overflow-y: auto;
                     }
@@ -353,29 +511,31 @@ body {
                     .date {
                         
                         grid-area: "date";
-                        grid-row: 2/4;
-                        grid-column: 5/8;
-                        width: 95%;
+                        grid-row: var(--date-row);
+                        grid-column: var(--date-col);
+                        width: 98%;
 
                     }
 
                     .project {
                         grid-area: "project";
-                        grid-row: 4/7;
-                        grid-column: 5/8;
-                        width: 95%;
+                        grid-row: var(--pro-row);
+                        grid-column: var(--pro-col);
+                        width: 98%;
 
                     }
 
                     .submit {
                         position: relative;
                         grid-area: "submit";
-                        grid-column: 8/9;
-                        grid-row: 2/4;
-                        width: 57px;
+                        grid-column: var(--submit-col);
+                        grid-row: var(--submit-row);
+                        width: var(--submit-width);
+                        height: var(--submit-height);
                         background-color: transparent;
                         color: white;
                         border: 1px solid white;
+                        align-self: center;
                     }
 
                         .submit:hover {
@@ -388,9 +548,9 @@ body {
 
                     .formDelete {
                         grid-area: "delete";
-                        grid-column: 8/9;
-                        grid-row: 6/8;
-                        width: 90%;
+                        grid-column: var(--delete-col);
+                        grid-row: var(--delete-row);
+                        width: 60px;
                     }
 
 button {
@@ -418,7 +578,6 @@ button:hover {
     justify-content: center;
     align-content: start;
     grid-gap: 2px;
-    border-right: 3px solid white;
 }
 
 .projectPanel {
