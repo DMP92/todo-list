@@ -834,7 +834,7 @@ const editItems = (function() {
                     taskPanel.removeChild(parent);  
                     // projects.delete(projectIndex); 
                 } else if ( task != '' && project === '' ) {
-                    let projectIndex = searchProjectItems(project);
+                    
                     // variable that fetches array 
                     let itemArray = _index_js__WEBPACK_IMPORTED_MODULE_2__.itemRef.arrayShare();
                    
@@ -2950,10 +2950,11 @@ const tabSelection = (function () {
         const projects = JSON.parse(localStorage.getItem('projectArray'));
         const items = JSON.parse(localStorage.getItem('itemArray'));
 
-          const projectTasks = projects.map((a) => a.tasks);
+        
 
         // whatever taks are dated for today show up in the DOM
         
+      if (items != null) {
         for ( var i = 0; i < items.length; i++ ) {
             
             var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( items[i].date ), 1 );
@@ -2965,7 +2966,12 @@ const tabSelection = (function () {
             }  
 
          }
-
+      } 
+      
+      
+      if (projects != null) {
+        const projectTasks = projects.map((a) => a.tasks);
+        
         for ( var i = 0; i < projectTasks.length; i++ ) {
            for ( var j = 0; j < projectTasks[i].length; j++ ) {
                 var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)((0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(projectTasks[i][j].date ), 1)
@@ -2977,7 +2983,7 @@ const tabSelection = (function () {
            }
             
         }
-       
+      }
     }
 
 
@@ -3020,7 +3026,6 @@ const tabSelection = (function () {
          const projects = JSON.parse(localStorage.getItem('projectArray'));
          const items = JSON.parse(localStorage.getItem('itemArray'));
  
-          const projectTasks = projects.map((a) => a.tasks);
       
          const year = new Date().getFullYear();
          const month = new Date().getMonth() + 1;
@@ -3029,6 +3034,7 @@ const tabSelection = (function () {
          
          // whatever taks are dated for today show up in the DOM
          
+      if (items != null) {
          for ( var i = 0; i < items.length; i++ ) {
              
              var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( items[i].date ) );
@@ -3042,7 +3048,11 @@ const tabSelection = (function () {
              }  
  
           }
- 
+      }
+      
+       if (projects != null) {
+         const projectTasks = projects.map((a) => a.tasks);
+
          for ( var i = 0; i < projectTasks.length; i++ ) {
             for ( var j = 0; j < projectTasks[i].length; j++ ) {
                  var result = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default) ( (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default) ( projectTasks[i][j].date ) )
@@ -3055,7 +3065,7 @@ const tabSelection = (function () {
              
          }
         
-
+       }
     }
     
 
