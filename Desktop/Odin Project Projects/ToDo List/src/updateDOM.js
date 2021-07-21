@@ -206,9 +206,11 @@ const tabSelection = (function () {
         // variables to retrieve both arrays - project and item
         const projects = JSON.parse(localStorage.getItem('projectArray'));
         const items = JSON.parse(localStorage.getItem('itemArray'));
-
+        
+        if ( projects != null ) {         
         const projectTasks = projects.map((a) => a.tasks);
-
+        } else {}
+            
         // whatever taks are dated for today show up in the DOM
         
         for ( var i = 0; i < items.length; i++ ) {
@@ -277,7 +279,10 @@ const tabSelection = (function () {
          const projects = JSON.parse(localStorage.getItem('projectArray'));
          const items = JSON.parse(localStorage.getItem('itemArray'));
  
-         const projectTasks = projects.map((a) => a.tasks);
+         if ( projects != null ) {         
+        const projectTasks = projects.map((a) => a.tasks);
+        } else {}
+            
         
          const year = new Date().getFullYear();
          const month = new Date().getMonth() + 1;
