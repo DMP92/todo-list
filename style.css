@@ -215,8 +215,23 @@ body {
         color: var(--accent-color);
         text-indent: 5px;
         border-radius: 2px;
-        
     }
+    
+            ::-webkit-input-placeholder {
+                color: var(--accent-color);
+            }
+
+            ::-moz-placeholder {
+                color: var(--accent-color);
+            }
+
+            ::-ms-placeholder {
+                color: var(--accent-color);
+            }
+
+            ::placeholder {
+                color: var(--accent-color);
+            }
 
 
     /* header h1 */
